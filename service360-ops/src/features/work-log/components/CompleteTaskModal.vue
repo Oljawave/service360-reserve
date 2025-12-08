@@ -15,6 +15,13 @@
           :step="1"
           :required="true"
         />
+        <AppInput
+          label="Комментарий"
+          id="reasonDeviation"
+          v-model="reasonDeviation"
+          placeholder="Укажите причину отклонения от плана"
+          class="reason-input"
+        />
         <div class="modal-footer">
           <button class="cancel-button" @click="close">Отмена</button>
           <button class="confirm-button" @click="confirm" :disabled="!isVolumeValid">
@@ -28,7 +35,8 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue';
-import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'; // Предполагаемый путь
+import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue';
+import AppInput from '@/shared/ui/FormControls/AppInput.vue';
 
 const props = defineProps({
   isOpen: {
@@ -44,10 +52,12 @@ const props = defineProps({
 const emit = defineEmits(['close', 'confirm']);
 
 const actualVolume = ref(null);
+const reasonDeviation = ref('');
 
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
     actualVolume.value = props.maxVolume === Infinity ? null : props.maxVolume; // Предзаполнить плановым объемом
+    reasonDeviation.value = ''; // Очистить комментарий при открытии
   }
 });
 
@@ -62,7 +72,7 @@ const close = () => {
 
 const confirm = () => {
   if (isVolumeValid.value) {
-    emit('confirm', actualVolume.value);
+    emit('confirm', actualVolume.value, reasonDeviation.value);
   }
 };
 </script>
@@ -160,5 +170,9 @@ const confirm = () => {
   background-color: #93c5fd;
   border-color: #93c5fd;
   cursor: not-allowed;
+}
+
+.reason-input {
+  margin-top: 10px;
 }
 </style>

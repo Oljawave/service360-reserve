@@ -183,14 +183,16 @@ const handleStartTask = async () => {
   }
 };
 
-const handleCompleteTask = async (actualVolume) => {
+const handleCompleteTask = async (actualVolume, reasonDeviation) => {
   try {
     const payload = {
       id: props.taskLogId,
+      objWorkPlan: props.objWorkPlan,
       Value: actualVolume, // Фактический объем из модального окна
       FactDateEnd: getFormattedDate(),
+      ReasonDeviation: reasonDeviation || '', // Причина отклонения от плана
     };
-    
+
     await saveTaskLogFact(payload);
     isModalOpen.value = false;
     notificationStore.showNotification('Задача успешно завершена!', 'success');
