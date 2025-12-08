@@ -27,14 +27,14 @@ export default defineConfig(() => {
           secure: false,
         },
 
-        '/userapi': {
+        '/api': {
           target: `http://${process.env.VITE_LOCAL_HOST || '192.168.1.20'}:9180/api`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/userapi/, ''),
           secure: false,
         },
 
-        '/userinfo': {
+        '/api': {
           target: `http://${process.env.VITE_LOCAL_HOST || '192.168.1.20'}:9179/api`,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/userinfo/, ''),
