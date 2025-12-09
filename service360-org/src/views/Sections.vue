@@ -9,24 +9,44 @@
     @row-dblclick="onRowDoubleClick"
   >
   </TableWrapper>
+
+  <ModalAddSection
+    v-if="isAddModalOpen"
+    @close="closeAddModal"
+    @refresh="handleRefresh"
+  />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import TableWrapper from '@/app/layouts/Table/TableWrapper.vue'
+import ModalAddSection from '@/features/sections/components/ModalAddSection.vue'
 import { loadSection } from '@/shared/api/sections/sectionService'
 
 const tableWrapperRef = ref(null)
+const isAddModalOpen = ref(false)
+
+const openAddModal = () => {
+  isAddModalOpen.value = true
+}
+
+const closeAddModal = () => {
+  isAddModalOpen.value = false
+}
+
+const handleRefresh = () => {
+  tableWrapperRef.value?.refreshTable()
+}
 
 const onRowDoubleClick = (row) => {
-  // Пока пустая функция, модалки добавим позже
+  // Пока пустая функция, модалки редактирования добавим позже
 }
 
 const tableActions = computed(() => [
   {
     label: 'Добавить участок',
     icon: 'Plus',
-    onClick: () => console.log('Добавление участка...'),
+    onClick: openAddModal,
     show: true,
   },
   {

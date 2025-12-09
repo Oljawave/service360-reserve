@@ -16,6 +16,7 @@
         @blur="handleBlur"
       />
       <AppNumberInput
+        v-if="!disablePickets"
         :modelValue="currentStartPk"
         label="Начало (пк)"
         placeholder="пк"
@@ -37,6 +38,7 @@
         @blur="handleBlur"
       />
       <AppNumberInput
+        v-if="!disablePickets"
         :modelValue="currentEndPk"
         label="Конец (пк)"
         placeholder="пк"
@@ -72,6 +74,10 @@ const props = defineProps({
   },
   // ИЗМЕНЕНИЕ: Устанавливаем default: false, чтобы управлять атрибутом извне
   required: {
+    type: Boolean,
+    default: false
+  },
+  disablePickets: {
     type: Boolean,
     default: false
   }

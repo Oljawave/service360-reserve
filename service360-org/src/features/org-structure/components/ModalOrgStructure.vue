@@ -296,7 +296,7 @@ onMounted(async () => {
 .form-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  
   padding: 0 32px 32px;
   background-color: #f9fafb;
 }
@@ -308,13 +308,13 @@ onMounted(async () => {
 .coordinate-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
+  
 }
 
 .active-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  
   grid-column: span 2;
   font-size: 14px;
   font-weight: 500;

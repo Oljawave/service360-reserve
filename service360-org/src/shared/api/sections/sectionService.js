@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { loadObjList } from '../common/loadObjList';
 
 const API_URL = import.meta.env.VITE_OBJECT_URL;
 
@@ -116,5 +117,19 @@ export async function loadStage({ page = 1, limit = 10 }) {
       _originalIndex: i + 1,
     })),
     total: records.length
+  }
+}
+
+export async function loadClients() {
+  try {
+    const records = await loadObjList('Cls_Client', 'Prop_Client', 'clientdata');
+    return records.map(record => ({
+      label: record.name,
+      value: record.id,
+      pv: record.pv || null
+    }));
+  } catch (error) {
+    console.error('Ошибка при загрузке клиентов:', error);
+    throw error;
   }
 }
