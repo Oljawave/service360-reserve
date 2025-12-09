@@ -19,7 +19,7 @@
         :modelValue="currentStartPk"
         label="Начало (пк)"
         placeholder="пк"
-        :max="10"
+        :max="9"
         :disabled="disabled"
         :status="shouldShowError && (isInvalid || isOutOfBounds) ? 'error' : null"
         @update:modelValue="handleStartPk"
@@ -51,7 +51,7 @@
         :modelValue="currentEndPk"
         label="Конец (пк)"
         placeholder="пк"
-        :max="10"
+        :max="9"
         :disabled="disabled"
         :status="shouldShowError && (isInvalid || isOutOfBounds) ? 'error' : null"
         @update:modelValue="handleEndPk"
@@ -156,21 +156,26 @@ const updateCoords = (field, value) => {
 }
 
 const handleStartKm = (value) => updateCoords('coordStartKm', clamp(value, 0, 9999))
-const handleStartPk = (value) => updateCoords('coordStartPk', clamp(value, 0, 10))
+const handleStartPk = (value) => updateCoords('coordStartPk', clamp(value, 0, 9))
 const handleStartZv = (value) => updateCoords('coordStartZv', clamp(value, 0, 99))
 const handleEndKm = (value) => updateCoords('coordEndKm', clamp(value, 0, 9999))
-const handleEndPk = (value) => updateCoords('coordEndPk', clamp(value, 0, 10))
+const handleEndPk = (value) => updateCoords('coordEndPk', clamp(value, 0, 9))
 const handleEndZv = (value) => updateCoords('coordEndZv', clamp(value, 0, 99))
 
 const performValidation = () => {
+  // Всегда эмитим текущее состояние валидности
+  emit('invalidRange', isInvalid.value)
+
   if (isInvalid.value) {
-    emit('invalidRange', isInvalid.value)
     notificationStore.showNotification('Диапазон координат неверен!', 'error')
   }
 
   if (isOutOfBounds.value) {
     emit('out-of-bounds')
     notificationStore.showNotification('Координаты выходят за пределы допустимого диапазона!', 'error')
+  } else {
+    // Сбрасываем флаг если координаты в пределах
+    emit('out-of-bounds', false)
   }
 }
 

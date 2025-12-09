@@ -82,6 +82,13 @@
   <CompleteTaskModal
     :isOpen="isModalOpen"
     :maxVolume="recordData.volume"
+    :resources="{
+      materials: recordData.materials || [],
+      tools: recordData.tools || [],
+      equipment: recordData.equipment || [],
+      services: recordData.services || [],
+      performers: recordData.performers || []
+    }"
     @close="isModalOpen = false"
     @confirm="handleCompleteTask"
   />

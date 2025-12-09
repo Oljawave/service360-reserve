@@ -76,7 +76,7 @@
             v-model="incident.coordinates"
             :object-bounds="incident.objectBounds"
             @invalid-range="incident.isInvalidRange = $event"
-            @out-of-bounds="incident.isOutOfBounds = true"
+            @out-of-bounds="(val) => incident.isOutOfBounds = val !== false"
             :required="true"
           />
 

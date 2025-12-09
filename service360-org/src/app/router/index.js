@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import ServicedObjects from '@/views/ServicedObjects.vue'
+import Sections from '@/views/Sections.vue'
+import Stations from '@/views/Stations.vue'
+import Stages from '@/views/Stages.vue'
 import OrgStructure from '@/views/OrgStructure.vue'
 import Login from '@/views/Login.vue'
 import Tools from '@/views/Tools.vue'
@@ -24,6 +27,24 @@ const routes = [
     path: '/objects',
     name: 'ServicedObjects',
     component: ServicedObjects,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/sections',
+    name: 'Sections',
+    component: Sections,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/stations',
+    name: 'Stations',
+    component: Stations,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/stages',
+    name: 'Stages',
+    component: Stages,
     meta: { requiresAuth: true }
   },
   {

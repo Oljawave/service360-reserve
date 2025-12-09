@@ -60,7 +60,10 @@ const allItems = [
     label: 'Объекты',
     icon: 'Package',
     children: [
-      { label: 'Обслуживаемые объекты', path: '/objects', permission: 'obj' }
+      { label: 'Обслуживаемые объекты', path: '/objects', permission: 'obj' },
+      { label: 'Участки', path: '/sections' },
+      { label: 'Раздельные пункты', path: '/stations' },
+      { label: 'Перегоны', path: '/stages' }
     ]
   },
   {
