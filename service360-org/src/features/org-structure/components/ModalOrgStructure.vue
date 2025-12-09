@@ -137,10 +137,10 @@ const form = ref({
   phone: '',
   description: '',
   coordinates: {
-    coordStartKm: null,
-    coordStartPk: null,
-    coordEndKm: null,
-    coordEndPk: null
+    coordStartKm: 1,
+    coordStartPk: 1,
+    coordEndKm: 1,
+    coordEndPk: 1
   },
   distance: '',
   multipleSelect: [],
@@ -188,10 +188,10 @@ const handleActivityTypeChange = (selectedId) => {
     form.value.address = ''
     form.value.phone = ''
     form.value.coordinates = {
-      coordStartKm: null,
-      coordStartPk: null,
-      coordEndKm: null,
-      coordEndPk: null
+      coordStartKm: 1,
+      coordStartPk: 1,
+      coordEndKm: 1,
+      coordEndPk: 1
     }
     form.value.distance = ''
   }
