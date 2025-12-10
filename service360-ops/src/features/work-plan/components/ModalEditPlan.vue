@@ -60,7 +60,7 @@
             @update:value="onObjectChange"
             :required="true" />
 
-          <CoordinateInputs
+          <FullCoordinates
             class="col-span-2"
             v-model="coordinates"
             :object-bounds="objectBounds"
@@ -106,7 +106,7 @@ import { ref, onMounted, computed } from 'vue'
 import ModalWrapper from '@/app/layouts/Modal/ModalWrapper.vue'
 import AppDatePicker from '@/shared/ui/FormControls/AppDatePicker.vue'
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'
-import CoordinateInputs from '@/shared/ui/FormControls/CoordinateInputs.vue'
+import FullCoordinates from '@/shared/ui/FormControls/FullCoordinates.vue'
 import ConfirmationModal from '@/shared/ui/ConfirmationModal.vue'
 import { useNotificationStore } from '@/app/stores/notificationStore'
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
@@ -138,10 +138,12 @@ const form = ref({
 })
 
 const coordinates = ref({
-  coordStartKm: 1,
-  coordStartPk: 1,
-  coordEndKm: 1,
-  coordEndPk: 1
+  coordStartKm: 0,
+  coordStartPk: 0,
+  coordStartZv: 0,
+  coordEndKm: 0,
+  coordEndPk: 0,
+  coordEndZv: 0
 })
 
 const objectBounds = ref(null)
@@ -235,8 +237,10 @@ const saveData = async () => {
 
     updatedPlan.StartKm = coordinates.value.coordStartKm
     updatedPlan.StartPicket = coordinates.value.coordStartPk
+    updatedPlan.StartLink = coordinates.value.coordStartZv
     updatedPlan.FinishKm = coordinates.value.coordEndKm
     updatedPlan.FinishPicket = coordinates.value.coordEndPk
+    updatedPlan.FinishLink = coordinates.value.coordEndZv
     updatedPlan.PlanDateEnd = formatDateForBackend(form.value.plannedDate)
     updatedPlan.UpdatedAt = formatDateForBackend(new Date())
 
@@ -360,19 +364,26 @@ const onObjectChange = async (selectedObjectId) => {
 
   selectedObjectData.value = record
 
+  const startZv = record.StartLink ?? 0
+  const finishZv = record.FinishLink ?? 0
+
   objectBounds.value = {
-    startAbs: record.StartKm * 1000 + record.StartPicket * 100,
-    endAbs: record.FinishKm * 1000 + record.FinishPicket * 100,
+    startAbs: record.StartKm * 1000 + record.StartPicket * 100 + startZv * 25,
+    endAbs: record.FinishKm * 1000 + record.FinishPicket * 100 + finishZv * 25,
     StartKm: record.StartKm,
     StartPicket: record.StartPicket,
+    StartLink: startZv,
     FinishKm: record.FinishKm,
-    FinishPicket: record.FinishPicket
+    FinishPicket: record.FinishPicket,
+    FinishLink: finishZv
   }
 
-  coordinates.value.coordStartKm = Math.floor(record.StartKm) || 1
-  coordinates.value.coordStartPk = Math.floor(record.StartPicket) || 1
-  coordinates.value.coordEndKm = Math.floor(record.FinishKm) || 1
-  coordinates.value.coordEndPk = Math.floor(record.FinishPicket) || 1
+  coordinates.value.coordStartKm = Math.floor(record.StartKm) || 0
+  coordinates.value.coordStartPk = Math.floor(record.StartPicket) || 0
+  coordinates.value.coordStartZv = Math.floor(startZv) || 0
+  coordinates.value.coordEndKm = Math.floor(record.FinishKm) || 0
+  coordinates.value.coordEndPk = Math.floor(record.FinishPicket) || 0
+  coordinates.value.coordEndZv = Math.floor(finishZv) || 0
 
   form.value.section = null
   selectedSectionData.value = null
@@ -458,10 +469,12 @@ const populateFormFromRowData = () => {
   if (row.planDate) {
     form.value.plannedDate = new Date(row.planDate)
   }
-  coordinates.value.coordStartKm = row.StartKm || 1
-  coordinates.value.coordStartPk = row.StartPicket || 1
-  coordinates.value.coordEndKm = row.FinishKm || 1
-  coordinates.value.coordEndPk = row.FinishPicket || 1
+  coordinates.value.coordStartKm = row.StartKm || 0
+  coordinates.value.coordStartPk = row.StartPicket || 0
+  coordinates.value.coordStartZv = row.StartLink || 0
+  coordinates.value.coordEndKm = row.FinishKm || 0
+  coordinates.value.coordEndPk = row.FinishPicket || 0
+  coordinates.value.coordEndZv = row.FinishLink || 0
 }
 
 const findOptionInArray = (array, key, value) => {
@@ -488,13 +501,18 @@ const restoreFullSelection = async () => {
 
     selectedObjectData.value = targetRecord
 
+    const startZv = targetRecord.StartLink ?? 0
+    const finishZv = targetRecord.FinishLink ?? 0
+
     objectBounds.value = {
-      startAbs: targetRecord.StartKm * 1000 + targetRecord.StartPicket * 100,
-      endAbs: targetRecord.FinishKm * 1000 + targetRecord.FinishPicket * 100,
+      startAbs: targetRecord.StartKm * 1000 + targetRecord.StartPicket * 100 + startZv * 25,
+      endAbs: targetRecord.FinishKm * 1000 + targetRecord.FinishPicket * 100 + finishZv * 25,
       StartKm: targetRecord.StartKm,
       StartPicket: targetRecord.StartPicket,
+      StartLink: startZv,
       FinishKm: targetRecord.FinishKm,
-      FinishPicket: targetRecord.FinishPicket
+      FinishPicket: targetRecord.FinishPicket,
+      FinishLink: finishZv
     }
 
     const placeOption = findOptionInArray(placeOptions.value, 'value', targetRecord.objSection)
