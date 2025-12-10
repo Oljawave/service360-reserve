@@ -499,7 +499,9 @@ const loadSectionsForObject = async (objectForm) => {
       objectForm.coordinates.coordStartKm,
       objectForm.coordinates.coordEndKm,
       objectForm.coordinates.coordStartPk || 0,
-      objectForm.coordinates.coordEndPk || 0
+      objectForm.coordinates.coordEndPk || 0,
+      objectForm.coordinates.coordStartZv || 0,
+      objectForm.coordinates.coordEndZv || 0
     )
 
     if (Array.isArray(sections) && sections.length > 0) {

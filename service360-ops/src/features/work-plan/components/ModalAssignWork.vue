@@ -162,8 +162,10 @@ const onIncidentTypeChange = async (selectedIncidentValue) => {
   const coords = {
     coordStartKm: incidentData.StartKm,
     coordStartPk: incidentData.StartPicket,
+    coordStartZv: incidentData.StartLink || 0,
     coordEndKm: incidentData.FinishKm,
     coordEndPk: incidentData.FinishPicket,
+    coordEndZv: incidentData.FinishLink || 0,
   };
 
   // Загружаем участки, если выбрана и работа
@@ -177,7 +179,14 @@ const onWorkTypeChange = async (selectedWorkValue) => {
   if (!selectedIncidentOption || !selectedIncidentOption.fullIncidentData) return;
 
   const incidentData = selectedIncidentOption.fullIncidentData.rawData;
-  await loadSections({ coordStartKm: incidentData.StartKm, coordEndKm: incidentData.FinishKm, coordStartPk: incidentData.StartPicket, coordEndPk: incidentData.FinishPicket }, selectedWorkValue);
+  await loadSections({
+    coordStartKm: incidentData.StartKm,
+    coordEndKm: incidentData.FinishKm,
+    coordStartPk: incidentData.StartPicket,
+    coordEndPk: incidentData.FinishPicket,
+    coordStartZv: incidentData.StartLink || 0,
+    coordEndZv: incidentData.FinishLink || 0
+  }, selectedWorkValue);
 };
 
 const loadSections = async (coords, workId) => {
@@ -195,7 +204,9 @@ const loadSections = async (coords, workId) => {
       coords.coordStartKm,
       coords.coordEndKm,
       coords.coordStartPk || 0,
-      coords.coordEndPk || 0
+      coords.coordEndPk || 0,
+      coords.coordStartZv || 0,
+      coords.coordEndZv || 0
     );
 
     if (Array.isArray(sections) && sections.length > 0) {

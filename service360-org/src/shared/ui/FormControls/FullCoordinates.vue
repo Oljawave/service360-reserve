@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref, watch } from 'vue'
+import { defineProps, defineEmits, computed, ref, watch, onMounted } from 'vue'
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'
 import { useNotificationStore } from '@/app/stores/notificationStore'
 
@@ -112,6 +112,7 @@ const notificationStore = useNotificationStore()
 
 const isUserTyping = ref(false)
 const shouldShowError = ref(false)
+const isInitialMount = ref(true)
 
 const currentStartKm = computed(() => props.modelValue.coordStartKm ?? 0)
 const currentStartPk = computed(() => props.modelValue.coordStartPk ?? 0)
@@ -163,20 +164,32 @@ const handleEndPk = (value) => updateCoords('coordEndPk', clamp(value, 0, 10))
 const handleEndZv = (value) => updateCoords('coordEndZv', clamp(value, 0, 4))
 
 const performValidation = () => {
+  // Всегда эмитим текущее состояние валидности
+  emit('invalidRange', isInvalid.value)
+
+  // Не показываем уведомления при начальной загрузке
+  if (isInitialMount.value) {
+    return
+  }
+
   if (isInvalid.value) {
-    emit('invalidRange', isInvalid.value)
     notificationStore.showNotification('Диапазон координат неверен!', 'error')
   }
 
   if (isOutOfBounds.value) {
     emit('out-of-bounds')
     notificationStore.showNotification('Координаты выходят за пределы допустимого диапазона!', 'error')
+  } else {
+    // Сбрасываем флаг если координаты в пределах
+    emit('out-of-bounds', false)
   }
 }
 
 const handleFocus = () => {
   isUserTyping.value = true
   shouldShowError.value = false
+  // Когда пользователь начинает взаимодействовать, снимаем флаг начальной загрузки
+  isInitialMount.value = false
 }
 
 const handleBlur = () => {
@@ -198,6 +211,14 @@ watch(() => props.objectBounds, () => {
     shouldShowError.value = true
     performValidation()
   }
+})
+
+// После монтирования компонента даём время для начальной загрузки,
+// затем разрешаем показ уведомлений о валидации
+onMounted(() => {
+  setTimeout(() => {
+    isInitialMount.value = false
+  }, 1500)
 })
 </script>
 

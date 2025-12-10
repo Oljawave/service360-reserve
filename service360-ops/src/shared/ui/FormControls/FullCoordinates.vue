@@ -74,7 +74,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref, watch } from 'vue'
+import { defineProps, defineEmits, computed, ref, watch, onMounted } from 'vue'
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'
 import { useNotificationStore } from '@/app/stores/notificationStore'
 
@@ -112,6 +112,7 @@ const notificationStore = useNotificationStore()
 
 const isUserTyping = ref(false)
 const shouldShowError = ref(false)
+const isInitialMount = ref(true)
 
 const currentStartKm = computed(() => props.modelValue.coordStartKm ?? 0)
 const currentStartPk = computed(() => props.modelValue.coordStartPk ?? 0)
@@ -128,17 +129,20 @@ const isInvalid = computed(() => startAbs.value > endAbs.value)
 
 const isOutOfBounds = computed(() => {
   if (!props.objectBounds) return false
-  
-  const startZv = props.objectBounds.StartLink ?? props.objectBounds.StartZv ?? 0;
-  const finishZv = props.objectBounds.FinishLink ?? props.objectBounds.FinishZv ?? 0;
-  
-  const objStartAbs = (props.objectBounds.StartKm ?? 0) * 1000 + 
-                      (props.objectBounds.StartPicket ?? 0) * 100 + 
+
+  // ИСПРАВЛЕНО: правильное получение звеньев из objectBounds
+  const startZv = props.objectBounds.StartLink ?? 0;
+  const finishZv = props.objectBounds.FinishLink ?? 0;
+
+  // ИСПРАВЛЕНО: используем значения по умолчанию 0 если не заданы
+  const objStartAbs = (props.objectBounds.StartKm ?? 0) * 1000 +
+                      (props.objectBounds.StartPicket ?? 0) * 100 +
                       startZv * 25;
-  const objEndAbs = (props.objectBounds.FinishKm ?? 0) * 1000 + 
-                    (props.objectBounds.FinishPicket ?? 0) * 100 + 
+  const objEndAbs = (props.objectBounds.FinishKm ?? 0) * 1000 +
+                    (props.objectBounds.FinishPicket ?? 0) * 100 +
                     finishZv * 25;
-  
+
+  // ИСПРАВЛЕНО: проверяем что введенные координаты находятся В ПРЕДЕЛАХ объекта
   return startAbs.value < objStartAbs || endAbs.value > objEndAbs
 })
 
@@ -166,13 +170,18 @@ const performValidation = () => {
   // Всегда эмитим текущее состояние валидности
   emit('invalidRange', isInvalid.value)
 
+  // Не показываем уведомления при начальной загрузке
+  if (isInitialMount.value) {
+    return
+  }
+
   if (isInvalid.value) {
     notificationStore.showNotification('Диапазон координат неверен!', 'error')
   }
 
   if (isOutOfBounds.value) {
     emit('out-of-bounds')
-    notificationStore.showNotification('Координаты выходят за пределы допустимого диапазона!', 'error')
+    notificationStore.showNotification('Координаты выходят за границы выбранного объекта!', 'error')
   } else {
     // Сбрасываем флаг если координаты в пределах
     emit('out-of-bounds', false)
@@ -182,6 +191,8 @@ const performValidation = () => {
 const handleFocus = () => {
   isUserTyping.value = true
   shouldShowError.value = false
+  // Когда пользователь начинает взаимодействовать, снимаем флаг начальной загрузки
+  isInitialMount.value = false
 }
 
 const handleBlur = () => {
@@ -203,6 +214,14 @@ watch(() => props.objectBounds, () => {
     shouldShowError.value = true
     performValidation()
   }
+})
+
+// После монтирования компонента даём время для начальной загрузки,
+// затем разрешаем показ уведомлений о валидации
+onMounted(() => {
+  setTimeout(() => {
+    isInitialMount.value = false
+  }, 1500)
 })
 </script>
 

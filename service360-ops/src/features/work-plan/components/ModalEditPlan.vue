@@ -191,8 +191,8 @@ const saveData = async () => {
       return
     }
 
-    const startAbs = coordinates.value.coordStartKm * 1000 + coordinates.value.coordStartPk * 100
-    const endAbs = coordinates.value.coordEndKm * 1000 + coordinates.value.coordEndPk * 100
+    const startAbs = coordinates.value.coordStartKm * 1000 + coordinates.value.coordStartPk * 100 + coordinates.value.coordStartZv * 25
+    const endAbs = coordinates.value.coordEndKm * 1000 + coordinates.value.coordEndPk * 100 + coordinates.value.coordEndZv * 25
 
     if (startAbs > endAbs) {
       notificationStore.showNotification('Начало не может быть больше конца', 'error')
@@ -354,6 +354,29 @@ const onObjectTypeChange = async (selectedObjectTypeId) => {
   }))
 }
 
+// Функция для парсинга координат из строки nameObject
+// Пример строки: "Перегон [30км 1пк 1зв - 46км 9пк 4зв] [ЖД пути на перегоне] [Сарыжаз -Шалабай]"
+const parseCoordinatesFromName = (nameObject) => {
+  if (!nameObject) return null
+
+  // Ищем координаты в квадратных скобках формата [Xкм Yпк Zзв - Aкм Bпк Cзв]
+  const coordPattern = /\[(\d+)км\s+(\d+)пк\s+(\d+)зв\s*-\s*(\d+)км\s+(\d+)пк\s+(\d+)зв\]/
+  const match = nameObject.match(coordPattern)
+
+  if (match) {
+    return {
+      StartKm: parseInt(match[1]),
+      StartPicket: parseInt(match[2]),
+      StartLink: parseInt(match[3]),
+      FinishKm: parseInt(match[4]),
+      FinishPicket: parseInt(match[5]),
+      FinishLink: parseInt(match[6])
+    }
+  }
+
+  return null
+}
+
 const onObjectChange = async (selectedObjectId) => {
   if (!selectedObjectId) return
   const record = fullRecordsForWork.value.find(r => r.objObject === selectedObjectId)
@@ -364,8 +387,21 @@ const onObjectChange = async (selectedObjectId) => {
 
   selectedObjectData.value = record
 
-  const startZv = record.StartLink ?? 0
-  const finishZv = record.FinishLink ?? 0
+  // Пытаемся получить звенья из record, если нет - парсим из nameObject
+  let startZv = record.StartLink
+  let finishZv = record.FinishLink
+
+  if ((startZv === undefined || startZv === null) || (finishZv === undefined || finishZv === null)) {
+    const parsed = parseCoordinatesFromName(record.nameObject)
+    if (parsed) {
+      startZv = startZv ?? parsed.StartLink
+      finishZv = finishZv ?? parsed.FinishLink
+    }
+  }
+
+  // Если всё равно null/undefined, ставим 0
+  startZv = startZv ?? 0
+  finishZv = finishZv ?? 0
 
   objectBounds.value = {
     startAbs: record.StartKm * 1000 + record.StartPicket * 100 + startZv * 25,
@@ -400,7 +436,9 @@ const loadSections = async () => {
       coordinates.value.coordStartKm,
       coordinates.value.coordEndKm,
       coordinates.value.coordStartPk,
-      coordinates.value.coordEndPk
+      coordinates.value.coordEndPk,
+      coordinates.value.coordStartZv,
+      coordinates.value.coordEndZv
     )
 
     if (Array.isArray(sections) && sections.length > 0) {
@@ -501,8 +539,21 @@ const restoreFullSelection = async () => {
 
     selectedObjectData.value = targetRecord
 
-    const startZv = targetRecord.StartLink ?? 0
-    const finishZv = targetRecord.FinishLink ?? 0
+    // Пытаемся получить звенья из targetRecord, если нет - парсим из nameObject
+    let startZv = targetRecord.StartLink
+    let finishZv = targetRecord.FinishLink
+
+    if ((startZv === undefined || startZv === null) || (finishZv === undefined || finishZv === null)) {
+      const parsed = parseCoordinatesFromName(targetRecord.nameObject)
+      if (parsed) {
+        startZv = startZv ?? parsed.StartLink
+        finishZv = finishZv ?? parsed.FinishLink
+      }
+    }
+
+    // Если всё равно null/undefined, ставим 0
+    startZv = startZv ?? 0
+    finishZv = finishZv ?? 0
 
     objectBounds.value = {
       startAbs: targetRecord.StartKm * 1000 + targetRecord.StartPicket * 100 + startZv * 25,
