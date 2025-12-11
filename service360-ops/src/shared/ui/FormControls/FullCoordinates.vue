@@ -90,10 +90,6 @@ const props = defineProps({
       coordEndZv: null
     })
   },
-  objectBounds: {
-    type: Object,
-    default: null
-  },
   // Добавляем пропс required с default: false
   required: {
     type: Boolean,
@@ -103,10 +99,15 @@ const props = defineProps({
   disabled: {
     type: Boolean,
     default: false
+  },
+  // Флаг ошибки выхода за границы объекта
+  outOfBoundsError: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'invalidRange', 'out-of-bounds'])
+const emit = defineEmits(['update:modelValue'])
 
 const notificationStore = useNotificationStore()
 
@@ -153,25 +154,6 @@ const isInvalid = computed(() => {
   return startAbs.value > endAbs.value
 })
 
-const isOutOfBounds = computed(() => {
-  if (!props.objectBounds) return false
-
-  // ИСПРАВЛЕНО: правильное получение звеньев из objectBounds
-  const startZv = props.objectBounds.StartLink ?? 0;
-  const finishZv = props.objectBounds.FinishLink ?? 0;
-
-  // ИСПРАВЛЕНО: используем значения по умолчанию 0 если не заданы
-  const objStartAbs = (props.objectBounds.StartKm ?? 0) * 1000 +
-                      (props.objectBounds.StartPicket ?? 0) * 100 +
-                      startZv * 25;
-  const objEndAbs = (props.objectBounds.FinishKm ?? 0) * 1000 +
-                    (props.objectBounds.FinishPicket ?? 0) * 100 +
-                    finishZv * 25;
-
-  // ИСПРАВЛЕНО: проверяем что введенные координаты находятся В ПРЕДЕЛАХ объекта
-  return startAbs.value < objStartAbs || endAbs.value > objEndAbs
-})
-
 // Computed для определения статуса каждого поля
 const getFieldStatus = (field) => {
   if (!shouldShowError.value) return null
@@ -185,7 +167,8 @@ const getFieldStatus = (field) => {
   }
 
   if (fieldErrors.value[field]) return 'error'
-  if (isInvalid.value || isOutOfBounds.value) return 'error'
+  if (isInvalid.value) return 'error'
+  if (props.outOfBoundsError) return 'error'
   return null
 }
 
@@ -308,9 +291,6 @@ const handleEndZv = (value) => {
 }
 
 const performValidation = () => {
-  // Всегда эмитим текущее состояние валидности
-  emit('invalidRange', isInvalid.value)
-
   // Не показываем уведомления при начальной загрузке
   if (isInitialMount.value) {
     return
@@ -333,14 +313,6 @@ const performValidation = () => {
   if (isInvalid.value) {
     notificationStore.showNotification('Начальная координата не может быть больше конечной координаты', 'error')
   }
-
-  if (isOutOfBounds.value) {
-    emit('out-of-bounds')
-    notificationStore.showNotification('Координаты выходят за границы выбранного объекта!', 'error')
-  } else {
-    // Сбрасываем флаг если координаты в пределах
-    emit('out-of-bounds', false)
-  }
 }
 
 const handleFocus = () => {
@@ -360,13 +332,6 @@ const handleBlur = () => {
 
 watch([startAbs, endAbs], () => {
   if (!isUserTyping.value) {
-    performValidation()
-  }
-})
-
-watch(() => props.objectBounds, () => {
-  if (!isUserTyping.value) {
-    shouldShowError.value = true
     performValidation()
   }
 })

@@ -60,10 +60,8 @@
           <FullCoordinates
             class="col-span-2"
             v-model="object.coordinates"
-            :object-bounds="object.objectBounds"
             @update:modelValue="(coords) => updateCoordinates(index, coords)"
-            @invalid-range="(isInvalid) => handleInvalidRange(index, isInvalid)"
-            @out-of-bounds="() => handleOutOfBounds(index)"
+            :out-of-bounds-error="object.isCoordinatesOutOfBounds"
             :required="true"
           />
 
@@ -141,6 +139,7 @@ const createNewObjectForm = () => ({
     coordEndZv: 0
   },
   objectBounds: null,
+  isCoordinatesOutOfBounds: false,
 
   placeOptions: [],
   objectTypeOptions: [],
@@ -207,32 +206,22 @@ const validateForm = () => {
       return false
     }
 
-    // Проверка координат
+    // Проверка выхода за границы объекта (бизнес-логика)
     const coords = obj.coordinates
-    if (
-      coords.coordStartKm === null || coords.coordStartKm === 0 ||
-      coords.coordStartPk === null || coords.coordStartPk === 0 ||
-      coords.coordStartZv === null || coords.coordStartZv === 0 ||
-      coords.coordEndKm === null || coords.coordEndKm === 0 ||
-      coords.coordEndPk === null || coords.coordEndPk === 0 ||
-      coords.coordEndZv === null || coords.coordEndZv === 0
-    ) {
-      notificationStore.showNotification(`Объект #${objectNum}: не заполнены все Координаты`, 'error')
-      return false
-    }
-
-    const startAbs = (coords.coordStartKm || 0) * 1000 + (coords.coordStartPk || 0) * 100 + (coords.coordStartZv || 0) * 25
-    const endAbs = (coords.coordEndKm || 0) * 1000 + (coords.coordEndPk || 0) * 100 + (coords.coordEndZv || 0) * 25
-
-    if (startAbs > endAbs) {
-      notificationStore.showNotification(`Объект #${objectNum}: Начало не может быть больше конца`, 'error')
-      return false
-    }
+    const newStartCoordinates = (coords.coordStartKm || 0) * 1000 + (coords.coordStartPk || 0) * 100 + (coords.coordStartZv || 0) * 25
+    const newFinishCoordinates = (coords.coordEndKm || 0) * 1000 + (coords.coordEndPk || 0) * 100 + (coords.coordEndZv || 0) * 25
 
     if (obj.objectBounds) {
-      const objStartAbs = obj.objectBounds.startAbs
-      const objEndAbs = obj.objectBounds.endAbs
-      if (startAbs < objStartAbs || endAbs > objEndAbs) {
+      const objectStartCoordinates = obj.objectBounds.startAbs
+      const objectFinishCoordinates = obj.objectBounds.endAbs
+
+      // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
+      const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates
+
+      // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
+      const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates
+
+      if (!isStartInBounds || !isFinishInBounds) {
         notificationStore.showNotification(`Объект #${objectNum}: Координаты выходят за границы объекта`, 'error')
         return false
       }
@@ -531,24 +520,36 @@ const updateCoordinates = async (index, newCoords) => {
   const objectForm = form.value.objects[index]
   objectForm.coordinates = newCoords
 
+  // Проверка выхода за границы объекта (в реальном времени)
+  if (objectForm.objectBounds) {
+    const newStartCoordinates = (newCoords.coordStartKm || 0) * 1000 + (newCoords.coordStartPk || 0) * 100 + (newCoords.coordStartZv || 0) * 25
+    const newFinishCoordinates = (newCoords.coordEndKm || 0) * 1000 + (newCoords.coordEndPk || 0) * 100 + (newCoords.coordEndZv || 0) * 25
+
+    const objectStartCoordinates = objectForm.objectBounds.startAbs
+    const objectFinishCoordinates = objectForm.objectBounds.endAbs
+
+    // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
+    const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates
+
+    // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
+    const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates
+
+    if (!isStartInBounds || !isFinishInBounds) {
+      objectForm.isCoordinatesOutOfBounds = true
+      notificationStore.showNotification(`Объект #${index + 1}: Координаты выходят за границы объекта`, 'error')
+    } else {
+      objectForm.isCoordinatesOutOfBounds = false
+    }
+  } else {
+    objectForm.isCoordinatesOutOfBounds = false
+  }
+
   objectForm.section = null
   objectForm.sectionOptions = []
 
   if (form.value.work?.value) {
     await loadSectionsForObject(objectForm)
   }
-}
-
-const handleInvalidRange = (index, isInvalid) => {
-  if (isInvalid) {
-    // Нотификация уже выводится, можно оставить для обратной связи в реальном времени
-    // notificationStore.showNotification(`Объект #${index + 1}: Начало не может быть больше конца`, 'error')
-  }
-}
-
-const handleOutOfBounds = (index) => {
-  // Нотификация уже выводится
-  // notificationStore.showNotification(`Объект #${index + 1}: Координаты выходят за границы объекта`, 'error')
 }
 
 onMounted(async () => {
