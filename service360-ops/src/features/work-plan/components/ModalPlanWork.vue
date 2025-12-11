@@ -210,12 +210,12 @@ const validateForm = () => {
     // Проверка координат
     const coords = obj.coordinates
     if (
-      coords.coordStartKm === null ||
-      coords.coordStartPk === null ||
-      coords.coordStartZv === null ||
-      coords.coordEndKm === null ||
-      coords.coordEndPk === null ||
-      coords.coordEndZv === null
+      coords.coordStartKm === null || coords.coordStartKm === 0 ||
+      coords.coordStartPk === null || coords.coordStartPk === 0 ||
+      coords.coordStartZv === null || coords.coordStartZv === 0 ||
+      coords.coordEndKm === null || coords.coordEndKm === 0 ||
+      coords.coordEndPk === null || coords.coordEndPk === 0 ||
+      coords.coordEndZv === null || coords.coordEndZv === 0
     ) {
       notificationStore.showNotification(`Объект #${objectNum}: не заполнены все Координаты`, 'error')
       return false
@@ -498,10 +498,10 @@ const loadSectionsForObject = async (objectForm) => {
       form.value.work.value,
       objectForm.coordinates.coordStartKm,
       objectForm.coordinates.coordEndKm,
-      objectForm.coordinates.coordStartPk || 0,
-      objectForm.coordinates.coordEndPk || 0,
-      objectForm.coordinates.coordStartZv || 0,
-      objectForm.coordinates.coordEndZv || 0
+      objectForm.coordinates.coordStartPk,
+      objectForm.coordinates.coordEndPk,
+      objectForm.coordinates.coordStartZv,
+      objectForm.coordinates.coordEndZv
     )
 
     if (Array.isArray(sections) && sections.length > 0) {

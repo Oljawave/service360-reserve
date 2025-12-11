@@ -191,6 +191,19 @@ const saveData = async () => {
       return
     }
 
+    // Проверка координат
+    if (
+      coordinates.value.coordStartKm === null || coordinates.value.coordStartKm === 0 ||
+      coordinates.value.coordStartPk === null || coordinates.value.coordStartPk === 0 ||
+      coordinates.value.coordStartZv === null || coordinates.value.coordStartZv === 0 ||
+      coordinates.value.coordEndKm === null || coordinates.value.coordEndKm === 0 ||
+      coordinates.value.coordEndPk === null || coordinates.value.coordEndPk === 0 ||
+      coordinates.value.coordEndZv === null || coordinates.value.coordEndZv === 0
+    ) {
+      notificationStore.showNotification('Необходимо заполнить все координаты', 'error')
+      return
+    }
+
     const startAbs = coordinates.value.coordStartKm * 1000 + coordinates.value.coordStartPk * 100 + coordinates.value.coordStartZv * 25
     const endAbs = coordinates.value.coordEndKm * 1000 + coordinates.value.coordEndPk * 100 + coordinates.value.coordEndZv * 25
 
@@ -414,12 +427,12 @@ const onObjectChange = async (selectedObjectId) => {
     FinishLink: finishZv
   }
 
-  coordinates.value.coordStartKm = Math.floor(record.StartKm) || 0
-  coordinates.value.coordStartPk = Math.floor(record.StartPicket) || 0
-  coordinates.value.coordStartZv = Math.floor(startZv) || 0
-  coordinates.value.coordEndKm = Math.floor(record.FinishKm) || 0
-  coordinates.value.coordEndPk = Math.floor(record.FinishPicket) || 0
-  coordinates.value.coordEndZv = Math.floor(finishZv) || 0
+  coordinates.value.coordStartKm = Math.floor(record.StartKm) || null
+  coordinates.value.coordStartPk = Math.floor(record.StartPicket) || null
+  coordinates.value.coordStartZv = Math.floor(startZv) || null
+  coordinates.value.coordEndKm = Math.floor(record.FinishKm) || null
+  coordinates.value.coordEndPk = Math.floor(record.FinishPicket) || null
+  coordinates.value.coordEndZv = Math.floor(finishZv) || null
 
   form.value.section = null
   selectedSectionData.value = null
@@ -507,12 +520,12 @@ const populateFormFromRowData = () => {
   if (row.planDate) {
     form.value.plannedDate = new Date(row.planDate)
   }
-  coordinates.value.coordStartKm = row.StartKm || 0
-  coordinates.value.coordStartPk = row.StartPicket || 0
-  coordinates.value.coordStartZv = row.StartLink || 0
-  coordinates.value.coordEndKm = row.FinishKm || 0
-  coordinates.value.coordEndPk = row.FinishPicket || 0
-  coordinates.value.coordEndZv = row.FinishLink || 0
+  coordinates.value.coordStartKm = row.StartKm || null
+  coordinates.value.coordStartPk = row.StartPicket || null
+  coordinates.value.coordStartZv = row.StartLink || null
+  coordinates.value.coordEndKm = row.FinishKm || null
+  coordinates.value.coordEndPk = row.FinishPicket || null
+  coordinates.value.coordEndZv = row.FinishLink || null
 }
 
 const findOptionInArray = (array, key, value) => {
