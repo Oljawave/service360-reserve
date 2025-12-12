@@ -26,9 +26,8 @@
       />
 
       <div class="col-span-2">
-        <CoordinateInputs
+        <SimpleCoordinates
           v-model="form.coordinates"
-          :disablePickets="true"
           :required="true"
         />
       </div>
@@ -51,7 +50,7 @@ import ModalWrapper from '@/app/layouts/Modal/ModalWrapper.vue'
 import AppInput from '@/shared/ui/FormControls/AppInput.vue'
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'
-import CoordinateInputs from '@/shared/ui/FormControls/CoordinateInputs.vue'
+import SimpleCoordinates from '@/shared/ui/FormControls/SimpleCoordinates.vue'
 import { useNotificationStore } from '@/app/stores/notificationStore'
 import { loadClients, saveSection } from '@/shared/api/sections/sectionService'
 import { getUserData } from '@/shared/api/common/userCache'
@@ -65,9 +64,7 @@ const form = ref({
   client: null,
   coordinates: {
     coordStartKm: null,
-    coordStartPk: null,
-    coordEndKm: null,
-    coordEndPk: null
+    coordEndKm: null
   },
   stageLength: null
 })
@@ -96,6 +93,12 @@ const saveData = async () => {
     // Validate required fields
     if (!form.value.name || !form.value.client || !form.value.coordinates.coordStartKm || !form.value.coordinates.coordEndKm || !form.value.stageLength) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
+      return
+    }
+
+    // Validate coordinate range
+    if (form.value.coordinates.coordStartKm > form.value.coordinates.coordEndKm) {
+      notificationStore.showNotification('Начальная координата не может быть больше конечной координаты', 'error')
       return
     }
 
