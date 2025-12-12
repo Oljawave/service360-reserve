@@ -53,7 +53,8 @@ import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'
 import CoordinateInputs from '@/shared/ui/FormControls/CoordinateInputs.vue'
 import { useNotificationStore } from '@/app/stores/notificationStore'
-import { loadClients } from '@/shared/api/sections/sectionService'
+import { loadClients, saveSection } from '@/shared/api/sections/sectionService'
+import { getUserData } from '@/shared/api/common/userCache'
 
 const emit = defineEmits(['close', 'refresh'])
 const notificationStore = useNotificationStore()
@@ -98,25 +99,33 @@ const saveData = async () => {
       return
     }
 
+    const userData = await getUserData()
+    const currentDate = new Date().toISOString().split('T')[0]
+
     const payload = {
       name: form.value.name,
-      client: form.value.client,
-      startKm: form.value.coordinates.coordStartKm,
-      endKm: form.value.coordinates.coordEndKm,
-      stageLength: form.value.stageLength
+      StartKm: form.value.coordinates.coordStartKm,
+      FinishKm: form.value.coordinates.coordEndKm,
+      StageLength: form.value.stageLength,
+      objClient: form.value.client.value,
+      pvClient: form.value.client.pv,
+      CreatedAt: currentDate,
+      UpdatedAt: currentDate,
+      objUser: userData?.id || null,
+      pvUser: userData?.pv || null
     }
 
     console.log('Сохранение участка:', payload)
 
-    // TODO: Добавить реальный вызов API для сохранения
-    // await saveSection(payload)
+    await saveSection('ins', payload)
 
     notificationStore.showNotification('Участок успешно добавлен', 'success')
 
     emit('refresh')
     closeModal()
   } catch (error) {
-    notificationStore.showNotification(error.message || 'Ошибка при сохранении участка', 'error')
+    const errorMessage = error.response?.data?.error?.message || error.message || 'Ошибка при сохранении участка'
+    notificationStore.showNotification(errorMessage, 'error')
   }
 }
 

@@ -663,7 +663,15 @@ const saveWork = async () => {
     } catch (error) {
       console.error('Ошибка сохранения дефекта:', error);
       let errorMessage = 'Не удалось сохранить дефект.';
-      if (error.response?.data?.error?.message) { errorMessage = error.response.data.error.message; }
+
+      if (error.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Ошибка сервера. Попробуйте еще раз.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       notificationStore.showNotification(errorMessage, 'error');
     } finally {
       isSaving.value = false;
@@ -756,7 +764,15 @@ const saveWork = async () => {
     } catch (error) {
       console.error('Ошибка сохранения параметра:', error);
       let errorMessage = 'Не удалось сохранить параметр.';
-      if (error.response?.data?.error?.message) { errorMessage = error.response.data.error.message; }
+
+      if (error.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Ошибка сервера. Попробуйте еще раз.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       notificationStore.showNotification(errorMessage, 'error');
     } finally {
       isSaving.value = false;

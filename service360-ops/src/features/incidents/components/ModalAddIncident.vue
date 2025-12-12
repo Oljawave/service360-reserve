@@ -75,6 +75,8 @@
             class="col-span-2"
             v-model="incident.coordinates"
             :object-bounds="incident.objectBounds"
+            :out-of-bounds-error="incident.isCoordinatesOutOfBounds"
+            @update:modelValue="(coords) => updateCoordinates(coords, index)"
             @invalid-range="incident.isInvalidRange = $event"
             @out-of-bounds="(val) => incident.isOutOfBounds = val !== false"
             :required="true"
@@ -127,7 +129,7 @@ let nextObjectId = 1;
 const generateObjectId = () => nextObjectId++;
 
 const createNewObjectForm = (dataToCopy = {}) => ({
-  id: generateObjectId(), 
+  id: generateObjectId(),
   place: dataToCopy.place || null,
   objectType: dataToCopy.objectType || null,
   object: dataToCopy.object || null,
@@ -143,6 +145,7 @@ const createNewObjectForm = (dataToCopy = {}) => ({
   objectBounds: dataToCopy.objectBounds ? JSON.parse(JSON.stringify(dataToCopy.objectBounds)) : null,
   isInvalidRange: false,
   isOutOfBounds: false,
+  isCoordinatesOutOfBounds: false,
   // Копируем опции для корректной инициализации (если они были загружены)
   objectTypeOptions: dataToCopy.objectTypeOptions ? JSON.parse(JSON.stringify(dataToCopy.objectTypeOptions)) : [],
   objectOptions: dataToCopy.objectOptions ? JSON.parse(JSON.stringify(dataToCopy.objectOptions)) : [],
@@ -245,6 +248,7 @@ const onPlaceChange = (selectedPlaceId, index) => {
   objectForm.objectBounds = null
   objectForm.isInvalidRange = false
   objectForm.isOutOfBounds = false
+  objectForm.isCoordinatesOutOfBounds = false
 
   if (!selectedPlaceId) return
 
@@ -280,6 +284,7 @@ const onObjectTypeChange = (selectedObjectTypeId, index) => {
   objectForm.objectBounds = null
   objectForm.isInvalidRange = false
   objectForm.isOutOfBounds = false
+  objectForm.isCoordinatesOutOfBounds = false
 
   if (!selectedObjectTypeId || !objectForm.place) return
 
@@ -309,6 +314,7 @@ const onObjectChange = async (selectedObjectId, index) => {
   objectForm.objectBounds = null
   objectForm.isInvalidRange = false
   objectForm.isOutOfBounds = false
+  objectForm.isCoordinatesOutOfBounds = false
 
   if (!selectedObjectId) return
 
@@ -345,6 +351,35 @@ const onObjectChange = async (selectedObjectId, index) => {
   }
 
 }
+
+const updateCoordinates = (newCoordinates, index) => {
+  const objectForm = form.value.incidents[index];
+  objectForm.coordinates = newCoordinates;
+
+  // Проверка выхода за границы объекта (в реальном времени)
+  if (objectForm.objectBounds) {
+    const newStartCoordinates = (newCoordinates.coordStartKm || 0) * 1000 + (newCoordinates.coordStartPk || 0) * 100 + (newCoordinates.coordStartZv || 0) * 25;
+    const newFinishCoordinates = (newCoordinates.coordEndKm || 0) * 1000 + (newCoordinates.coordEndPk || 0) * 100 + (newCoordinates.coordEndZv || 0) * 25;
+
+    const objectStartCoordinates = objectForm.objectBounds.startAbs;
+    const objectFinishCoordinates = objectForm.objectBounds.endAbs;
+
+    // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
+    const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates;
+
+    // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
+    const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates;
+
+    if (!isStartInBounds || !isFinishInBounds) {
+      objectForm.isCoordinatesOutOfBounds = true;
+      notificationStore.showNotification('Координаты не могут выходить за границы выбранного объекта', 'error');
+    } else {
+      objectForm.isCoordinatesOutOfBounds = false;
+    }
+  } else {
+    objectForm.isCoordinatesOutOfBounds = false;
+  }
+};
 
 const addObject = () => {
   const lastIncident = form.value.incidents[form.value.incidents.length - 1];
@@ -443,6 +478,11 @@ const validateForm = () => {
       return false;
     }
 
+    if (obj.isCoordinatesOutOfBounds) {
+      notificationStore.showNotification(`Инцидент #${objectNum}: Координаты выходят за границы объекта`, 'error');
+      return false;
+    }
+
     if (!obj.description) {
       notificationStore.showNotification(`Инцидент #${objectNum}: введите описание инцидента`, 'error')
       return false
@@ -501,7 +541,29 @@ const saveData = async () => {
       emit('update-table')
       closeModal()
   } catch (error) {
-      notificationStore.showNotification(error.message || 'Ошибка при сохранении инцидентов', 'error')
+      console.error('Полная ошибка:', error);
+      console.error('error.response:', error.response);
+      console.error('error.response?.data:', error.response?.data);
+
+      let errorMessage = 'Ошибка при сохранении инцидентов';
+
+      // Проверяем разные варианты структуры ответа
+      if (error.response?.data?.error?.message) {
+        errorMessage = error.response.data.error.message;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data) {
+        // Если data - это строка или объект с другой структурой
+        errorMessage = typeof error.response.data === 'string'
+          ? error.response.data
+          : JSON.stringify(error.response.data);
+      } else if (error.response?.status === 500) {
+        errorMessage = 'Ошибка сервера. Попробуйте еще раз.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      notificationStore.showNotification(errorMessage, 'error')
   }
 }
 

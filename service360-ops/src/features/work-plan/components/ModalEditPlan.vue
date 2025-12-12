@@ -251,10 +251,17 @@ const saveData = async () => {
     emit('save')
   } catch (e) {
     console.error('❌ Ошибка при сохранении:', e)
-    notificationStore.showNotification(
-      'Ошибка при сохранении: ' + (e.message || 'неизвестная ошибка'),
-      'error'
-    )
+    let errorMessage = 'Ошибка при сохранении';
+
+    if (e.response?.data?.error?.message) {
+      errorMessage = e.response.data.error.message;
+    } else if (e.response?.status === 500) {
+      errorMessage = 'Ошибка сервера. Попробуйте еще раз.';
+    } else if (e.message) {
+      errorMessage = e.message;
+    }
+
+    notificationStore.showNotification(errorMessage, 'error')
   }
 }
 
