@@ -7,7 +7,7 @@
   >
     <div class="form-section">
       <AppDropdown
-        class="col-span-2"
+        class="full-width-item"
         id="incidentType"
         label="Событие / запрос"
         placeholder="Введите или выберите тип инцидента"
@@ -19,12 +19,12 @@
         :required="true"
       />
 
-      <AppInput 
-        class="col-span-2" 
+      <AppInput
+        class="full-width-item"
         id="applicantNameGlobal"
-        label="Информация о заявителе" 
-        placeholder="Введите информацию о заявителе.." 
-        v-model="form.applicantName" 
+        label="Информация о заявителе"
+        placeholder="Введите информацию о заявителе.."
+        v-model="form.applicantName"
         :required="true"
       />
 
@@ -34,9 +34,8 @@
           <span v-if="index > 0" class="remove-object" @click="removeObject(index)">×</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="incident-grid">
           <AppDropdown
-            class="col-span-1"
             :id="'place-' + incident.id"
             label="Место"
             placeholder="Выберите место"
@@ -47,8 +46,7 @@
             :required="true"
           />
 
-          <AppDropdown 
-            class="col-span-1"
+          <AppDropdown
             :id="'incidentType-' + incident.id"
             label="Тип объекта"
             placeholder="Выберите тип объекта"
@@ -60,7 +58,7 @@
           />
 
           <AppDropdown
-            class="col-span-2"
+            class="full-width"
             :id="'incident-' + incident.id"
             label="Объект"
             placeholder="Выберите объект"
@@ -72,7 +70,7 @@
           />
 
           <FullCoordinates
-            class="col-span-2"
+            class="full-width"
             v-model="incident.coordinates"
             :object-bounds="incident.objectBounds"
             :out-of-bounds-error="incident.isCoordinatesOutOfBounds"
@@ -82,22 +80,22 @@
             :required="true"
           />
 
-          <AppInput 
-            class="col-span-2" 
+          <AppInput
+            class="full-width"
             :id="'description-' + incident.id"
-            label="Описание" 
-            placeholder="Введите описание инцидента..." 
-            v-model="incident.description" 
-            type="textarea" 
+            label="Описание"
+            placeholder="Введите описание инцидента..."
+            v-model="incident.description"
+            type="textarea"
             :required="true"
           />
 
         </div>
       </div>
 
-      <div class="divider"></div>
+      <div class="divider full-width-item"></div>
 
-      <div class="col-span-2">
+      <div class="full-width-item">
         <UiButton
           text="Добавить инцидент"
           icon="Plus"
@@ -587,10 +585,25 @@ const closeModal = () => {
 <style scoped>
 .form-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   padding: 0 32px 32px;
   background-color: #f9fafb;
+}
+
+.full-width-item {
+  grid-column: span 2;
+}
+
+.incident-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.full-width {
+  grid-column: span 2;
 }
 
 .section-title {
@@ -605,7 +618,6 @@ const closeModal = () => {
 }
 
 .divider {
-  grid-column: span 2;
   height: 1px;
   background-color: #e0e0e0;
   margin: 16px 0;
@@ -625,6 +637,30 @@ const closeModal = () => {
   margin-top: 0;
   margin-right: 8px;
   line-height: 1;
-  font-weight: normal; 
+  font-weight: normal;
+}
+
+/* Tablet and Mobile styles */
+@media (max-width: 1024px) {
+  .form-section {
+    grid-template-columns: 1fr !important;
+    padding: 0 20px 20px;
+  }
+
+  .full-width-item {
+    grid-column: span 1 !important;
+  }
+
+  .incident-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .full-width {
+    grid-column: span 1 !important;
+  }
+
+  .col-span-2 {
+    grid-column: span 1 !important;
+  }
 }
 </style>

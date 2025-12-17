@@ -3,7 +3,7 @@
     <div class="form-section">
 
       <AppDropdown
-        class="col-span-2"
+        class="full-width-item"
         id="work"
         label="Работа"
         placeholder="Выберите работу"
@@ -20,9 +20,8 @@
           <span v-if="index > 0" class="remove-object" @click="removeObject(index)">×</span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="object-grid">
           <AppDropdown
-            class="col-span-1"
             :id="'place-' + object.id"
             label="Место"
             placeholder="Выберите место"
@@ -34,7 +33,6 @@
           />
 
           <AppDropdown
-            class="col-span-1"
             :id="'objectType-' + object.id"
             label="Тип объекта"
             placeholder="Выберите тип объекта"
@@ -46,7 +44,7 @@
           />
 
           <AppDropdown
-            class="col-span-2"
+            class="full-width"
             :id="'object-' + object.id"
             label="Объект"
             placeholder="Выберите объект"
@@ -58,7 +56,7 @@
           />
 
           <FullCoordinates
-            class="col-span-2"
+            class="full-width"
             v-model="object.coordinates"
             @update:modelValue="(coords) => updateCoordinates(index, coords)"
             :out-of-bounds-error="object.isCoordinatesOutOfBounds"
@@ -66,7 +64,6 @@
           />
 
           <AppDropdown
-            class="col-span-1"
             :id="'section-' + object.id"
             label="Участок"
             placeholder="Выберите участок"
@@ -77,7 +74,6 @@
           />
 
           <AppDatePicker
-            class="col-span-1"
             :id="'plannedDate-' + object.id"
             label="Плановый срок завершения"
             placeholder="Выберите дату"
@@ -88,9 +84,9 @@
         </div>
       </div>
 
-      <div class="divider"></div>
+      <div class="divider full-width-item"></div>
 
-      <div class="col-span-2">
+      <div class="full-width-item">
         <UiButton
           text="Добавить объект"
           icon="Plus"
@@ -584,7 +580,7 @@ onMounted(async () => {
 <style scoped>
 .form-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   padding: 0 32px 32px;
   background-color: #f9fafb;
@@ -601,8 +597,11 @@ onMounted(async () => {
   grid-column: span 2;
 }
 
-.divider {
+.full-width-item {
   grid-column: span 2;
+}
+
+.divider {
   height: 1px;
   background-color: #e0e0e0;
   margin: 16px 0;
@@ -621,5 +620,42 @@ onMounted(async () => {
   top: 0;
   margin-top: 0;
   margin-right: 8px;
+}
+
+.object-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+/* Tablet and Mobile styles */
+@media (max-width: 1024px) {
+  .form-section {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 0 16px 16px !important;
+  }
+
+  .col-span-2 {
+    grid-column: span 1 !important;
+  }
+
+  .full-width-item {
+    grid-column: span 1 !important;
+  }
+
+  .object-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .full-width {
+    grid-column: span 1 !important;
+  }
 }
 </style>

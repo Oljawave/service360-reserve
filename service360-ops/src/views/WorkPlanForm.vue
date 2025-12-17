@@ -41,7 +41,7 @@
     </div>
     <div class="table-section">
       <div class="table-header">
-        <h2>План работ на {{ formattedDate }}</h2>
+        <h2>План работ{{ formattedDate ? ' на ' + formattedDate : '' }}</h2>
         <div class="table-subheader">
           <p class="subtitle">
             Отображаются только незавершенные работы. Для детального просмотра дважды кликните по строке.
@@ -124,13 +124,27 @@ const selectedDate = computed(() => {
 });
 
 const formattedDate = computed(() => {
-  if (!selectedDate.value) return '';
-  const date = new Date(selectedDate.value);
-  return date.toLocaleDateString('ru-RU', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  // Если выбран месяц и день - показываем полную дату
+  if (selectedDate.value) {
+    const date = new Date(selectedDate.value);
+    return date.toLocaleDateString('ru-RU', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  // Если выбран только месяц - показываем месяц и год
+  if (selectedMonth.value) {
+    const [year, month] = selectedMonth.value.split('-');
+    const date = new Date(year, parseInt(month) - 1, 1);
+    return date.toLocaleDateString('ru-RU', {
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  return '';
 });
 
 const selectedSectionName = computed(() => {
@@ -211,6 +225,7 @@ const handleConfirmComplete = async () => {
 };
 
 const columns = [
+  { key: 'planDateEnd', label: 'ДАТА ОКОНЧАНИЯ' },
   { key: 'name', label: 'НАИМЕНОВАНИЕ РАБОТЫ' },
   { key: 'place', label: 'МЕСТО' },
   { key: 'objectType', label: 'ТИП ОБЪЕКТА' },
@@ -285,6 +300,7 @@ const mapRecordToTableRow = (record) => ({
   id: record.id,
   pv: record.pv,
   cls: record.cls,
+  planDateEnd: record.PlanDateEnd || 'Не указано',
   name: record.fullNameWork || 'Без названия',
   place: record.nameSection || 'Не указано',
   objectType: record.nameClsObject || 'Неизвестно',
@@ -500,5 +516,108 @@ onMounted(async () => {
   color: #4a5568;
   font-weight: 500;
   white-space: nowrap;
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) {
+  .plan-form-page {
+    padding: 16px;
+  }
+
+  .header h1 {
+    font-size: 18px;
+  }
+
+  .filters-section {
+    padding: 20px;
+  }
+
+  .filter-row {
+    gap: 16px;
+  }
+
+  .filter-item {
+    min-width: 200px;
+  }
+
+  .table-section {
+    padding: 20px;
+  }
+
+  .table-header h2 {
+    font-size: 16px;
+  }
+
+  .table-subheader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .total-count {
+    font-size: 13px;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 640px) {
+  .plan-form-page {
+    padding: 12px;
+  }
+
+  .header {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-size: 16px;
+  }
+
+  .filters-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .filter-item {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .table-section {
+    padding: 16px;
+    overflow-x: auto;
+  }
+
+  .table-header {
+    margin-bottom: 16px;
+  }
+
+  .table-header h2 {
+    font-size: 15px;
+  }
+
+  .table-subheader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .total-count {
+    font-size: 12px;
+  }
 }
 </style>

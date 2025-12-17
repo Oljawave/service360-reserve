@@ -10,7 +10,7 @@
   >
     <div class="form-section">
       <AppDropdown
-        class="col-span-2"
+        class="full-width-item"
         id="work"
         label="Работа"
         placeholder="Выберите работу"
@@ -26,9 +26,8 @@
           <h4 class="section-title">Объект</h4>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="object-grid">
           <AppDropdown
-            class="col-span-1"
             id="place"
             label="Место"
             placeholder="Выберите место"
@@ -39,7 +38,6 @@
             :required="true" />
 
           <AppDropdown
-            class="col-span-1"
             id="objectType"
             label="Тип объекта"
             placeholder="Выберите тип объекта"
@@ -50,7 +48,7 @@
             :required="true" />
 
           <AppDropdown
-            class="col-span-2"
+            class="full-width"
             id="object"
             label="Объект"
             placeholder="Выберите объект"
@@ -61,14 +59,13 @@
             :required="true" />
 
           <FullCoordinates
-            class="col-span-2"
+            class="full-width"
             v-model="coordinates"
             @update:modelValue="updateCoordinates"
             :out-of-bounds-error="isCoordinatesOutOfBounds"
             :required="true" />
 
           <AppDropdown
-            class="col-span-1"
             id="section"
             label="Участок"
             placeholder="Выберите участок"
@@ -79,7 +76,6 @@
             :required="true" />
 
           <AppDatePicker
-            class="col-span-1"
             id="plannedDate"
             label="Плановый срок завершения"
             placeholder="Выберите дату"
@@ -643,7 +639,7 @@ onMounted(async () => {
 <style scoped>
 .form-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   padding: 0 32px 32px;
   background-color: #f9fafb;
@@ -660,8 +656,49 @@ onMounted(async () => {
   grid-column: span 2;
 }
 
+.full-width-item {
+  grid-column: span 2;
+}
+
 .object-header {
   position: relative;
   margin-bottom: 16px;
+}
+
+.object-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+/* Tablet and Mobile styles */
+@media (max-width: 1024px) {
+  .form-section {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 0 16px 16px !important;
+  }
+
+  .col-span-2 {
+    grid-column: span 1 !important;
+  }
+
+  .full-width-item {
+    grid-column: span 1 !important;
+  }
+
+  .object-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .full-width {
+    grid-column: span 1 !important;
+  }
 }
 </style>
