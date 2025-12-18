@@ -488,8 +488,8 @@ const saveWork = async () => {
 
       const dataToSave = {
         name: `${props.record.id}-${formattedDate}`,
-        objLocationClsSection: props.sectionId,
-        pvLocationClsSection: parseInt(props.sectionPv),
+        objLocationClsSection: props.record.objLocationClsSection || props.sectionId,
+        pvLocationClsSection: props.record.pvLocationClsSection ? parseInt(props.record.pvLocationClsSection) : parseInt(props.sectionPv),
         objWorkPlan: props.record.id,
         pvWorkPlan: props.record.pv,
         objUser: user.id,
