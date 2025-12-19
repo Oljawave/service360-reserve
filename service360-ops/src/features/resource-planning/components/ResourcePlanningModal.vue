@@ -180,12 +180,13 @@
                       :required="true" />
                       
                     <AppNumberInput
-                      label="Часы"
+                      label="минут"
                       :id="`personnel-hours-input-${index}`"
                       v-model.number="personnel.hours"
-                      placeholder="Введите часы"
-                      type="number" 
-                      :min="0" />
+                      placeholder="Введите минуты"
+                      type="number"
+                      :min="0"
+                      :required="true" />
                   </div>
               </div>
               
@@ -224,12 +225,13 @@
                       :required="true" />
                       
                     <AppNumberInput
-                      label="Часы"
+                      label="минут"
                       :id="`equipment-hours-input-${index}`"
                       v-model.number="equipment.hours"
-                      placeholder="Введите часы"
-                      type="number" 
-                      :min="0" />
+                      placeholder="Введите минуты"
+                      type="number"
+                      :min="0"
+                      :required="true" />
                   </div>
               </div>
               
@@ -718,7 +720,7 @@ const saveData = async () => {
     }
 
     if (validRecords.some(p => p.count < 0 || (p.hours !== null && p.hours < 0))) {
-      notificationStore.showNotification('Количество человек и часы не могут быть отрицательными.', 'error');
+      notificationStore.showNotification('Количество человек и минут не могут быть отрицательными.', 'error');
       return;
     }
 
@@ -791,7 +793,7 @@ const saveData = async () => {
     }
 
     if (validRecords.some(e => e.count < 0 || (e.hours !== null && e.hours < 0))) {
-      notificationStore.showNotification('Количество техники и часы не могут быть отрицательными.', 'error');
+      notificationStore.showNotification('Количество техники и минут не могут быть отрицательными.', 'error');
       return;
     }
 
@@ -864,7 +866,7 @@ const saveData = async () => {
     }
 
     if (validRecords.some(t => t.count < 0 || (t.hours !== null && t.hours < 0))) {
-      notificationStore.showNotification('Количество инструментов и часы не могут быть отрицательными.', 'error');
+      notificationStore.showNotification('Количество инструментов и минут не могут быть отрицательными.', 'error');
       return;
     }
 
@@ -1320,7 +1322,7 @@ watch(
 .form-line-personnel,
 .form-line-equipment {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr; /* Должность/Тип Техники, Количество, Часы */
+  grid-template-columns: 2fr 1fr 1fr; /* Должность/Тип Техники, Количество, минут */
   gap: 16px;
 }
 
