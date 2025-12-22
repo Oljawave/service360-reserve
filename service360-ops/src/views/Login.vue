@@ -94,7 +94,7 @@ export default {
         localStorage.setItem("userId", userId)
 
         notify.showNotification("Успешный вход!", "success")
-        this.$router.push("/main")
+        this.$router.push({ name: 'Dashboard' })
       } catch (err) {
         console.error("Ошибка при входе:", err)
 
