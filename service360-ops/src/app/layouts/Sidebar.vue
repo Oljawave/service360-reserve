@@ -59,7 +59,8 @@ const allItems = [
   {
     label: 'Главная',
     path: '/main',
-    icon: 'Home'
+    icon: 'Home',
+    permission: 'home'
   },
   {
     label: 'Планирование',

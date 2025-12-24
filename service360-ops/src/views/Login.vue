@@ -99,7 +99,7 @@ export default {
         localStorage.setItem("userId", userId)
 
         notify.showNotification("Успешный вход!", "success")
-        this.$router.push({ name: 'Dashboard' })
+        this.$router.push({ name: 'WorkPlan' })
       } catch (err) {
         console.error("Ошибка при входе:", err)
 

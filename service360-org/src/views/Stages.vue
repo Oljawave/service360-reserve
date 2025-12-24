@@ -27,6 +27,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { usePermissions } from '@/shared/api/auth/usePermissions';
 import TableWrapper from '@/app/layouts/Table/TableWrapper.vue'
 import ModalAddStage from '@/features/sections/components/ModalAddStage.vue'
 import ModalEditStage from '@/features/sections/components/ModalEditStage.vue'
@@ -36,6 +37,9 @@ const tableWrapperRef = ref(null)
 const isAddModalOpen = ref(false)
 const isEditModalOpen = ref(false)
 const selectedStage = ref(null)
+
+const { hasPermission } = usePermissions();
+const canInsert = computed(() => hasPermission('stag:ins'));
 
 const openAddModal = () => {
   isAddModalOpen.value = true
@@ -68,7 +72,7 @@ const tableActions = computed(() => [
     label: 'Добавить перегон',
     icon: 'Plus',
     onClick: openAddModal,
-    show: true,
+    show: canInsert.value,
   },
   {
     label: 'Экспорт',
