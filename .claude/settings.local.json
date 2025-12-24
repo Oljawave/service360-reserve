@@ -5,7 +5,19 @@
       "Bash(grep:*)",
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(dir C:UsersgabdullinDesktopservice360-frontservice360-ops)",
+      "Bash(magick convert:*)",
+      "Bash(node generate-icons.js:*)",
+      "Bash(node generate-icons.cjs:*)",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File generate-icons.ps1)",
+      "Bash(dir \"C:\\\\Users\\\\gabdullin\\\\Desktop\\\\service360-front\\\\service360-ops\\\\public\")",
+      "Bash(dir:*)",
+      "Bash(npm run preview:*)",
+      "Bash(copy icon-512x512.jpg icon-192x192.jpg)",
+      "Bash(ls:*)",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File resize-512.ps1)",
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File create-screenshot.ps1)"
     ]
   }
 }

@@ -171,7 +171,13 @@ const filteredItems = computed(() => filterItems(JSON.parse(JSON.stringify(allIt
     left: 0;
   }
   .desktop-only {
-    display: none;
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .desktop-only {
+    display: none !important;
   }
 }
 

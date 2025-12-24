@@ -29,7 +29,9 @@
               <AppInput label="Пароль" v-model="password" type="password" placeholder="Введите пароль" />
             </div>
 
-            <MainButton :label="'ВОЙТИ'" :loading="loading" type="submit" />
+            <div class="submit-button-wrapper">
+              <MainButton :label="'ВОЙТИ'" :loading="loading" type="submit" />
+            </div>
           </form>
         </div>
       </div>
@@ -287,7 +289,7 @@ form {
   }
 
   .logo-mobile img {
-    height: 80px;
+    height: 160px;
   }
 
   .language-fixed {
@@ -297,7 +299,7 @@ form {
   .login-container {
     padding: 0;
     max-width: 100%;
-    height: calc(100vh - 50px);
+    height: 100vh;
   }
 
   .login-card {
@@ -308,6 +310,8 @@ form {
     box-shadow: none;
     justify-content: center;
     padding-top: 60px;
+    display: flex;
+    flex-direction: column;
   }
 
   .login-title {
@@ -315,10 +319,15 @@ form {
     margin-bottom: 12px;
   }
 
+  .header-section {
+    margin-bottom: 80px;
+    margin-top: 40px;
+  }
+
   .login-subtitle {
     font-size: 14px;
     margin-bottom: 0;
-    padding: 0 40px;
+    padding: 0 90px;
   }
 
   .input-label {
@@ -330,12 +339,30 @@ form {
   }
 
   .form-fields {
-    margin-bottom: 0;
+    margin-bottom: 24px;
   }
 
   form {
     justify-content: space-between;
-    padding-bottom: 40px;
+    flex: 1;
+    padding-bottom: 80px;
+  }
+
+  .login-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .submit-button-wrapper {
+    position: fixed;
+    bottom: 46px;
+    left: 0;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
   }
 
   .footer-note {
@@ -419,6 +446,17 @@ form {
 
   form button {
     margin-top: 0;
+  }
+
+  .submit-button-wrapper {
+    position: fixed;
+    bottom: 46px;
+    left: 0;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
   }
 
   .footer-note {
