@@ -57,6 +57,11 @@ onBeforeUnmount(() => {
 
 const allItems = [
   {
+    label: 'Главная',
+    path: '/welcome',
+    icon: 'Home'
+  },
+  {
     label: 'Объекты',
     icon: 'Package',
     children: [

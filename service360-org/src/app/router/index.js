@@ -5,6 +5,7 @@ import Stations from '@/views/Stations.vue'
 import Stages from '@/views/Stages.vue'
 import OrgStructure from '@/views/OrgStructure.vue'
 import Login from '@/views/Login.vue'
+import Welcome from '@/views/Welcome.vue'
 import Tools from '@/views/Tools.vue'
 import Equipment from '@/views/Equipment.vue'
 import Materials from '@/views/Materials.vue'
@@ -22,6 +23,12 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: { requiresAuth: false }
+  },
+  {
+    path: '/welcome',
+    name: 'Welcome',
+    component: Welcome,
+    meta: { requiresAuth: true }
   },
   {
     path: '/objects',
@@ -100,8 +107,8 @@ router.beforeEach((to, from, next) => {
     // Пытается зайти на защищенную страницу без авторизации
     next('/login')
   } else if (to.path === '/login' && authenticated) {
-    // Уже авторизован, пытается зайти на логин - редирект на объекты
-    next('/objects')
+    // Уже авторизован, пытается зайти на логин - редирект на welcome
+    next('/welcome')
   } else {
     // Всё ок, пропускаем
     next()
