@@ -84,7 +84,10 @@
       v-else
       :rows="pagedRows"
       :loading="loading"
+      :showCheckbox="showCheckbox"
+      :selectedRows="selectedRows"
       @row-dblclick="handleRowDoubleClick"
+      @update:selectedRows="handleUpdateSelectedRows"
     />
 
     <div class="table-footer" v-if="!isMobile && filteredRows.length > 0">
