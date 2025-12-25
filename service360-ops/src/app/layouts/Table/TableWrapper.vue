@@ -62,8 +62,11 @@
       :sortKey="sortKey"
       :sortDirection="sortDirection"
       :getRowClassFn="getRowClassFn"
+      :showCheckbox="showCheckbox"
+      :selectedRows="selectedRows"
       @row-dblclick="handleRowDoubleClick" @toggle-filter="toggleFilter"
       @sort="handleSort"
+      @update:selectedRows="handleUpdateSelectedRows"
     >
       <template #filter="{ column }">
         <ColumnFilter
@@ -146,10 +149,18 @@ const props = defineProps({
   getRowClassFn: {
     type: Function,
     default: () => ({}),
+  },
+  showCheckbox: {
+    type: Boolean,
+    default: false
+  },
+  selectedRows: {
+    type: Array,
+    default: () => []
   }
 });
 
-const emit = defineEmits(['update:filters', 'row-dblclick']);
+const emit = defineEmits(['update:filters', 'row-dblclick', 'update:selectedRows']);
 
 const rows = ref([]);
 const childrenMap = ref({});
@@ -295,6 +306,10 @@ const handleSave = async () => {
 
 const refreshTable = () => {
   loadData();
+};
+
+const handleUpdateSelectedRows = (newSelectedRows) => {
+  emit('update:selectedRows', newSelectedRows);
 };
 
 const handleSort = (key) => {
