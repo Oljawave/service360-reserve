@@ -88,6 +88,11 @@ const allItems = [
       { label: 'Организационная структура', path: '/organization', permission: 'org' },
       { label: 'Сотрудники', path: '/personnel', permission: 'team' }
     ]
+  },
+  {
+    label: 'Клиенты',
+    path: '/clients',
+    icon: 'Users',
   }
 ]
 
