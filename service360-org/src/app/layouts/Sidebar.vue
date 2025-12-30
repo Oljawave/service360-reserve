@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
 const allItems = [
   {
     label: 'Главная',
-    path: '/welcome',
+    path: '/main',
     icon: 'Home'
   },
   {
@@ -93,6 +93,7 @@ const allItems = [
     label: 'Клиенты',
     path: '/clients',
     icon: 'Users',
+    permission: 'cl'
   }
 ]
 

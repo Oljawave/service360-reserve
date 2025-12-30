@@ -134,6 +134,13 @@ const allCards = [
     description: 'Управление персоналом',
     path: '/personnel',
     permission: 'team'
+  },
+  {
+    icon: 'Users',
+    title: 'Клиенты',
+    description: 'Управление клиентами',
+    path: '/clients',
+    permission: 'cl'
   }
 ]
 

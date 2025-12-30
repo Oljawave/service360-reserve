@@ -26,7 +26,7 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/welcome',
+    path: '/main',
     name: 'Welcome',
     component: Welcome,
     meta: { requiresAuth: true }

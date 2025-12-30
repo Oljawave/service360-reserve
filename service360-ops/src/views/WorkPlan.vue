@@ -340,7 +340,7 @@ const tableActions = computed(() => {
       label: 'Копировать план работ',
       icon: 'Copy', // Copy icon
       onClick: handleCopyWorkPlan,
-      hidden: !hasPermission('plan:ins'),
+      hidden: !hasPermission('plan:copy'),
     },
     {
       label: 'Запланировать новую работу',

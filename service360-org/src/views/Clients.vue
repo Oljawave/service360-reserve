@@ -26,7 +26,8 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { usePermissions } from '@/shared/api/auth/usePermissions';
 import TableWrapper from '@/app/layouts/Table/TableWrapper.vue'
 import ModalAddClient from '@/features/clients/components/ModalAddClient.vue'
 import ModalEditClient from '@/features/clients/components/ModalEditClient.vue'
@@ -36,6 +37,9 @@ const tableWrapperRef = ref(null)
 const isAddModalOpen = ref(false)
 const isEditModalOpen = ref(false)
 const selectedClient = ref(null)
+
+const { hasPermission } = usePermissions();
+const canInsert = computed(() => hasPermission('cl:ins'));
 
 const openAddModal = () => {
   isAddModalOpen.value = true
@@ -70,18 +74,20 @@ const refreshTable = () => {
   }
 }
 
-const tableActions = [
+const tableActions = computed(() => [
   {
     label: 'Добавить клиента',
     icon: 'Plus',
     onClick: openAddModal,
+    show: canInsert.value,
   },
   {
     label: 'Экспорт',
     icon: 'Download',
     onClick: () => console.log('Экспортирование...'),
+    show: true,
   },
-];
+].filter(action => action.show));
 
 const limit = 10
 
