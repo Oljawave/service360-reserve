@@ -1065,7 +1065,7 @@ const loadExistingTools = async (taskLogId) => {
 
 const loadTaskOptions = async () => {
   try {
-    taskOptions.value = await loadTasks();
+    taskOptions.value = await loadTasks(props.record?.objWork || null);
   } catch (error) {
     notificationStore.showNotification('Не удалось загрузить список задач.', 'error');
   }
@@ -1152,7 +1152,6 @@ const handleTabChange = (newTab) => {
 };
 
 onMounted(() => {
-  loadTaskOptions();
   loadMaterialOptions();
   loadUnitOptions();
   loadServiceOptions();
@@ -1177,27 +1176,28 @@ watch(
       savedTaskLogId.value = null;
       savedTaskLogCls.value = null;
       activeTab.value = 'info';
-      
+
       // Сброс и инициализация массивов ресурсов
       materialRecords.value = [createNewMaterialObject()];
       existingRecordsMaterials.value = [];
 
       serviceRecords.value = [createNewServiceObject()];
       existingRecordsServices.value = [];
-      
+
       personnelRecords.value = [createNewPersonnelObject()];
       existingRecordsPersonnel.value = [];
-      
+
       equipmentRecords.value = [createNewEquipmentObject()];
       existingRecordsEquipment.value = [];
 
       toolRecords.value = [createNewToolObject()];
       existingRecordsTools.value = [];
-      
+
       loadExistingData(newRecordData);
+      loadTaskOptions(); // Перезагружаем задачи для новой записи
     }
   },
-  { immediate: true } 
+  { immediate: true }
 );
 </script>
 

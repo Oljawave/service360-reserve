@@ -317,6 +317,7 @@ const mapRecordToTableRow = (record) => ({
   place: record.nameSection || 'Не указано',
   objectType: record.nameClsObject || 'Неизвестно',
   object: record.fullNameObject || 'Объект не указан',
+  objWork: record.objWork,
   objObject: record.objObject,
   nameLocationClsSection: record.nameLocationClsSection,
   objLocationClsSection: record.objLocationClsSection,
