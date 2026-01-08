@@ -9,6 +9,7 @@ import Incidents from '@/views/Incidents.vue'
 import WorkPlanForm from '@/views/WorkPlanForm.vue'
 import ResourcePlanning from '@/views/ResourcePlanning.vue'
 import ResourcePlanningForm from '@/views/ResourcePlanningForm.vue'
+import ResourcePlanningEdit from '@/views/ResourcePlanningEdit.vue'
 import WorkLog from '@/views/WorkLog.vue'
 import WorkLogForm from '@/views/WorkLogForm.vue'
 import { isAuthenticated } from '@/shared/api/auth/auth'
@@ -58,6 +59,12 @@ const routes = [
     path: '/resource-planning/record',
     name: 'ResourcePlanningRecord',
     component: ResourcePlanningForm,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/resource-planning/edit/:id',
+    name: 'ResourcePlanningEdit',
+    component: ResourcePlanningEdit,
     meta: { requiresAuth: true }
   },
   {
