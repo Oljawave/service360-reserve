@@ -46,6 +46,7 @@
             @update:modelValue="updateFilter('periodType', $event)"
           />
         </div>
+        <slot name="custom-header"></slot>
         <TableActions :actions="actions" :isMobile="isMobile" />
       </div>
     </div>
