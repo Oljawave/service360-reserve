@@ -9,7 +9,14 @@
     :showFilters="false"
     @row-dblclick="onRowDoubleClick"
   >
+    <template #controls-footer>
+      <div v-if="analysisStatus" class="analysis-status" :class="`status-${analysisStatus.type}`">
+        Статус: <span class="status-text">{{ analysisStatus.message }}</span>
+      </div>
+    </template>
   </TableWrapper>
+
+  <LoadingSpinner :show="isAnalyzing" message="Анализ файла..." />
 
   <input
     ref="fileInputRef"
@@ -24,7 +31,8 @@
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import TableWrapper from '@/app/layouts/Table/TableWrapper.vue';
-import { analyzeTrackGaugeFile } from '@/shared/api/track-gauge/trackGaugeApi';
+import LoadingSpinner from '@/shared/ui/LoadingSpinner.vue';
+import { analyzeTrackGaugeFile, loadImportLog } from '@/shared/api/track-gauge/trackGaugeApi';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 
 const router = useRouter();
@@ -36,6 +44,9 @@ const fileInputRef = ref(null);
 const selectedFileName = ref('');
 const selectedFile = ref(null);
 const analyzedData = ref([]);
+const analysisStatus = ref(null);
+const canUpload = ref(false);
+const isAnalyzing = ref(false);
 const columns = ref([
   { key: 'id', label: '№' },
 ]);
@@ -45,6 +56,16 @@ const handleFileSelect = (event) => {
   if (file) {
     selectedFile.value = file;
     selectedFileName.value = file.name;
+
+    // Сброс таблицы при выборе нового файла
+    analyzedData.value = [];
+    analysisStatus.value = null;
+    canUpload.value = false;
+    columns.value = [{ key: 'id', label: '№' }];
+
+    if (tableWrapperRef.value && tableWrapperRef.value.refreshTable) {
+      tableWrapperRef.value.refreshTable();
+    }
   }
 };
 
@@ -57,6 +78,8 @@ const handleAnalyze = async () => {
     notificationStore.showNotification('Пожалуйста, выберите файл', 'warning');
     return;
   }
+
+  isAnalyzing.value = true;
 
   try {
     const records = await analyzeTrackGaugeFile(selectedFileName.value, selectedFile.value);
@@ -82,8 +105,42 @@ const handleAnalyze = async () => {
         tableWrapperRef.value.refreshTable();
       }
 
+      // Вызываем loadImportLog для проверки статуса
+      try {
+        const logData = await loadImportLog(selectedFileName.value);
+        console.log('Данные лога:', logData);
+
+        if (logData && logData.msg) {
+          // Если есть сообщение в msg, показываем его красным
+          analysisStatus.value = {
+            type: 'error',
+            message: logData.msg
+          };
+          canUpload.value = false;
+        } else {
+          // Если msg пустой, показываем успешно
+          analysisStatus.value = {
+            type: 'success',
+            message: 'успешно'
+          };
+          canUpload.value = true;
+        }
+      } catch (logError) {
+        console.error('Ошибка при загрузке лога:', logError);
+        // Если не удалось загрузить лог, все равно показываем успешно
+        analysisStatus.value = {
+          type: 'success',
+          message: 'успешно'
+        };
+        canUpload.value = true;
+      }
+
       notificationStore.showNotification(`Файл успешно проанализирован. Найдено записей: ${records.length}`, 'success');
     } else {
+      analysisStatus.value = {
+        type: 'warning',
+        message: 'нет данных'
+      };
       notificationStore.showNotification('Нет данных для отображения', 'warning');
     }
   } catch (error) {
@@ -96,7 +153,14 @@ const handleAnalyze = async () => {
       errorMessage = error.message;
     }
 
+    analysisStatus.value = {
+      type: 'error',
+      message: 'ошибка'
+    };
+
     notificationStore.showNotification(errorMessage, 'error');
+  } finally {
+    isAnalyzing.value = false;
   }
 };
 
@@ -133,6 +197,7 @@ const tableActions = computed(() => [
       // Логика привязки
     },
     show: true,
+    disabled: true,
   },
   {
     label: 'Залить',
@@ -141,9 +206,31 @@ const tableActions = computed(() => [
       // Логика заливки
     },
     show: true,
+    disabled: !canUpload.value,
   },
 ]);
 </script>
 
 <style scoped>
+.analysis-status {
+  font-size: 14px;
+  font-weight: normal;
+  color: #1a202c;
+}
+
+.analysis-status .status-text {
+  font-weight: normal;
+}
+
+.status-success .status-text {
+  color: #22c55e;
+}
+
+.status-warning .status-text {
+  color: #f59e0b;
+}
+
+.status-error .status-text {
+  color: #ef4444;
+}
 </style>

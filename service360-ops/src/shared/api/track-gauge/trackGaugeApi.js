@@ -1,6 +1,7 @@
 import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_IMPORTXML_URL;
+const API_INSPECTIONS_URL = import.meta.env.VITE_INSPECTIONS_URL;
 
 export async function analyzeTrackGaugeFile(filename, file) {
   const objLocation = localStorage.getItem("objLocation");
@@ -40,4 +41,25 @@ export async function analyzeTrackGaugeFile(filename, file) {
 
   console.warn('Неожиданная структура ответа:', response.data);
   return [];
+}
+
+export async function loadImportLog(filename) {
+  console.log('Вызов метода import/loadLog', {
+    filename
+  });
+
+  const response = await axios.post(
+    API_INSPECTIONS_URL,
+    {
+      method: "import/loadLog",
+      params: [filename]
+    },
+    {
+      withCredentials: true
+    }
+  );
+
+  console.log('Ответ от import/loadLog:', response.data);
+
+  return response.data.result?.records?.[0] || response.data.result || null;
 }
