@@ -12,7 +12,7 @@
       <ModalUpdateObject
         v-if="showEditModal"
         :rowData="selectedRow"
-        @close="closeModals"        
+        @close="closeModals"
         @save="() => handleTableUpdate(closeModals)"
         @deleted="() => handleTableUpdate(closeModals)"
       />
@@ -24,18 +24,29 @@
     @close="closeModal"
     @update-table="() => handleTableUpdate(closeModal)"
   />
+
+  <ModalPassportData
+    v-if="isPassportModalOpen"
+    :rowData="passportRowData"
+    @close="closePassportModal"
+    @save="handlePassportSave"
+  />
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, provide } from 'vue'
 import { usePermissions } from '@/shared/api/auth/usePermissions';
 import TableWrapper from '@/app/layouts/Table/TableWrapper.vue'
 import ModalAddObject from '@/features/objects/components/ModalAddObject.vue'
 import ModalUpdateObject from '@/features/objects/components/ModalUpdateObject.vue'
+import ModalPassportData from '@/features/objects/components/ModalPassportData.vue'
+import RowActionButton from '@/features/objects/components/RowActionButton.vue'
 import { loadObjectServed } from '@/shared/api/objects/objectService'
 
 const tableWrapperRef = ref(null)
 const isAddObjectModalOpen = ref(false)
+const isPassportModalOpen = ref(false)
+const passportRowData = ref(null)
 
 const { hasPermission } = usePermissions();
 const canInsert = computed(() => hasPermission('obj:ins'));
@@ -43,6 +54,22 @@ const canInsert = computed(() => hasPermission('obj:ins'));
 const closeModal = () => {
   isAddObjectModalOpen.value = false
 }
+
+const openPassportModal = (row) => {
+  passportRowData.value = row
+  isPassportModalOpen.value = true
+}
+
+const closePassportModal = () => {
+  isPassportModalOpen.value = false
+  passportRowData.value = null
+}
+
+const handlePassportSave = (data) => {
+  console.log('Passport data saved:', data)
+}
+
+provide('openPassportModal', openPassportModal)
 
 const handleTableUpdate = (closeFn) => {
   tableWrapperRef.value?.refreshTable()
@@ -78,11 +105,12 @@ const columns = [
   { key: 'coords', label: 'Координаты' },
   { key: 'feature', label: 'Характеристика' },
   { key: 'location', label: 'Сведения о месте' },
-  { key: 'replacement', label: 'Периодичность замены (год)' },
+  // { key: 'replacement', label: 'Периодичность замены (год)' },
   { key: 'number', label: 'Номер объекта' },
   { key: 'installDate', label: 'Дата установки' },
-  { key: 'createDate', label: 'Дата создания' },
-  { key: 'updateDate', label: 'Дата обновления' },
-  { key: 'description', label: 'Описание' }
+  // { key: 'createDate', label: 'Дата создания' },
+  // { key: 'updateDate', label: 'Дата обновления' },
+  // { key: 'description', label: 'Описание' }
+  { key: 'actions', label: 'Действия', component: RowActionButton },
 ]
 </script>

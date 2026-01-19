@@ -48,7 +48,7 @@ const props = defineProps({
   },
   step: {
     type: Number,
-    default: 1
+    default: 0.01
   },
   status: String
 })
@@ -68,13 +68,13 @@ const handleInput = (newValue) => {
     return
   }
 
-  let value = Math.floor(Number(newValue))
+  let value = props.allowDecimal ? Number(newValue) : Math.floor(Number(newValue))
 
   if (value < props.min) {
-    value = props.min 
+    value = props.min
   }
   if (props.max !== Infinity && value > props.max) {
-    value = props.max 
+    value = props.max
   }
 
   internalValue.value = value
@@ -96,13 +96,14 @@ const handleKeydown = (e) => {
   ]
   const isCtrl = e.ctrlKey || e.metaKey
   const isNumber = /^[0-9]$/.test(e.key)
+  const isDecimalSeparator = e.key === '.' || e.key === ','
 
   if (e.key === '-' || e.key === 'Minus') {
     e.preventDefault()
     return
   }
 
-  if (!isNumber && !allowedKeys.includes(e.key) && !(isCtrl && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase()))) {
+  if (!isNumber && !isDecimalSeparator && !allowedKeys.includes(e.key) && !(isCtrl && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase()))) {
     e.preventDefault()
   }
 }
