@@ -239,3 +239,17 @@ export async function saveComplexObjectPassport(payload) {
     throw error
   }
 }
+
+export async function loadComplexObjectPassport(objectId) {
+  try {
+    const response = await axios.post(API_URL, {
+      method: 'data/loadComplexObjectPassport',
+      params: [objectId],
+    })
+    // API возвращает result как массив напрямую, а не result.records
+    return response.data.result || []
+  } catch (error) {
+    console.error('Ошибка при загрузке паспортных данных:', error)
+    throw error
+  }
+}

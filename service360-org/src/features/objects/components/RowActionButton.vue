@@ -10,17 +10,21 @@
 
 <script setup>
 import UiIcon from '@/shared/ui/UiIcon.vue';
-import { inject } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps({
   row: { type: Object, default: null }
 });
 
-const openPassportModal = inject('openPassportModal', null);
+const router = useRouter();
 
 const handleClick = () => {
-  if (openPassportModal) {
-    openPassportModal(props.row);
+  if (props.row?.id) {
+    router.push({
+      name: 'PassportData',
+      params: { id: props.row.id },
+      query: { name: props.row.name || '' }
+    });
   }
 };
 </script>
