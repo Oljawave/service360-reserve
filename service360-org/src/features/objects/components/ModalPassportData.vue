@@ -4,6 +4,7 @@
     @close="closeModal"
     @save="saveData"
     :showSave="true"
+    :loading="isSaving"
   >
     <div class="form-section">
       <div v-for="(item, index) in form.items" :key="item.id" class="col-span-2">
@@ -59,6 +60,8 @@
             label="Значение"
             placeholder="Введите значение"
             v-model="item.value"
+            :allowDecimal="true"
+            :step="0.01"
           />
         </div>
       </div>
@@ -84,7 +87,10 @@ import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'
 import MultipleSelect from '@/shared/ui/FormControls/MultipleSelect.vue'
 import UiButton from '@/shared/ui/UiButton.vue'
-import { loadComponentsByObjectType, loadParametersByComponent, loadMeasureUnits, loadSignsByParameter } from '@/shared/api/objects/objectService'
+import { loadComponentsByObjectType, loadParametersByComponent, loadMeasureUnits, loadSignsByParameter, saveComplexObjectPassport } from '@/shared/api/objects/objectService'
+import { useNotificationStore } from '@/app/stores/notificationStore'
+
+const notificationStore = useNotificationStore()
 
 const props = defineProps({
   rowData: { type: Object, default: null }
@@ -105,6 +111,7 @@ const createNewItem = () => ({
   parameterOptions: [],
   loadingParameters: false,
   signOptions: [],
+  signRawData: [], // Сырые данные признаков для сохранения
   loadingSigns: false
 })
 
@@ -118,6 +125,7 @@ const unitOptions = ref([])
 const loadingComponents = ref(false)
 const loadingUnits = ref(false)
 const isAddingItem = ref(false)
+const isSaving = ref(false)
 
 const loadComponents = async () => {
   if (!props.rowData?.id) {
@@ -210,15 +218,18 @@ const handleParameterChange = async (parameterId, index) => {
   const item = form.value.items[index]
   item.signs = []
   item.signOptions = []
+  item.signRawData = []
 
   if (parameterId) {
     item.loadingSigns = true
     try {
       const signs = await loadSignsByParameter(parameterId)
+      item.signRawData = signs // Сохраняем сырые данные для формирования payload
       item.signOptions = buildSignTree(signs)
     } catch (error) {
       console.error('Ошибка загрузки признаков:', error)
       item.signOptions = []
+      item.signRawData = []
     } finally {
       item.loadingSigns = false
     }
@@ -243,9 +254,75 @@ const closeModal = () => {
   emit('close')
 }
 
-const saveData = () => {
-  emit('save', form.value.items)
-  closeModal()
+const validateForm = () => {
+  for (let i = 0; i < form.value.items.length; i++) {
+    const item = form.value.items[i]
+    const recordNum = i + 1
+
+    if (!item.parameter) {
+      notificationStore.showNotification(`Запись #${recordNum}: не выбран "Параметр"`, 'error')
+      return false
+    }
+    if (item.value === null || item.value === '') {
+      notificationStore.showNotification(`Запись #${recordNum}: не заполнено "Значение"`, 'error')
+      return false
+    }
+  }
+  return true
+}
+
+const saveData = async () => {
+  if (isSaving.value) return
+
+  if (!validateForm()) return
+
+  isSaving.value = true
+  try {
+    for (const item of form.value.items) {
+      // Получаем id и pv параметра (item.parameter может быть объектом или числом)
+      const parameterId = typeof item.parameter === 'object' ? item.parameter.value : item.parameter
+      const parameterData = item.parameterOptions.find(p => p.value === parameterId)
+
+      // Получаем id и pv единицы измерения
+      const unitId = typeof item.unit === 'object' ? item.unit.value : item.unit
+      const unitData = unitOptions.value.find(u => u.value === unitId)
+
+      // Формируем массив выбранных признаков с полными данными
+      const selectedSigns = item.signs.map(signId => {
+        const signData = item.signRawData.find(s => s.id === signId)
+        if (signData) {
+          return {
+            id: signData.id,
+            cls: signData.cls,
+            name: signData.name,
+            fullName: signData.fullName || signData.name,
+            pv: signData.pv
+          }
+        }
+        return null
+      }).filter(Boolean)
+
+      const payload = {
+        id: props.rowData.id,
+        relobjPassportComponentParams: parameterId,
+        pvPassportComponentParams: parameterData?.pv,
+        objPassportSignMulti: selectedSigns,
+        meaPassportMeasure: unitId,
+        pvPassportMeasure: unitData?.pv,
+        PassportVal: item.value
+      }
+
+      await saveComplexObjectPassport(payload)
+    }
+
+    notificationStore.showNotification('Паспортные данные успешно сохранены!', 'success')
+    emit('save')
+    closeModal()
+  } catch (error) {
+    notificationStore.showNotification('Ошибка при сохранении паспортных данных', 'error')
+  } finally {
+    isSaving.value = false
+  }
 }
 
 onMounted(() => {

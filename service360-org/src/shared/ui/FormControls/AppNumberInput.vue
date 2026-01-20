@@ -48,7 +48,11 @@ const props = defineProps({
   },
   step: {
     type: Number,
-    default: 0.01
+    default: 1
+  },
+  allowDecimal: {
+    type: Boolean,
+    default: false
   },
   status: String
 })
@@ -99,6 +103,12 @@ const handleKeydown = (e) => {
   const isDecimalSeparator = e.key === '.' || e.key === ','
 
   if (e.key === '-' || e.key === 'Minus') {
+    e.preventDefault()
+    return
+  }
+
+  // Разрешаем десятичный разделитель только если allowDecimal включен
+  if (isDecimalSeparator && !props.allowDecimal) {
     e.preventDefault()
     return
   }

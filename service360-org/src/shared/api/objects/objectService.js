@@ -226,3 +226,16 @@ export async function loadSignsByParameter(parameterId) {
     throw error
   }
 }
+
+export async function saveComplexObjectPassport(payload) {
+  try {
+    const response = await axios.post(API_URL, {
+      method: 'data/saveComplexObjectPassport',
+      params: ['ins', payload],
+    })
+    return response.data
+  } catch (error) {
+    console.error('Ошибка при сохранении паспортных данных:', error)
+    throw error
+  }
+}
