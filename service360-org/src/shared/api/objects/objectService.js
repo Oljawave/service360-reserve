@@ -240,6 +240,32 @@ export async function saveComplexObjectPassport(payload) {
   }
 }
 
+export async function updateComplexObjectPassport(payload) {
+  try {
+    const response = await axios.post(API_URL, {
+      method: 'data/saveComplexObjectPassport',
+      params: ['upd', payload],
+    })
+    return response.data
+  } catch (error) {
+    console.error('Ошибка при обновлении паспортных данных:', error)
+    throw error
+  }
+}
+
+export async function deleteComplexObjectPassport(idPassportComplex) {
+  try {
+    const response = await axios.post(API_URL, {
+      method: 'data/deleteComplexData',
+      params: [idPassportComplex],
+    })
+    return response.data
+  } catch (error) {
+    console.error('Ошибка при удалении паспортных данных:', error)
+    throw error
+  }
+}
+
 export async function loadComplexObjectPassport(objectId) {
   try {
     const response = await axios.post(API_URL, {

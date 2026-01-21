@@ -122,7 +122,7 @@ router.beforeEach((to, from, next) => {
     next('/login')
   } else if (to.path === '/login' && authenticated) {
     // Уже авторизован, пытается зайти на логин - редирект на welcome
-    next('/welcome')
+    next('/main')
   } else {
     // Всё ок, пропускаем
     next()

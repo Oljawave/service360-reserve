@@ -8,11 +8,16 @@
     <div class="table-section">
       <div class="table-header">
         <h2>Список паспортных данных</h2>
-        <div class="table-subheader">
-          <p class="subtitle">
-            Паспортные данные объекта
-          </p>
-          <span class="total-count">Всего записей: {{ tableData.length }}</span>
+        <div class="table-actions">
+          <button
+            v-for="action in tableActions"
+            :key="action.label"
+            class="action-btn"
+            @click="action.onClick"
+          >
+            <UiIcon :name="action.icon" />
+            {{ action.label }}
+          </button>
         </div>
       </div>
       <BaseTable
@@ -24,8 +29,24 @@
         :children-map="{}"
         :active-filters="{}"
         :showFilters="false"
+        @row-dblclick="handleRowDoubleClick"
       />
     </div>
+
+    <ModalEditPassportData
+      v-if="isEditModalVisible"
+      :rowData="selectedRowData"
+      @close="closeEditModal"
+      @save="handleSaveEdit"
+      @deleted="handleDeleted"
+    />
+
+    <ModalPassportData
+      v-if="isAddModalVisible"
+      :rowData="{ id: objectId }"
+      @close="closeAddModal"
+      @save="handleSaveAdd"
+    />
   </div>
 </template>
 
@@ -35,7 +56,10 @@ import { useRouter, useRoute } from 'vue-router'
 import { useNotificationStore } from '@/app/stores/notificationStore'
 import BaseTable from '@/app/layouts/Table/BaseTable.vue'
 import BackButton from '@/shared/ui/BackButton.vue'
+import UiIcon from '@/shared/ui/UiIcon.vue'
 import { loadComplexObjectPassport } from '@/shared/api/objects/objectService'
+import ModalEditPassportData from '@/features/objects/components/ModalEditPassportData.vue'
+import ModalPassportData from '@/features/objects/components/ModalPassportData.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -44,6 +68,9 @@ const notificationStore = useNotificationStore()
 const isLoading = ref(false)
 const tableData = ref([])
 const objectName = ref('')
+const isEditModalVisible = ref(false)
+const isAddModalVisible = ref(false)
+const selectedRowData = ref(null)
 
 const objectId = computed(() => route.params.id)
 
@@ -90,7 +117,6 @@ const loadData = async () => {
     const records = await loadComplexObjectPassport(objectId.value)
     tableData.value = records.map(mapRecordToTableRow)
 
-    // Получаем имя объекта из query параметров
     if (route.query.name) {
       objectName.value = route.query.name
     }
@@ -101,6 +127,47 @@ const loadData = async () => {
     isLoading.value = false
   }
 }
+
+const handleRowDoubleClick = (row) => {
+  selectedRowData.value = { ...row, objectId: objectId.value }
+  isEditModalVisible.value = true
+}
+
+const closeEditModal = () => {
+  isEditModalVisible.value = false
+  selectedRowData.value = null
+}
+
+const handleSaveEdit = () => {
+  closeEditModal()
+  loadData()
+}
+
+const openAddModal = () => {
+  isAddModalVisible.value = true
+}
+
+const closeAddModal = () => {
+  isAddModalVisible.value = false
+}
+
+const handleSaveAdd = () => {
+  closeAddModal()
+  loadData()
+}
+
+const handleDeleted = () => {
+  closeEditModal()
+  loadData()
+}
+
+const tableActions = [
+  {
+    label: 'Добавить данные',
+    icon: 'Plus',
+    onClick: openAddModal,
+  },
+]
 
 onMounted(() => {
   loadData()
@@ -145,7 +212,8 @@ onMounted(() => {
 
 .table-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   gap: 8px;
   margin-bottom: 24px;
   flex-shrink: 0;
@@ -157,26 +225,27 @@ onMounted(() => {
   color: #1a202c;
 }
 
-.table-subheader {
+.table-actions {
   display: flex;
-  justify-content: space-between;
+  gap: 8px;
+}
+
+.action-btn {
+  display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 6px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1a202c;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
-.subtitle {
-  font-size: 14px;
-  color: #718096;
-  line-height: 1.5;
-  margin: 0;
-  flex: 1;
-}
-
-.total-count {
-  font-size: 14px;
-  color: #4a5568;
-  font-weight: 500;
-  white-space: nowrap;
+.action-btn:hover {
+  background: #edf2f7;
 }
 
 @media (max-width: 1024px) {
@@ -194,12 +263,6 @@ onMounted(() => {
 
   .table-header h2 {
     font-size: 16px;
-  }
-
-  .table-subheader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
   }
 }
 
