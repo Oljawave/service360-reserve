@@ -5,7 +5,11 @@
       <Sidebar />
       <div class="main-content">
         <Navbar />
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <keep-alive :include="keepAliveInclude">
+            <component :is="Component" />
+          </keep-alive>
+        </router-view>
         <AppNotification />
       </div>
     </div>
@@ -17,7 +21,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import Sidebar from './app/layouts/Sidebar.vue'
 import Navbar from './app/layouts/Navbar.vue'
@@ -29,6 +33,26 @@ const route = useRoute()
 const isLoginPage = computed(() => route.path === '/login')
 const sidebar = useSidebarStore()
 
+// Кэшируем ServicedObjects только при переходе на PassportData
+const keepAliveInclude = ref([])
+let previousRoute = null
+
+watch(
+  () => route.path,
+  (newPath, oldPath) => {
+    // Если переходим с ServicedObjects на PassportData - кэшируем
+    if (oldPath === '/objects' && newPath.startsWith('/objects/') && newPath.includes('/passport')) {
+      keepAliveInclude.value = ['ServicedObjects']
+    }
+    // Если уходим на любую другую страницу (не PassportData) - очищаем кэш
+    else if (!newPath.startsWith('/objects/') || !newPath.includes('/passport')) {
+      if (newPath !== '/objects') {
+        keepAliveInclude.value = []
+      }
+    }
+    previousRoute = oldPath
+  }
+)
 </script>
 
 <style scoped>

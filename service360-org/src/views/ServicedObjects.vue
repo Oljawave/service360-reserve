@@ -35,6 +35,10 @@ import ModalUpdateObject from '@/features/objects/components/ModalUpdateObject.v
 import RowActionButton from '@/features/objects/components/RowActionButton.vue'
 import { loadObjectServed } from '@/shared/api/objects/objectService'
 
+defineOptions({
+  name: 'ServicedObjects'
+})
+
 const tableWrapperRef = ref(null)
 const isAddObjectModalOpen = ref(false)
 
