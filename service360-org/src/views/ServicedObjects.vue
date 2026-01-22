@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onActivated, onDeactivated } from 'vue'
 import { usePermissions } from '@/shared/api/auth/usePermissions';
 import TableWrapper from '@/app/layouts/Table/TableWrapper.vue'
 import ModalAddObject from '@/features/objects/components/ModalAddObject.vue'
@@ -38,6 +38,18 @@ import { loadObjectServed } from '@/shared/api/objects/objectService'
 defineOptions({
   name: 'ServicedObjects'
 })
+
+onMounted(() => {
+  console.log('ServicedObjects: onMounted');
+});
+
+onActivated(() => {
+  console.log('ServicedObjects: onActivated');
+});
+
+onDeactivated(() => {
+  console.log('ServicedObjects: onDeactivated');
+});
 
 const tableWrapperRef = ref(null)
 const isAddObjectModalOpen = ref(false)

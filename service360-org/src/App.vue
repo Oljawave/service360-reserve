@@ -35,22 +35,36 @@ const sidebar = useSidebarStore()
 
 // Кэшируем ServicedObjects только при переходе на PassportData
 const keepAliveInclude = ref([])
-let previousRoute = null
 
 watch(
   () => route.path,
   (newPath, oldPath) => {
+    console.log('Route change:', { oldPath, newPath, keepAliveInclude: keepAliveInclude.value })
+    
     // Если переходим с ServicedObjects на PassportData - кэшируем
     if (oldPath === '/objects' && newPath.startsWith('/objects/') && newPath.includes('/passport')) {
+      console.log('Caching ServicedObjects for passport navigation')
       keepAliveInclude.value = ['ServicedObjects']
     }
-    // Если уходим на любую другую страницу (не PassportData) - очищаем кэш
-    else if (!newPath.startsWith('/objects/') || !newPath.includes('/passport')) {
-      if (newPath !== '/objects') {
-        keepAliveInclude.value = []
+    // Если возвращаемся с PassportData на ServicedObjects - сохраняем кэш
+    else if (oldPath && oldPath.startsWith('/objects/') && oldPath.includes('/passport') && newPath === '/objects') {
+      console.log('Keeping cache when returning from passport to objects')
+      // Кэш уже должен быть установлен, ничего не меняем
+      // Но убедимся, что ServicedObjects в списке кэширования
+      if (!keepAliveInclude.value.includes('ServicedObjects')) {
+        keepAliveInclude.value = ['ServicedObjects']
       }
     }
-    previousRoute = oldPath
+    // Если уходим на любую другую страницу через sidebar - очищаем кэш
+    else if (newPath !== '/objects' && !newPath.startsWith('/objects/') && !newPath.includes('/passport')) {
+      console.log('Clearing cache for sidebar navigation to:', newPath)
+      keepAliveInclude.value = []
+    }
+    // Если заходим на ServicedObjects с любой другой страницы (не из passport) - очищаем кэш
+    else if (newPath === '/objects' && oldPath && !oldPath.includes('/passport')) {
+      console.log('Clearing cache when entering objects from non-passport page')
+      keepAliveInclude.value = []
+    }
   }
 )
 </script>
