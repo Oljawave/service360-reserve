@@ -167,6 +167,10 @@ import { loadMaterials, loadUnits, loadExternalServices, loadPositions, loadEqui
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
 
+defineOptions({
+  name: 'WorkLogForm'
+});
+
 const router = useRouter();
 const route = useRoute();
 const { hasPermission } = usePermissions();
