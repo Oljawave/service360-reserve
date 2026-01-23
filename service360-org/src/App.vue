@@ -39,7 +39,6 @@ const keepAliveInclude = ref([])
 watch(
   () => route.path,
   (newPath, oldPath) => {
-    console.log('Route change:', { oldPath, newPath, keepAliveInclude: keepAliveInclude.value })
     
     // Если переходим с ServicedObjects на PassportData - кэшируем
     if (oldPath === '/objects' && newPath.startsWith('/objects/') && newPath.includes('/passport')) {

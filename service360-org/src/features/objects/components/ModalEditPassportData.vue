@@ -4,8 +4,8 @@
     @close="closeModal"
     @save="saveData"
     @delete="handleDelete"
-    :showSave="true"
-    :showDelete="true"
+    :showSave="canUpdate"
+    :showDelete="canDelete"
     :loading="isSaving"
   >
     <div class="form-section">
@@ -75,7 +75,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import ModalWrapper from '@/app/layouts/Modal/ModalWrapper.vue'
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'
@@ -83,6 +83,11 @@ import MultipleSelect from '@/shared/ui/FormControls/MultipleSelect.vue'
 import ConfirmationModal from '@/shared/ui/ConfirmationModal.vue'
 import { loadComponentsByObjectType, loadParametersByComponent, loadMeasureUnits, loadSignsByParameter, updateComplexObjectPassport, deleteComplexObjectPassport } from '@/shared/api/objects/objectService'
 import { useNotificationStore } from '@/app/stores/notificationStore'
+import { usePermissions } from '@/shared/api/auth/usePermissions'
+
+const { hasPermission } = usePermissions()
+const canUpdate = computed(() => hasPermission('obj:upd'))
+const canDelete = computed(() => hasPermission('obj:del'))
 
 const notificationStore = useNotificationStore()
 

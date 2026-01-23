@@ -60,6 +60,9 @@ import UiIcon from '@/shared/ui/UiIcon.vue'
 import { loadComplexObjectPassport } from '@/shared/api/objects/objectService'
 import ModalEditPassportData from '@/features/objects/components/ModalEditPassportData.vue'
 import ModalPassportData from '@/features/objects/components/ModalPassportData.vue'
+import { usePermissions } from '@/shared/api/auth/usePermissions'
+
+const { hasPermission } = usePermissions()
 
 const router = useRouter()
 const route = useRoute()
@@ -161,13 +164,14 @@ const handleDeleted = () => {
   loadData()
 }
 
-const tableActions = [
+const tableActions = computed(() => [
   {
     label: 'Добавить данные',
     icon: 'Plus',
     onClick: openAddModal,
+    hidden: !hasPermission('obj:ins'),
   },
-]
+].filter(action => !action.hidden))
 
 onMounted(() => {
   loadData()
