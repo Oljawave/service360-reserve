@@ -552,13 +552,17 @@ const loadWorkLogData = async (id) => {
       startDate: formatDate(data.PlanDateStart),
       endDate: formatDate(data.PlanDateEnd),
       workName: data.fullNameWork || '-',
+      fullNameWork: data.fullNameWork || '',  // для API
       section: data.nameLocationClsSection || '-',
       place: data.nameSection || '-',
       objectName: data.fullNameObject || '-',
+      objObject: data.objObject,              // для API
       coordinates: formatCoordinates(data.StartKm, data.StartPicket, data.StartLink, data.FinishKm, data.FinishPicket, data.FinishLink),
       volumeFact: data.ValueFact !== null ? data.ValueFact : '-',
       startDateFact: formatDate(data.FactDateStart),
       endDateFact: formatDate(data.FactDateEnd),
+      idUser: data.idUser,                    // для API
+      idUpdatedAt: data.idUpdatedAt,          // для API
       
       materials: (data.material || []).map(item => ({
         id: item.id,

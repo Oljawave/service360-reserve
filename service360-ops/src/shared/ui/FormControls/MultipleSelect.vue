@@ -31,6 +31,8 @@
       filterable
       size="medium"
       :render-label="renderLabel"
+      :max-tag-count="3"
+      show-arrow
     />
   </div>
 </template>
