@@ -6,7 +6,7 @@
     :show-delete="canDelete"
     @save="saveData"
     @delete="handleDelete"
-    :loading="isSaving"
+    :loading="isSaving || isDeleting"
   >
     <div class="form-section">
       <AppInput 
@@ -184,6 +184,7 @@ const stationData = ref(null)
 const isFetching = ref(false)
 const showConfirmModal = ref(false)
 const isSaving = ref(false)
+const isDeleting = ref(false)
 let fetchTimeout = null
 
 const closeModal = () => emit('close')
@@ -335,7 +336,10 @@ const handleDelete = () => {
 }
 
 const confirmDelete = async () => {
+  if (isDeleting.value) return
+
   showConfirmModal.value = false
+  isDeleting.value = true
   try {
     await deleteObject(props.rowData.id)
     notificationStore.showNotification('Объект успешно удален!', 'success')
@@ -343,6 +347,8 @@ const confirmDelete = async () => {
   } catch (error) {
     console.error('Ошибка при удалении объекта:', error)
     notificationStore.showNotification('Ошибка при удалении объекта.', 'error')
+  } finally {
+    isDeleting.value = false
   }
 }
 

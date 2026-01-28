@@ -6,7 +6,7 @@
     @delete="handleDelete"
     :show-save="canUpdate"
     :show-delete="canDelete"
-    :loading="isSaving"
+    :loading="isSaving || isDeleting"
   >
     <div class="form-section">
       <AppInput
@@ -90,6 +90,7 @@ const canDelete = computed(() => hasPermission('cl:del'));
 
 const showConfirmModal = ref(false)
 const isSaving = ref(false)
+const isDeleting = ref(false)
 
 // Form data
 const form = ref({
@@ -137,7 +138,10 @@ const handleDelete = () => {
 }
 
 const confirmDelete = async () => {
+  if (isDeleting.value) return
+
   showConfirmModal.value = false
+  isDeleting.value = true
   try {
     await deleteClient(props.clientData.id)
     notificationStore.showNotification('Клиент успешно удален!', 'success')
@@ -145,6 +149,8 @@ const confirmDelete = async () => {
   } catch (error) {
     console.error('Ошибка при удалении клиента:', error)
     notificationStore.showNotification('Ошибка при удалении клиента.', 'error')
+  } finally {
+    isDeleting.value = false
   }
 }
 

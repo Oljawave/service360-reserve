@@ -7,7 +7,7 @@
     :show-save="canUpdate"
     @save="saveData"
     @delete="confirmDelete"
-    :loading="isSaving"
+    :loading="isSaving || isDeleting"
   >
     <div class="form-section">
       <AppDropdown
@@ -151,6 +151,7 @@ const objectOptions = ref([])
 const sectionOptions = ref([])
 
 const isSaving = ref(false)
+const isDeleting = ref(false)
 const loadingWorks = ref(false)
 const loadingPlaces = ref(false)
 const loadingObjectTypes = ref(false)
@@ -274,8 +275,10 @@ const confirmDelete = () => {
 }
 
 const deletePlan = async () => {
-  showConfirmationModal.value = false // Close the confirmation modal
+  if (isDeleting.value) return
 
+  showConfirmationModal.value = false // Close the confirmation modal
+  isDeleting.value = true
   try {
     await deletePlanApi(props.rowData.rawData.id)
     notificationStore.showNotification('План работы успешно удалён!', 'success')
@@ -287,6 +290,8 @@ const deletePlan = async () => {
       'Ошибка при удалении: ' + (e.message || 'неизвестная ошибка'),
       'error'
     )
+  } finally {
+    isDeleting.value = false
   }
 }
 

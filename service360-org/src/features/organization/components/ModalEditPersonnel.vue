@@ -6,7 +6,7 @@
     :show-delete="canDelete"
     @save="saveData"
     @delete="handleDelete"
-    :loading="isSaving"
+    :loading="isSaving || isDeleting"
   >
     <div class="form-section">
       <AppInput
@@ -210,6 +210,7 @@ const loadingPositions = ref(false)
 const loadingLocations = ref(false)
 const loadingSex = ref(false)
 const isSaving = ref(false)
+const isDeleting = ref(false)
 
 // Load positions
 const loadPositionsData = async () => {
@@ -326,7 +327,10 @@ const handleDelete = () => {
 }
 
 const confirmDelete = async () => {
+  if (isDeleting.value) return
+
   showConfirmModal.value = false
+  isDeleting.value = true
   try {
     // Определяем есть ли логин у сотрудника
     const hasLogin = !!(props.personnelData.login && props.personnelData.login.trim())
@@ -337,6 +341,8 @@ const confirmDelete = async () => {
   } catch (error) {
     console.error('Ошибка при удалении сотрудника:', error)
     notificationStore.showNotification('Ошибка при удалении сотрудника.', 'error')
+  } finally {
+    isDeleting.value = false
   }
 }
 
