@@ -12,6 +12,7 @@
           <ModalFooter
             v-if="showFooter"
             :disabled="disabled"
+            :loading="loading"
             :showDelete="showDelete"
             :showSave="showSave"
             :showCancel="showCancel"
@@ -33,6 +34,7 @@ import ModalFooter from './ModalFooter.vue'
 const props = defineProps({
   title: { type: String, required: true },
   disabled: { type: Boolean, default: false },
+  loading: { type: Boolean, default: false },
   showDelete: { type: Boolean, default: false },
   showSave: { type: Boolean, default: true },
   showCancel: { type: Boolean, default: true }

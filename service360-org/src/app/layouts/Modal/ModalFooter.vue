@@ -1,9 +1,14 @@
 <template>
   <div class="modal-footer">
-    <button v-if="showDelete" class="button button-delete" @click="deleteObject">Удалить</button>
+    <button v-if="showDelete" class="button button-delete" @click="deleteObject" :disabled="loading">Удалить</button>
     <div></div>
-    <button v-if="showCancel" class="button button-secondary" @click="cancel">Отмена</button>
-    <button v-if="showSave" class="button button-primary" @click="save" :disabled="disabled">Сохранить</button>
+    <button v-if="showCancel" class="button button-secondary" @click="cancel" :disabled="loading">Отмена</button>
+    <button v-if="showSave" class="button button-primary" @click="save" :disabled="disabled || loading">
+      <svg v-if="loading" class="spinner" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <circle class="spinner-circle" cx="12" cy="12" r="10" fill="none" stroke-width="3"/>
+      </svg>
+      <span>{{ loading ? 'Сохранение...' : 'Сохранить' }}</span>
+    </button>
   </div>
 </template>
 
@@ -14,6 +19,7 @@ const emit = defineEmits(['cancel', 'save', 'delete'])
 
 const props = defineProps({
   disabled: Boolean,
+  loading: { type: Boolean, default: false },
   showDelete: Boolean,
   showSave: { type: Boolean, default: true },
   showCancel: { type: Boolean, default: true },
@@ -89,6 +95,59 @@ const deleteObject = () => emit('delete')
   background: #b91c1c;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.button-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.button-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+.spinner-circle {
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-dasharray: 50;
+  stroke-dashoffset: 25;
+  animation: spinnerDash 1.5s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinnerDash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
 }
 
 @media (max-width: 640px) {
