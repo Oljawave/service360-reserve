@@ -278,6 +278,7 @@ const confirmDelete = async () => {
     await deleteLocation(props.locationData.id)
     notificationStore.showNotification('Организационная структура успешно удалена!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении организационной структуры:', error)
     notificationStore.showNotification('Ошибка при удалении организационной структуры.', 'error')

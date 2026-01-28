@@ -153,6 +153,7 @@ const confirmDelete = async () => {
     await deleteResource(props.materialData.id)
     notificationStore.showNotification('Материал успешно удален!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении материала:', error)
     notificationStore.showNotification('Ошибка при удалении материала.', 'error')

@@ -199,6 +199,7 @@ const confirmDelete = async () => {
     await deleteResource(props.toolData.id)
     notificationStore.showNotification('Инструмент успешно удален!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении инструмента:', error)
     notificationStore.showNotification('Ошибка при удалении инструмента.', 'error')

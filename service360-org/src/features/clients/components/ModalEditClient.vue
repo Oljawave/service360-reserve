@@ -146,6 +146,7 @@ const confirmDelete = async () => {
     await deleteClient(props.clientData.id)
     notificationStore.showNotification('Клиент успешно удален!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении клиента:', error)
     notificationStore.showNotification('Ошибка при удалении клиента.', 'error')

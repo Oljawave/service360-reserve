@@ -305,6 +305,7 @@ const confirmDelete = async () => {
     await deleteComplexObjectPassport(props.rowData.idPassportComplex)
     notificationStore.showNotification('Паспортные данные успешно удалены!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении паспортных данных:', error)
     notificationStore.showNotification('Ошибка при удалении паспортных данных', 'error')

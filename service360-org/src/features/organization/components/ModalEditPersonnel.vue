@@ -338,6 +338,7 @@ const confirmDelete = async () => {
     await deletePersonnel(props.personnelData.id, hasLogin)
     notificationStore.showNotification('Сотрудник успешно удален!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении сотрудника:', error)
     notificationStore.showNotification('Ошибка при удалении сотрудника.', 'error')

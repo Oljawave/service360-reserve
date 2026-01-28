@@ -153,6 +153,7 @@ const confirmDelete = async () => {
     await deleteResource(props.serviceData.id)
     notificationStore.showNotification('Услуга успешно удалена!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении услуги:', error)
     notificationStore.showNotification('Ошибка при удалении услуги.', 'error')

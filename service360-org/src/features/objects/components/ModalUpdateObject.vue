@@ -344,6 +344,7 @@ const confirmDelete = async () => {
     await deleteObject(props.rowData.id)
     notificationStore.showNotification('Объект успешно удален!', 'success')
     emit('deleted')
+    closeModal()
   } catch (error) {
     console.error('Ошибка при удалении объекта:', error)
     notificationStore.showNotification('Ошибка при удалении объекта.', 'error')
