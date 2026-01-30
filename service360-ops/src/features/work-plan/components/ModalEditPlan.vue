@@ -1,10 +1,10 @@
 <template>
   <ModalWrapper
     :title="modalTitle"
-    :show-delete="canDelete"
+    :show-delete="canDelete && !isCompleted"
     @close="closeModal"
-    :show-cancel="canUpdate"
-    :show-save="canUpdate"
+    :show-cancel="!isCompleted"
+    :show-save="canUpdate && !isCompleted"
     @save="saveData"
     @delete="confirmDelete"
     :loading="isSaving || isDeleting"
@@ -36,6 +36,7 @@
             :options="placeOptions"
             :loading="loadingPlaces"
             @update:value="onPlaceChange"
+            :disabled="isCompleted"
             :required="true" />
 
           <AppDropdown
@@ -46,6 +47,7 @@
             :options="objectTypeOptions"
             :loading="loadingObjectTypes"
             @update:value="onObjectTypeChange"
+            :disabled="isCompleted"
             :required="true" />
 
           <AppDropdown
@@ -57,6 +59,7 @@
             :options="objectOptions"
             :loading="loadingObjects"
             @update:value="onObjectChange"
+            :disabled="isCompleted"
             :required="true" />
 
           <FullCoordinates
@@ -64,6 +67,7 @@
             v-model="coordinates"
             @update:modelValue="updateCoordinates"
             :out-of-bounds-error="isCoordinatesOutOfBounds"
+            :disabled="isCompleted"
             :required="true" />
 
           <AppDropdown
@@ -74,6 +78,7 @@
             :options="sectionOptions"
             :loading="loadingSections"
             @update:value="onSectionChange"
+            :disabled="isCompleted"
             :required="true" />
 
           <AppDatePicker
@@ -81,6 +86,7 @@
             label="Плановый срок завершения"
             placeholder="Выберите дату"
             v-model="form.plannedDate"
+            :disabled="isCompleted"
             :required="true" />
         </div>
       </div>
@@ -119,8 +125,12 @@ const notificationStore = useNotificationStore()
 const { hasPermission } = usePermissions()
 const canUpdate = computed(() => hasPermission('plan:upd'))
 const canDelete = computed(() => hasPermission('plan:del'))
+const isCompleted = computed(() => !!props.rowData?.rawData?.FactDateEnd)
 
-const modalTitle = computed(() => canUpdate.value ? 'Редактировать плановую работу' : 'Просмотр плановой работы')
+const modalTitle = computed(() => {
+  if (isCompleted.value) return 'Просмотр завершённой работы'
+  return canUpdate.value ? 'Редактировать плановую работу' : 'Просмотр плановой работы'
+})
 
 
 const form = ref({
