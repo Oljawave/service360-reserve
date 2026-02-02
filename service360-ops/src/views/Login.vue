@@ -17,26 +17,44 @@
             <div class="logo-mobile">
               <img src="@/assets/img/s360.PNG" alt="Service360 Logo" />
             </div>
-            <h2 class="login-title">Добро пожаловать</h2>
+            <h2 class="login-title">{{ showForgot ? 'Восстановление пароля' : 'Добро пожаловать' }}</h2>
             <p class="login-subtitle">
-              Для входа во внутреннюю систему DTJ Service введите логин и пароль
+              {{ showForgot ? 'Введите логин, и мы отправим инструкцию по восстановлению пароля' : 'Для входа во внутреннюю систему DTJ Service введите логин и пароль' }}
             </p>
           </div>
 
-          <form @submit.prevent="handleLogin">
-            <div class="form-fields">
-              <AppInput label="Логин" v-model="username" placeholder="Введите логин" />
-              <AppInput label="Пароль" v-model="password" type="password" placeholder="Введите пароль" />
-            </div>
+          <transition name="fade" mode="out-in">
+            <!-- Форма входа -->
+            <form v-if="!showForgot" key="login" @submit.prevent="handleLogin">
+              <div class="form-fields">
+                <AppInput label="Логин" v-model="username" placeholder="Введите логин" />
+                <AppInput label="Пароль" v-model="password" type="password" placeholder="Введите пароль" />
+              </div>
 
-            <div class="forgot-password-wrapper">
-              <a class="forgot-password-link" @click.prevent="handleForgotPassword">Забыли пароль?</a>
-            </div>
+              <div class="forgot-password-wrapper">
+                <a class="forgot-password-link" @click.prevent="showForgot = true">Забыли пароль?</a>
+              </div>
 
-            <div class="submit-button-wrapper">
-              <MainButton :label="'ВОЙТИ'" :loading="loading" type="submit" />
-            </div>
-          </form>
+              <div class="submit-button-wrapper">
+                <MainButton :label="'ВОЙТИ'" :loading="loading" type="submit" />
+              </div>
+            </form>
+
+            <!-- Форма восстановления -->
+            <form v-else key="forgot" @submit.prevent="handleForgotPassword">
+              <div class="form-fields">
+                <AppInput label="Логин" v-model="forgotLogin" placeholder="Введите ваш логин" />
+              </div>
+
+              <div class="submit-button-wrapper">
+                <MainButton :label="'ВОССТАНОВИТЬ'" :loading="forgotLoading" type="submit" />
+              </div>
+
+              <div class="back-to-login-wrapper">
+                <a class="back-to-login-link" @click.prevent="showForgot = false">Назад к входу</a>
+              </div>
+            </form>
+          </transition>
         </div>
       </div>
     </div>
@@ -69,6 +87,8 @@ export default {
       username: "",
       password: "",
       loading: false,
+      showForgot: false,
+      forgotLogin: "",
       forgotLoading: false,
     }
   },
@@ -78,15 +98,17 @@ export default {
 
       const notify = useNotificationStore()
 
-      if (!this.username) {
+      if (!this.forgotLogin) {
         notify.showNotification("Введите логин", "error")
         return
       }
 
       this.forgotLoading = true
       try {
-        await forgetPassword(this.username)
+        await forgetPassword(this.forgotLogin)
         notify.showNotification("Инструкция по восстановлению пароля отправлена", "success")
+        this.showForgot = false
+        this.forgotLogin = ""
       } catch (err) {
         const msg = err.response?.data?.error?.message || err.message || "Ошибка при восстановлении пароля"
         notify.showNotification(msg, "error")
@@ -283,6 +305,33 @@ export default {
 .forgot-password-link:hover {
   text-decoration: underline;
   color: #1a4d8f;
+}
+
+.back-to-login-wrapper {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.back-to-login-link {
+  font-size: 13px;
+  color: #64748b;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.back-to-login-link:hover {
+  text-decoration: underline;
+  color: #1e293b;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .footer-note {
