@@ -15,24 +15,9 @@
     />
 
     <div class="navbar-right">
-      <!-- <div class="lang-select" @click="toggleLangMenu">
-        {{ currentLang }}
-        <UiIcon name="ChevronDown" class="icon" />
-        <div v-if="langMenuOpen" class="lang-dropdown">
-          <div
-            v-for="lang in languages"
-            :key="lang"
-            class="lang-item"
-            @click.stop="setLanguage(lang)"
-          >
-            {{ lang }}
-          </div>
-        </div>
-      </div>
-
       <button class="notif-btn">
         <UiIcon name="Bell" class="icon" />
-      </button> -->
+      </button>
 
       <UserAvatar :initials="'ОГ'" />
     </div>
