@@ -73,7 +73,7 @@ const dismissNotification = (id) => {
 
 onMounted(() => {
   fetchNotifications()
-  pollInterval = setInterval(fetchNotifications, 60000)
+  pollInterval = setInterval(fetchNotifications, 300000)
 })
 
 onBeforeUnmount(() => {

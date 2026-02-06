@@ -15,21 +15,19 @@
     />
 
     <div class="navbar-right">
-      <button class="notif-btn">
-        <UiIcon name="Bell" class="icon" />
-      </button>
-
+      <NotificationPanel />
       <UserAvatar :initials="'ОГ'" />
     </div>
   </header>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import UiIcon from '@/shared/ui/UiIcon.vue'
 import SearchBox from '@/shared/ui/SearchBox.vue'
 import UserAvatar from '@/shared/ui/UserAvatar.vue'
 import WeatherAndDate from '@/shared/ui/WeatherAndDate.vue'
+import NotificationPanel from '@/app/layouts/NotificationPanel.vue'
 import { useSidebarStore } from '@/app/stores/sidebar'
 
 
@@ -132,7 +130,7 @@ const setLanguage = (lang) => {
 
 const handleResize = () => {
   isMobile.value = window.innerWidth < 768
-  collapsedSearch.value = window.innerWidth < 992 && !isMobile.value // Пример логики для десктопа
+  collapsedSearch.value = window.innerWidth < 992 && !isMobile.value
 }
 
 onMounted(() => {
@@ -144,15 +142,12 @@ onMounted(() => {
     }
   })
 
-  // Загружаем погоду и дату
   fetchWeather()
   fetchAlmatyDate()
 })
 
-
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
-  document.removeEventListener('click', () => (langMenuOpen.value = false))
 })
 </script>
 
@@ -197,7 +192,7 @@ onBeforeUnmount(() => {
 }
 
 .navbar > :nth-child(2) {
-  margin-right: 32px;
+  margin-right: 8px;
 }
 
 .navbar-right {

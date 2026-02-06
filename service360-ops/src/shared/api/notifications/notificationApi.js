@@ -25,3 +25,29 @@ export async function loadNotificationUser() {
     return [];
   }
 }
+
+export async function markNotificationRead(notificationId) {
+  const now = new Date();
+  const timeReading = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + 'T' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0') + ':' +
+    String(now.getSeconds()).padStart(2, '0');
+
+  const response = await axios.post(
+    API_PERSONNEL_URL,
+    {
+      method: 'data/saveNotification',
+      params: ['upd', {
+        id: notificationId,
+        TimeReading: timeReading
+      }]
+    },
+    {
+      withCredentials: true
+    }
+  );
+
+  return response.data;
+}
