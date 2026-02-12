@@ -17,7 +17,8 @@
       "Bash(copy icon-512x512.jpg icon-192x192.jpg)",
       "Bash(ls:*)",
       "Bash(powershell.exe -ExecutionPolicy Bypass -File resize-512.ps1)",
-      "Bash(powershell.exe -ExecutionPolicy Bypass -File create-screenshot.ps1)"
+      "Bash(powershell.exe -ExecutionPolicy Bypass -File create-screenshot.ps1)",
+      "Bash(wc:*)"
     ]
   }
 }
