@@ -266,10 +266,17 @@
 
       <div class="button-container">
         <div class="main-actions">
-          <MainButton 
-            :label="getButtonLabel()" 
-            :loading="isSaving" 
-            @click="saveData" 
+          <button
+            v-if="activeTab === 'info'"
+            class="norma-btn"
+            @click="openNorma"
+          >
+            Норма
+          </button>
+          <MainButton
+            :label="getButtonLabel()"
+            :loading="isSaving"
+            @click="saveData"
             class="save-btn" />
         </div>
       </div>
@@ -412,6 +419,10 @@ const existingRecordsTools = ref([]);
 
 const closeModal = () => {
   emit('close');
+};
+
+const openNorma = () => {
+  // TODO: реализовать логику кнопки "Норма"
 };
 
 const getButtonLabel = () => {
@@ -1352,6 +1363,23 @@ watch(
 .main-actions {
   display: flex;
   gap: 12px;
+}
+
+.norma-btn {
+  padding: 10px 20px;
+  background: white;
+  color: #64748b;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.norma-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
 }
 
 @media (max-width: 768px) {
