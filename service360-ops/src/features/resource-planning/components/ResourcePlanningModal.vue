@@ -8,98 +8,111 @@
     :loading="isSaving"
   >
     <div class="work-card-content">
-      <WorkHeaderInfo :record="record" :section="section" :date="date" />
+      <transition name="fade" mode="out-in">
+        <!-- Основной контент с табами -->
+        <div v-if="!showNorma" key="main">
+          <WorkHeaderInfo :record="record" :section="section" :date="date" />
+          <div class="tabs-block">
+            <TabsHeader
+              :tabs="tabsRow1"
+              :modelValue="activeTab"
+              @update:modelValue="handleTabChange"
+              :disabledTabs="disabledTabs"
+              class="first-row-tabs"
+            />
+            <TabsHeader
+              :tabs="tabsRow2"
+              :modelValue="activeTab"
+              @update:modelValue="handleTabChange"
+              :disabledTabs="disabledTabs"
+              class="second-row-tabs"
+            />
 
-      <div class="tabs-block">
-        <TabsHeader
-          :tabs="tabsRow1"
-          :modelValue="activeTab"
-          @update:modelValue="handleTabChange"
-          :disabledTabs="disabledTabs"
-          class="first-row-tabs"
-        />
-        <TabsHeader
-          :tabs="tabsRow2"
-          :modelValue="activeTab"
-          @update:modelValue="handleTabChange"
-          :disabledTabs="disabledTabs"
-          class="second-row-tabs"
-        />
+            <div class="tab-content">
+              <PlanningInfoTab
+                v-if="activeTab === 'info'"
+                ref="infoTab"
+                :record="record"
+                :sectionId="sectionId"
+                :sectionPv="sectionPv"
+                @saving="onSaving"
+                @saved="onInfoSaved"
+              />
 
-        <div class="tab-content">
-          <PlanningInfoTab
-            v-if="activeTab === 'info'"
-            ref="infoTab"
-            :record="record"
-            :sectionId="sectionId"
-            :sectionPv="sectionPv"
-            @saving="onSaving"
-            @saved="onInfoSaved"
-          />
+              <MaterialsTab
+                v-if="activeTab === 'materials'"
+                ref="materialsTab"
+                :savedTaskLogId="savedTaskLogId"
+                :savedTaskLogCls="savedTaskLogCls"
+                :record="record"
+                @saving="onSaving"
+              />
 
-          <MaterialsTab
-            v-if="activeTab === 'materials'"
-            ref="materialsTab"
-            :savedTaskLogId="savedTaskLogId"
-            :savedTaskLogCls="savedTaskLogCls"
-            :record="record"
-            @saving="onSaving"
-          />
+              <ExternalServicesTab
+                v-if="activeTab === 'externalServices'"
+                ref="externalServicesTab"
+                :savedTaskLogId="savedTaskLogId"
+                :savedTaskLogCls="savedTaskLogCls"
+                :record="record"
+                @saving="onSaving"
+              />
 
-          <ExternalServicesTab
-            v-if="activeTab === 'externalServices'"
-            ref="externalServicesTab"
-            :savedTaskLogId="savedTaskLogId"
-            :savedTaskLogCls="savedTaskLogCls"
-            :record="record"
-            @saving="onSaving"
-          />
+              <PersonnelTab
+                v-if="activeTab === 'personnel'"
+                ref="personnelTab"
+                :savedTaskLogId="savedTaskLogId"
+                :savedTaskLogCls="savedTaskLogCls"
+                :record="record"
+                @saving="onSaving"
+              />
 
-          <PersonnelTab
-            v-if="activeTab === 'personnel'"
-            ref="personnelTab"
-            :savedTaskLogId="savedTaskLogId"
-            :savedTaskLogCls="savedTaskLogCls"
-            :record="record"
-            @saving="onSaving"
-          />
+              <EquipmentTab
+                v-if="activeTab === 'equipment'"
+                ref="equipmentTab"
+                :savedTaskLogId="savedTaskLogId"
+                :savedTaskLogCls="savedTaskLogCls"
+                :record="record"
+                @saving="onSaving"
+              />
 
-          <EquipmentTab
-            v-if="activeTab === 'equipment'"
-            ref="equipmentTab"
-            :savedTaskLogId="savedTaskLogId"
-            :savedTaskLogCls="savedTaskLogCls"
-            :record="record"
-            @saving="onSaving"
-          />
+              <ToolsTab
+                v-if="activeTab === 'tools'"
+                ref="toolsTab"
+                :savedTaskLogId="savedTaskLogId"
+                :savedTaskLogCls="savedTaskLogCls"
+                :record="record"
+                @saving="onSaving"
+              />
+            </div>
+          </div>
 
-          <ToolsTab
-            v-if="activeTab === 'tools'"
-            ref="toolsTab"
-            :savedTaskLogId="savedTaskLogId"
-            :savedTaskLogCls="savedTaskLogCls"
-            :record="record"
-            @saving="onSaving"
-          />
+          <div class="button-container">
+            <div class="main-actions">
+              <button
+                v-if="activeTab === 'info'"
+                class="norma-btn"
+                @click="openNorma"
+              >
+                Норма
+              </button>
+              <MainButton
+                :label="getButtonLabel()"
+                :loading="isSaving"
+                @click="saveData"
+                class="save-btn" />
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="button-container">
-        <div class="main-actions">
-          <button
-            v-if="activeTab === 'info'"
-            class="norma-btn"
-            @click="openNorma"
-          >
-            Норма
-          </button>
-          <MainButton
-            :label="getButtonLabel()"
-            :loading="isSaving"
-            @click="saveData"
-            class="save-btn" />
-        </div>
-      </div>
+        <!-- Нормативы -->
+        <NormativeView
+          v-else
+          key="norma"
+          :objWork="normaObjWork"
+          :objTask="normaObjTask"
+          @back="showNorma = false"
+        />
+      </transition>
     </div>
   </ModalWrapper>
 </template>
@@ -117,6 +130,7 @@ import ExternalServicesTab from './tabs/ExternalServicesTab.vue';
 import PersonnelTab from './tabs/PersonnelTab.vue';
 import EquipmentTab from './tabs/EquipmentTab.vue';
 import ToolsTab from './tabs/ToolsTab.vue';
+import NormativeView from './tabs/NormativeView.vue';
 
 import { useNotificationStore } from '@/app/stores/notificationStore';
 
@@ -137,6 +151,11 @@ const activeTab = ref('info');
 const isInfoSaved = ref(false);
 const savedTaskLogId = ref(null);
 const savedTaskLogCls = ref(null);
+
+// Norma view state
+const showNorma = ref(false);
+const normaObjWork = ref(null);
+const normaObjTask = ref(null);
 
 const disabledTabs = computed(() => isInfoSaved.value ? [] : ['materials', 'externalServices', 'personnel', 'equipment', 'tools']);
 
@@ -172,7 +191,14 @@ const tabRefs = {
 const closeModal = () => { emit('close'); };
 
 const openNorma = () => {
-  // TODO: реализовать логику кнопки "Норма"
+  const selectedTask = infoTab.value?.getSelectedTask();
+  if (!selectedTask) {
+    notificationStore.showNotification('Сначала выберите задачу.', 'error');
+    return;
+  }
+  normaObjWork.value = props.record?.objWork;
+  normaObjTask.value = selectedTask.value;
+  showNorma.value = true;
 };
 
 const onSaving = (value) => { isSaving.value = value; };
@@ -229,6 +255,7 @@ watch(
       savedTaskLogId.value = null;
       savedTaskLogCls.value = null;
       activeTab.value = 'info';
+      showNorma.value = false;
     }
   },
   { immediate: true }
@@ -303,6 +330,17 @@ watch(
 .norma-btn:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
+}
+
+/* Transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 @media (max-width: 768px) {

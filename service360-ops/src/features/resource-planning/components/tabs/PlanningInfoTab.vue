@@ -196,7 +196,9 @@ watch(() => props.record, (newRecordData) => {
   }
 }, { immediate: true });
 
-defineExpose({ save, reset, loadExisting });
+const getSelectedTask = () => newRecord.value.task;
+
+defineExpose({ save, reset, loadExisting, getSelectedTask });
 </script>
 
 <style scoped>

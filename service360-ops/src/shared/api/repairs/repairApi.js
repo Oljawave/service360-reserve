@@ -584,3 +584,20 @@ export async function loadResourceEquipmentForTaskLog(taskLogId) {
     throw error;
   }
 }
+
+export async function loadResourceNormative(objWork, objTask) {
+  try {
+    const response = await axios.post(
+      API_NSI_URL,
+      {
+        method: "data/loadRelObjResourceNormative",
+        params: [{ objWork, objTask }],
+      },
+      { withCredentials: true }
+    );
+    return response.data.result || [];
+  } catch (error) {
+    console.error("Ошибка при загрузке нормативов:", error);
+    throw error;
+  }
+}
