@@ -202,11 +202,18 @@ const getSelectedTask = () => newRecord.value.task;
 
 const getPlannedVolume = () => newRecord.value.plannedVolume;
 
+const getFormData = () => ({
+  task: newRecord.value.task,
+  plannedVolume: newRecord.value.plannedVolume,
+  dateStartPlan: newRecord.value.dateStartPlan,
+  dateEndPlan: newRecord.value.dateEndPlan,
+});
+
 const isFormValid = () => {
   return !!(newRecord.value.task && newRecord.value.dateStartPlan && newRecord.value.dateEndPlan);
 };
 
-defineExpose({ save, reset, loadExisting, getSelectedTask, getPlannedVolume, isFormValid });
+defineExpose({ save, reset, loadExisting, getSelectedTask, getPlannedVolume, getFormData, isFormValid });
 </script>
 
 <style scoped>

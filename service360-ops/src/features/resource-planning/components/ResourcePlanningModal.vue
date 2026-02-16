@@ -110,6 +110,7 @@
         :objTask="normaObjTask"
         :plannedVolume="normaPlannedVolume"
         @back="showNorma = false"
+        @apply="onNormaApply"
       />
     </div>
   </ModalWrapper>
@@ -131,6 +132,9 @@ import ToolsTab from './tabs/ToolsTab.vue';
 import NormativeView from './tabs/NormativeView.vue';
 
 import { useNotificationStore } from '@/app/stores/notificationStore';
+import { getUserData } from '@/shared/api/inspections/inspectionsApi';
+import { saveTaskLogNormative } from '@/shared/api/repairs/repairApi';
+import { formatDateToISO } from '@/app/stores/date.js';
 
 const props = defineProps({
   record: { type: Object, default: null },
@@ -204,6 +208,64 @@ const openNorma = () => {
   normaObjTask.value = selectedTask.value;
   normaPlannedVolume.value = volume;
   showNorma.value = true;
+};
+
+const onNormaApply = async (normativeData) => {
+  if (isSaving.value) return;
+  isSaving.value = true;
+
+  try {
+    const formData = infoTab.value.getFormData();
+    const user = await getUserData();
+    const today = formatDateToISO(new Date());
+
+    const payload = {
+      name: `${props.record.id}-${today}`,
+      objWorkPlan: props.record.id,
+      pvWorkPlan: props.record.pv,
+      objTask: formData.task.value,
+      pvTask: formData.task.pv,
+      objUser: user.id,
+      pvUser: user.pv,
+      Value: formData.plannedVolume ? Number(formData.plannedVolume) : null,
+      PlanDateStart: formData.dateStartPlan ? formatDateToISO(formData.dateStartPlan) : null,
+      PlanDateEnd: formData.dateEndPlan ? formatDateToISO(formData.dateEndPlan) : null,
+      CreatedAt: today,
+      UpdatedAt: today,
+      objLocationClsSection: (props.record.objLocationClsSection !== null && props.record.objLocationClsSection !== undefined) ? props.record.objLocationClsSection : props.sectionId,
+      pvLocationClsSection: (props.record.pvLocationClsSection !== null && props.record.pvLocationClsSection !== undefined) ? parseInt(props.record.pvLocationClsSection) : parseInt(props.sectionPv),
+      id: normativeData.id,
+      relcls: normativeData.relcls,
+      idrom1: normativeData.idrom1,
+      clsrom1: normativeData.clsrom1,
+      idrom2: normativeData.idrom2,
+      clsrom2: normativeData.clsrom2,
+      material: normativeData.material || [],
+      tool: normativeData.tool || [],
+      equipment: normativeData.equipment || [],
+      service: normativeData.service || [],
+      personnel: normativeData.personnel || [],
+    };
+
+    const response = await saveTaskLogNormative(payload);
+
+    if (response.error) {
+      throw new Error(response.error.message || JSON.stringify(response.error));
+    }
+
+    notificationStore.showNotification('Нормативы успешно сохранены!', 'success');
+    showNorma.value = false;
+    infoTab.value?.loadExisting();
+  } catch (error) {
+    let errorMessage = 'Не удалось сохранить нормативы.';
+    if (error.response?.data?.error?.message) {
+      errorMessage = error.response.data.error.message;
+    }
+    console.error('Ошибка сохранения нормативов:', error);
+    notificationStore.showNotification(errorMessage, 'error');
+  } finally {
+    isSaving.value = false;
+  }
 };
 
 const onSaving = (value) => { isSaving.value = value; };

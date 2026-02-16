@@ -67,7 +67,11 @@
           <div v-for="item in normative.tool" :key="item.id" class="table-row">
             <span class="table-cell">{{ item.nameTypTool }}</span>
             <div class="table-cell value">
+              <AppNumberInput v-model.number="item.Quantity" :min="0" class="inline-input" />
+              <span class="unit-label">шт.</span>
+              <span class="separator">/</span>
               <AppNumberInput v-model.number="item.Value" :min="0" class="inline-input" />
+              <span class="unit-label">мин</span>
             </div>
           </div>
         </div>
@@ -131,7 +135,7 @@ const hasData = computed(() => {
 onMounted(async () => {
   loading.value = true;
   try {
-    const result = await loadResourceNormative(props.objWork, props.objTask);
+    const result = await loadResourceNormative(props.objWork, props.objTask, props.plannedVolume);
     normative.value = result[0] || {};
   } catch (error) {
     console.error('Ошибка загрузки нормативов:', error);
