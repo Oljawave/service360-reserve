@@ -44,10 +44,10 @@ import UiButton from '@/shared/ui/UiButton.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import {
-  loadExternalServices,
   saveResourceExternalService,
   loadResourceExternalServicesForTaskLog,
 } from '@/shared/api/repairs/repairApi';
+import { cachedLoadExternalServices } from '@/shared/offline/referenceDataCache';
 import { formatDateToISO } from '@/app/stores/date.js';
 
 const props = defineProps({
@@ -162,7 +162,7 @@ const reset = () => {
 };
 
 onMounted(async () => {
-  try { serviceOptions.value = await loadExternalServices(); } catch { notificationStore.showNotification('Не удалось загрузить список услуг.', 'error'); }
+  try { serviceOptions.value = await cachedLoadExternalServices(); } catch { notificationStore.showNotification('Не удалось загрузить список услуг.', 'error'); }
 });
 
 defineExpose({ save, reset, loadExisting });

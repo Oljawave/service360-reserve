@@ -54,10 +54,10 @@ import UiButton from '@/shared/ui/UiButton.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import {
-  loadEquipmentTypes,
   saveResourceEquipment,
   loadResourceEquipmentForTaskLog,
 } from '@/shared/api/repairs/repairApi';
+import { cachedLoadEquipmentTypes } from '@/shared/offline/referenceDataCache';
 import { formatDateToISO } from '@/app/stores/date.js';
 
 const props = defineProps({
@@ -174,7 +174,7 @@ const reset = () => {
 };
 
 onMounted(async () => {
-  try { equipmentTypeOptions.value = await loadEquipmentTypes(); } catch { notificationStore.showNotification('Не удалось загрузить список типов техники.', 'error'); }
+  try { equipmentTypeOptions.value = await cachedLoadEquipmentTypes(); } catch { notificationStore.showNotification('Не удалось загрузить список типов техники.', 'error'); }
 });
 
 defineExpose({ save, reset, loadExisting });

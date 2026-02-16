@@ -45,10 +45,10 @@ import UiButton from '@/shared/ui/UiButton.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import {
-  loadToolTypes,
   saveResourceTool,
   loadResourceToolsForTaskLog,
 } from '@/shared/api/repairs/repairApi';
+import { cachedLoadToolTypes } from '@/shared/offline/referenceDataCache';
 import { formatDateToISO } from '@/app/stores/date.js';
 
 const props = defineProps({
@@ -153,7 +153,7 @@ const reset = () => {
 };
 
 onMounted(async () => {
-  try { toolTypeOptions.value = await loadToolTypes(); } catch { notificationStore.showNotification('Не удалось загрузить список инструментов.', 'error'); }
+  try { toolTypeOptions.value = await cachedLoadToolTypes(); } catch { notificationStore.showNotification('Не удалось загрузить список инструментов.', 'error'); }
 });
 
 defineExpose({ save, reset, loadExisting });

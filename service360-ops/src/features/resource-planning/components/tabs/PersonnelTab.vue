@@ -54,10 +54,10 @@ import UiButton from '@/shared/ui/UiButton.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import {
-  loadPositions,
   saveResourcePersonnel,
   loadResourcePersonnelForTaskLog,
 } from '@/shared/api/repairs/repairApi';
+import { cachedLoadPositions } from '@/shared/offline/referenceDataCache';
 import { formatDateToISO } from '@/app/stores/date.js';
 
 const props = defineProps({
@@ -174,7 +174,7 @@ const reset = () => {
 };
 
 onMounted(async () => {
-  try { positionOptions.value = await loadPositions(); } catch { notificationStore.showNotification('Не удалось загрузить список должностей.', 'error'); }
+  try { positionOptions.value = await cachedLoadPositions(); } catch { notificationStore.showNotification('Не удалось загрузить список должностей.', 'error'); }
 });
 
 defineExpose({ save, reset, loadExisting });

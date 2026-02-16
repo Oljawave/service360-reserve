@@ -56,11 +56,10 @@ import UiButton from '@/shared/ui/UiButton.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import {
-  loadMaterials,
-  loadUnits,
   saveResourceMaterial,
   loadResourceMaterialsForTaskLog,
 } from '@/shared/api/repairs/repairApi';
+import { cachedLoadMaterials, cachedLoadUnits } from '@/shared/offline/referenceDataCache';
 import { formatDateToISO } from '@/app/stores/date.js';
 
 const props = defineProps({
@@ -179,8 +178,8 @@ const reset = () => {
 };
 
 onMounted(async () => {
-  try { materialOptions.value = await loadMaterials(); } catch { notificationStore.showNotification('Не удалось загрузить список материалов.', 'error'); }
-  try { unitOptions.value = await loadUnits(); } catch { notificationStore.showNotification('Не удалось загрузить список единиц измерения.', 'error'); }
+  try { materialOptions.value = await cachedLoadMaterials(); } catch { notificationStore.showNotification('Не удалось загрузить список материалов.', 'error'); }
+  try { unitOptions.value = await cachedLoadUnits(); } catch { notificationStore.showNotification('Не удалось загрузить список единиц измерения.', 'error'); }
 });
 
 defineExpose({ save, reset, loadExisting });

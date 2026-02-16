@@ -100,6 +100,7 @@ import { loadResourceNormative } from '@/shared/api/repairs/repairApi';
 const props = defineProps({
   objWork: { type: [Number, String], required: true },
   objTask: { type: [Number, String], required: true },
+  plannedVolume: { type: Number, default: null },
 });
 
 defineEmits(['back']);
@@ -118,11 +119,31 @@ const hasData = computed(() => {
   );
 });
 
+const multiplyValues = (data) => {
+  const volume = props.plannedVolume;
+  if (!volume || volume <= 0) return data;
+
+  const result = { ...data };
+  const arrayKeys = ['material', 'personnel', 'equipment', 'tool', 'service'];
+
+  for (const key of arrayKeys) {
+    if (result[key] && Array.isArray(result[key])) {
+      result[key] = result[key].map(item => {
+        const updated = { ...item };
+        if (updated.Value != null) updated.Value = updated.Value * volume;
+        if (updated.Quantity != null) updated.Quantity = updated.Quantity * volume;
+        return updated;
+      });
+    }
+  }
+  return result;
+};
+
 onMounted(async () => {
   loading.value = true;
   try {
     const result = await loadResourceNormative(props.objWork, props.objTask);
-    normative.value = result[0] || {};
+    normative.value = multiplyValues(result[0] || {});
   } catch (error) {
     console.error('Ошибка загрузки нормативов:', error);
     notificationStore.showNotification('Не удалось загрузить нормативы.', 'error');

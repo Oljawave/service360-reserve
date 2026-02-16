@@ -110,6 +110,7 @@
           key="norma"
           :objWork="normaObjWork"
           :objTask="normaObjTask"
+          :plannedVolume="normaPlannedVolume"
           @back="showNorma = false"
         />
       </transition>
@@ -156,6 +157,7 @@ const savedTaskLogCls = ref(null);
 const showNorma = ref(false);
 const normaObjWork = ref(null);
 const normaObjTask = ref(null);
+const normaPlannedVolume = ref(null);
 
 const disabledTabs = computed(() => isInfoSaved.value ? [] : ['materials', 'externalServices', 'personnel', 'equipment', 'tools']);
 
@@ -191,13 +193,14 @@ const tabRefs = {
 const closeModal = () => { emit('close'); };
 
 const openNorma = () => {
-  const selectedTask = infoTab.value?.getSelectedTask();
-  if (!selectedTask) {
-    notificationStore.showNotification('Сначала выберите задачу.', 'error');
+  if (!infoTab.value?.isFormValid()) {
+    notificationStore.showNotification('Пожалуйста, заполните все обязательные поля (Задача, Дата начала, Дата завершения).', 'error');
     return;
   }
+  const selectedTask = infoTab.value.getSelectedTask();
   normaObjWork.value = props.record?.objWork;
   normaObjTask.value = selectedTask.value;
+  normaPlannedVolume.value = infoTab.value.getPlannedVolume();
   showNorma.value = true;
 };
 

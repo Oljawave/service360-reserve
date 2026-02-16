@@ -52,7 +52,8 @@ import ExistingDataBlock from '@/shared/ui/ExistingDataBlock.vue';
 
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
-import { loadTasks, saveTaskLogPlan, loadTaskLogEntriesForWorkPlan } from '@/shared/api/repairs/repairApi';
+import { saveTaskLogPlan, loadTaskLogEntriesForWorkPlan } from '@/shared/api/repairs/repairApi';
+import { cachedLoadTasks } from '@/shared/offline/referenceDataCache';
 import { formatDate, formatDateToISO } from '@/app/stores/date.js';
 
 const props = defineProps({
@@ -77,7 +78,7 @@ const existingRecords = ref([]);
 
 const loadTaskOptions = async () => {
   try {
-    taskOptions.value = await loadTasks(props.record?.objWork || null);
+    taskOptions.value = await cachedLoadTasks(props.record?.objWork || null);
   } catch (error) {
     notificationStore.showNotification('Не удалось загрузить список задач.', 'error');
   }
@@ -198,7 +199,13 @@ watch(() => props.record, (newRecordData) => {
 
 const getSelectedTask = () => newRecord.value.task;
 
-defineExpose({ save, reset, loadExisting, getSelectedTask });
+const getPlannedVolume = () => newRecord.value.plannedVolume;
+
+const isFormValid = () => {
+  return !!(newRecord.value.task && newRecord.value.dateStartPlan && newRecord.value.dateEndPlan);
+};
+
+defineExpose({ save, reset, loadExisting, getSelectedTask, getPlannedVolume, isFormValid });
 </script>
 
 <style scoped>
