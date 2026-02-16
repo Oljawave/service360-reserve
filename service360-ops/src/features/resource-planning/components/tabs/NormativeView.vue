@@ -19,7 +19,10 @@
         <div class="resource-table">
           <div v-for="item in normative.material" :key="item.id" class="table-row">
             <span class="table-cell">{{ item.nameMaterial }}</span>
-            <span class="table-cell value">{{ item.Value }} {{ item.nameMeasure }}</span>
+            <div class="table-cell value">
+              <AppNumberInput v-model.number="item.Value" :min="0" class="inline-input" />
+              <span class="unit-label">{{ item.nameMeasure }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -30,7 +33,13 @@
         <div class="resource-table">
           <div v-for="item in normative.personnel" :key="item.id" class="table-row">
             <span class="table-cell">{{ item.namePosition }}</span>
-            <span class="table-cell value">{{ item.Quantity }} чел. / {{ item.Value }} мин</span>
+            <div class="table-cell value">
+              <AppNumberInput v-model.number="item.Quantity" :min="0" class="inline-input" />
+              <span class="unit-label">чел.</span>
+              <span class="separator">/</span>
+              <AppNumberInput v-model.number="item.Value" :min="0" class="inline-input" />
+              <span class="unit-label">мин</span>
+            </div>
           </div>
         </div>
       </div>
@@ -41,7 +50,13 @@
         <div class="resource-table">
           <div v-for="item in normative.equipment" :key="item.id" class="table-row">
             <span class="table-cell">{{ item.nameTypEquipment }}</span>
-            <span class="table-cell value">{{ item.Quantity }} шт. / {{ item.Value }} мин</span>
+            <div class="table-cell value">
+              <AppNumberInput v-model.number="item.Quantity" :min="0" class="inline-input" />
+              <span class="unit-label">шт.</span>
+              <span class="separator">/</span>
+              <AppNumberInput v-model.number="item.Value" :min="0" class="inline-input" />
+              <span class="unit-label">мин</span>
+            </div>
           </div>
         </div>
       </div>
@@ -52,7 +67,9 @@
         <div class="resource-table">
           <div v-for="item in normative.tool" :key="item.id" class="table-row">
             <span class="table-cell">{{ item.nameTypTool }}</span>
-            <span class="table-cell value">{{ item.Value }}</span>
+            <div class="table-cell value">
+              <AppNumberInput v-model.number="item.Value" :min="0" class="inline-input" />
+            </div>
           </div>
         </div>
       </div>
@@ -63,7 +80,9 @@
         <div class="resource-table">
           <div v-for="item in normative.service" :key="item.id" class="table-row">
             <span class="table-cell">{{ item.nameTpService }}</span>
-            <span class="table-cell value">{{ item.Value }}</span>
+            <div class="table-cell value">
+              <AppNumberInput v-model.number="item.Value" :min="0" class="inline-input" />
+            </div>
           </div>
         </div>
       </div>
@@ -74,6 +93,7 @@
 <script setup>
 import { ref, computed, defineProps, defineEmits, onMounted } from 'vue';
 import UiIcon from '@/shared/ui/UiIcon.vue';
+import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { loadResourceNormative } from '@/shared/api/repairs/repairApi';
 
@@ -211,12 +231,43 @@ onMounted(async () => {
 }
 
 .table-cell.value {
-  color: #2d3748;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   white-space: nowrap;
-  text-align: right;
   flex: 0 0 auto;
   margin-left: 16px;
+}
+
+.inline-input {
+  width: 120px;
+}
+
+.inline-input :deep(label) {
+  display: none;
+}
+
+.inline-input :deep(.form-group) {
+  margin: 0;
+}
+
+.inline-input :deep(input) {
+  padding: 6px 8px;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.unit-label {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.separator {
+  color: #94a3b8;
+  font-size: 13px;
 }
 
 @media (max-width: 640px) {
@@ -229,12 +280,12 @@ onMounted(async () => {
     flex-direction: column;
     align-items: flex-start;
     padding: 10px 12px;
-    gap: 4px;
+    gap: 8px;
   }
 
   .table-cell.value {
-    text-align: left;
     margin-left: 0;
+    flex-wrap: wrap;
   }
 }
 </style>
