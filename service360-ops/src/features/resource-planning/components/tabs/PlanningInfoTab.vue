@@ -21,7 +21,8 @@
           placeholder="Введите плановый объем"
           type="number"
           :min="0"
-          class="col-span-2" />
+          class="col-span-2"
+          :required="true" />
 
         <AppDatePicker
           label="Дата начала"
@@ -113,8 +114,8 @@ const save = async () => {
     return;
   }
 
-  if (newRecord.value.plannedVolume !== null && newRecord.value.plannedVolume < 0) {
-    notificationStore.showNotification('Плановый объем не может быть отрицательным.', 'error');
+  if (newRecord.value.plannedVolume !== null && newRecord.value.plannedVolume <= 0) {
+    notificationStore.showNotification('Плановый объем должен быть больше нуля.', 'error');
     return;
   }
 

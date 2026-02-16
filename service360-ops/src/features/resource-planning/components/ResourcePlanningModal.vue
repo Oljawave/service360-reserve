@@ -8,9 +8,8 @@
     :loading="isSaving"
   >
     <div class="work-card-content">
-      <transition name="fade" mode="out-in">
-        <!-- Основной контент с табами -->
-        <div v-if="!showNorma" key="main">
+      <!-- Основной контент с табами -->
+      <div v-show="!showNorma">
           <WorkHeaderInfo :record="record" :section="section" :date="date" />
           <div class="tabs-block">
             <TabsHeader
@@ -104,16 +103,14 @@
           </div>
         </div>
 
-        <!-- Нормативы -->
-        <NormativeView
-          v-else
-          key="norma"
-          :objWork="normaObjWork"
-          :objTask="normaObjTask"
-          :plannedVolume="normaPlannedVolume"
-          @back="showNorma = false"
-        />
-      </transition>
+      <!-- Нормативы -->
+      <NormativeView
+        v-if="showNorma"
+        :objWork="normaObjWork"
+        :objTask="normaObjTask"
+        :plannedVolume="normaPlannedVolume"
+        @back="showNorma = false"
+      />
     </div>
   </ModalWrapper>
 </template>
@@ -197,10 +194,15 @@ const openNorma = () => {
     notificationStore.showNotification('Пожалуйста, заполните все обязательные поля (Задача, Дата начала, Дата завершения).', 'error');
     return;
   }
+  const volume = infoTab.value.getPlannedVolume();
+  if (volume !== null && volume <= 0) {
+    notificationStore.showNotification('Плановый объем должен быть больше нуля.', 'error');
+    return;
+  }
   const selectedTask = infoTab.value.getSelectedTask();
   normaObjWork.value = props.record?.objWork;
   normaObjTask.value = selectedTask.value;
-  normaPlannedVolume.value = infoTab.value.getPlannedVolume();
+  normaPlannedVolume.value = volume;
   showNorma.value = true;
 };
 

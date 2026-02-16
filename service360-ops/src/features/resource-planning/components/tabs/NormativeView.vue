@@ -18,10 +18,9 @@
         <div class="section-header">Материалы</div>
         <div class="resource-table">
           <div v-for="item in normative.material" :key="item.id" class="table-row">
-            <span class="table-cell">{{ item.nameMaterial }}</span>
+            <span class="table-cell">{{ item.nameMaterial }}, {{ item.nameMeasure }}</span>
             <div class="table-cell value">
               <AppNumberInput v-model.number="item.Value" :min="0" class="inline-input" />
-              <span class="unit-label">{{ item.nameMeasure }}</span>
             </div>
           </div>
         </div>
@@ -87,12 +86,18 @@
         </div>
       </div>
     </div>
+
+    <div class="norma-actions">
+      <button class="cancel-btn" @click="$emit('back')">Отмена</button>
+      <MainButton label="Применить" @click="apply" />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, defineProps, defineEmits, onMounted } from 'vue';
 import UiIcon from '@/shared/ui/UiIcon.vue';
+import MainButton from '@/shared/ui/MainButton.vue';
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { loadResourceNormative } from '@/shared/api/repairs/repairApi';
@@ -103,7 +108,11 @@ const props = defineProps({
   plannedVolume: { type: Number, default: null },
 });
 
-defineEmits(['back']);
+const emit = defineEmits(['back', 'apply']);
+
+const apply = () => {
+  emit('apply', normative.value);
+};
 
 const notificationStore = useNotificationStore();
 const loading = ref(false);
@@ -119,31 +128,11 @@ const hasData = computed(() => {
   );
 });
 
-const multiplyValues = (data) => {
-  const volume = props.plannedVolume;
-  if (!volume || volume <= 0) return data;
-
-  const result = { ...data };
-  const arrayKeys = ['material', 'personnel', 'equipment', 'tool', 'service'];
-
-  for (const key of arrayKeys) {
-    if (result[key] && Array.isArray(result[key])) {
-      result[key] = result[key].map(item => {
-        const updated = { ...item };
-        if (updated.Value != null) updated.Value = updated.Value * volume;
-        if (updated.Quantity != null) updated.Quantity = updated.Quantity * volume;
-        return updated;
-      });
-    }
-  }
-  return result;
-};
-
 onMounted(async () => {
   loading.value = true;
   try {
     const result = await loadResourceNormative(props.objWork, props.objTask);
-    normative.value = multiplyValues(result[0] || {});
+    normative.value = result[0] || {};
   } catch (error) {
     console.error('Ошибка загрузки нормативов:', error);
     notificationStore.showNotification('Не удалось загрузить нормативы.', 'error');
@@ -289,6 +278,34 @@ onMounted(async () => {
 .separator {
   color: #94a3b8;
   font-size: 13px;
+}
+
+.norma-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cancel-btn {
+  padding: 10px 20px;
+  background: white;
+  color: #64748b;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancel-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.norma-actions :deep(.main-button) {
+  width: auto;
+  padding: 10px 20px;
 }
 
 @media (max-width: 640px) {
