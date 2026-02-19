@@ -2,7 +2,6 @@
   <transition name="fade">
     <div v-if="!isOnline" class="offline-badge">
       <UiIcon name="WifiOff" :size="14" />
-      <span>Офлайн</span>
     </div>
   </transition>
 </template>
@@ -18,15 +17,7 @@ const { isOnline } = useNetworkStatus();
 .offline-badge {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  background: #FEF2F2;
-  border: 1px solid #FECACA;
-  border-radius: 6px;
   color: #DC2626;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
 }
 
 .fade-enter-active,

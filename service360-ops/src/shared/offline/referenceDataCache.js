@@ -67,3 +67,21 @@ export const cachedLoadToolTypes = () =>
 export const cachedLoadExternalServices = () =>
   getCachedOrFetch('externalServices', () =>
     import('../api/repairs/repairApi').then(m => m.loadExternalServices()));
+
+export async function prefetchAllReferenceData() {
+  const loaders = [
+    cachedLoadMaterials(),
+    cachedLoadUnits(),
+    cachedLoadPositions(),
+    cachedLoadEquipmentTypes(),
+    cachedLoadToolTypes(),
+    cachedLoadExternalServices(),
+  ];
+
+  const results = await Promise.allSettled(loaders);
+  results.forEach((r, i) => {
+    if (r.status === 'rejected') {
+      console.warn('Prefetch failed for loader', i, r.reason);
+    }
+  });
+}

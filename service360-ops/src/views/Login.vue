@@ -74,6 +74,7 @@ import AppNotification from "@/app/layouts/AppNotification.vue"
 import { login, getCurrentUser, getPersonnalInfo } from "@/shared/api/auth/auth"
 import { forgetPassword } from "@/shared/api/profile/profileApi"
 import { useNotificationStore } from "@/app/stores/notificationStore"
+import { prefetchAllReferenceData } from "@/shared/offline/referenceDataCache"
 
 export default {
   name: "Login",
@@ -148,6 +149,7 @@ export default {
         localStorage.setItem("userId", userId)
 
         notify.showNotification("Успешный вход!", "success")
+        prefetchAllReferenceData()
         this.$router.push({ name: 'WorkPlan' })
       } catch (err) {
         console.error("Ошибка при входе:", err)

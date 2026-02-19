@@ -119,26 +119,18 @@ const router = createRouter({
   routes
 })
 
-// Navigation Guard - защита роутов (ВРЕМЕННО ОТКЛЮЧЕНО)
+// Navigation Guard
 router.beforeEach((to, from, next) => {
-  // ВРЕМЕННО: пропускаем все запросы без проверки авторизации
-  next()
-
-  /* ЗАКОММЕНТИРОВАНО ДЛЯ РАЗРАБОТКИ
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const authenticated = isAuthenticated()
 
   if (requiresAuth && !authenticated) {
-    // Пытается зайти на защищенную страницу без авторизации
     next('/login')
   } else if (to.path === '/login' && authenticated) {
-    // Уже авторизован, пытается зайти на логин - редирект на dashboard
-    next('/main')
+    next('/work-plan')
   } else {
-    // Всё ок, пропускаем
     next()
   }
-  */
 })
 
 export default router

@@ -8,6 +8,7 @@
     </div>
 
     <WeatherAndDate
+      v-if="!isMobile"
       :weather-temp="weatherTemp"
       :weather-icon-name="weatherIconName"
       :weather-icon-color="weatherIconColor"

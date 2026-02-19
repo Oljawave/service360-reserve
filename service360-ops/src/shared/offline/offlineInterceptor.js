@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { isMutation } from './rpcClassifier';
 import { enqueueRequest } from './syncQueue';
+import { logout } from '@/shared/api/auth/auth';
+import router from '@/app/router/index';
 
 const API_URLS = [
   import.meta.env.VITE_REPAIR_URL,
@@ -70,6 +72,13 @@ export function setupOfflineInterceptor() {
           statusText: 'Queued Offline',
         };
       }
+      // Сессия истекла — редирект на логин
+      if (error?.response?.status === 401) {
+        logout();
+        router.push('/login');
+        return Promise.reject(error);
+      }
+
       return Promise.reject(error);
     }
   );

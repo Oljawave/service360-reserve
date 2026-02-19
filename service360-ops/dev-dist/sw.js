@@ -67,7 +67,7 @@ if (!self.define) {
     });
   };
 }
-define(['./workbox-5fac4102'], (function (workbox) { 'use strict';
+define(['./workbox-fbbfebff'], (function (workbox) { 'use strict';
 
   self.skipWaiting();
   workbox.clientsClaim();
@@ -100,5 +100,10 @@ define(['./workbox-5fac4102'], (function (workbox) { 'use strict';
       statuses: [0, 200]
     })]
   }), 'GET');
+  workbox.registerRoute(/\/api\b/i, new workbox.NetworkOnly({
+    plugins: [new workbox.BackgroundSyncPlugin("service360-bg-sync", {
+      maxRetentionTime: 1440
+    })]
+  }), 'POST');
 
 }));
