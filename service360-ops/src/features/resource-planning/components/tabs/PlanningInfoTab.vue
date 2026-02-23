@@ -6,11 +6,20 @@
       <div class="form-grid-planning">
 
         <AppDropdown
+          v-if="isOnline"
           label="Задача"
           placeholder="Выберите задачу"
           id="task-dropdown"
           v-model="newRecord.task"
           :options="taskOptions"
+          class="col-span-2"
+          :required="true" />
+        <AppInput
+          v-else
+          label="Задача (текст)"
+          placeholder="Введите название задачи"
+          id="task-text-input"
+          v-model="newRecord.taskText"
           class="col-span-2"
           :required="true" />
 
@@ -49,6 +58,7 @@ import { ref, defineProps, defineEmits, defineExpose, watch, onMounted } from 'v
 import AppDatePicker from '@/shared/ui/FormControls/AppDatePicker.vue';
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
+import AppInput from '@/shared/ui/FormControls/AppInput.vue';
 import ExistingDataBlock from '@/shared/ui/ExistingDataBlock.vue';
 
 import { useNotificationStore } from '@/app/stores/notificationStore';
@@ -56,19 +66,23 @@ import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import { saveTaskLogPlan, loadTaskLogEntriesForWorkPlan } from '@/shared/api/repairs/repairApi';
 import { cachedLoadTasks } from '@/shared/offline/referenceDataCache';
 import { formatDate, formatDateToISO } from '@/app/stores/date.js';
+import { useNetworkStatus } from '@/shared/offline/useNetworkStatus';
 
 const props = defineProps({
   record: { type: Object, default: null },
   sectionId: { type: [Number, String], default: null },
   sectionPv: { type: [Number, String], default: null },
+  draftData: { type: Object, default: null },
 });
 
 const emit = defineEmits(['saving', 'saved']);
 
+const { isOnline } = useNetworkStatus();
 const notificationStore = useNotificationStore();
 
 const newRecord = ref({
   task: null,
+  taskText: '',
   plannedVolume: null,
   dateStartPlan: null,
   dateEndPlan: null,
@@ -184,6 +198,7 @@ const save = async () => {
 
 const reset = () => {
   newRecord.value.task = null;
+  newRecord.value.taskText = '';
   newRecord.value.plannedVolume = null;
   newRecord.value.dateStartPlan = null;
   newRecord.value.dateEndPlan = null;
@@ -204,16 +219,36 @@ const getPlannedVolume = () => newRecord.value.plannedVolume;
 
 const getFormData = () => ({
   task: newRecord.value.task,
+  taskText: newRecord.value.taskText,
   plannedVolume: newRecord.value.plannedVolume,
   dateStartPlan: newRecord.value.dateStartPlan,
   dateEndPlan: newRecord.value.dateEndPlan,
 });
 
 const isFormValid = () => {
-  return !!(newRecord.value.task && newRecord.value.dateStartPlan && newRecord.value.dateEndPlan);
+  const hasTask = isOnline.value ? !!newRecord.value.task : !!newRecord.value.taskText;
+  return !!(hasTask && newRecord.value.dateStartPlan && newRecord.value.dateEndPlan);
 };
 
-defineExpose({ save, reset, loadExisting, getSelectedTask, getPlannedVolume, getFormData, isFormValid });
+const fillFromDraft = (draftFields) => {
+  if (!draftFields) return;
+  newRecord.value.taskText = draftFields.taskText || '';
+  newRecord.value.plannedVolume = draftFields.plannedVolume || null;
+  newRecord.value.dateStartPlan = draftFields.dateStartPlan || null;
+  newRecord.value.dateEndPlan = draftFields.dateEndPlan || null;
+
+  // Если онлайн и есть taskText — ищем совпадение в дропдауне
+  if (isOnline.value && draftFields.taskText && taskOptions.value.length > 0) {
+    const match = taskOptions.value.find(opt =>
+      opt.label.toLowerCase().includes(draftFields.taskText.toLowerCase())
+    );
+    if (match) {
+      newRecord.value.task = match;
+    }
+  }
+};
+
+defineExpose({ save, reset, loadExisting, getSelectedTask, getPlannedVolume, getFormData, isFormValid, fillFromDraft });
 </script>
 
 <style scoped>

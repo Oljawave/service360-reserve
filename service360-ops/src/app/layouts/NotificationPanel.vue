@@ -400,4 +400,18 @@ onBeforeUnmount(() => {
   opacity: 0;
   transform: translateY(-6px);
 }
+
+@media (max-width: 768px) {
+  .notif-panel {
+    position: fixed;
+    top: 60px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+  }
+
+  .notif-panel-arrow {
+    display: none;
+  }
+}
 </style>

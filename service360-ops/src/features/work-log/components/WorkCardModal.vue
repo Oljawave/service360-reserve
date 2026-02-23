@@ -65,6 +65,7 @@
               </div>
               <div class="defect-info-group">
                 <AppDropdown
+                  v-if="isOnline"
                   label="Компонент"
                   id="component-dropdown"
                   :options="componentOptions"
@@ -74,7 +75,16 @@
                   :loading="loadingComponents"
                   @update:modelValue="handleDefectComponentChange"
                   :required="true" />
+                <AppInput
+                  v-else
+                  label="Компонент (текст)"
+                  id="component-text"
+                  v-model="defectRecord.componentText"
+                  placeholder="Введите название компонента"
+                  class="half-width"
+                  :required="true" />
                 <AppDropdown
+                  v-if="isOnline"
                   label="Дефект / неисправность"
                   id="defect-dropdown"
                   :options="defectOptions"
@@ -82,6 +92,14 @@
                   placeholder="Выберите дефект"
                   class="half-width"
                   :loading="loadingDefects"
+                  :required="true" />
+                <AppInput
+                  v-else
+                  label="Дефект (текст)"
+                  id="defect-text"
+                  v-model="defectRecord.defectText"
+                  placeholder="Введите описание дефекта"
+                  class="half-width"
                   :required="true" />
               </div>
               <AppInput
@@ -111,6 +129,7 @@
               </div>
               <div class="parameter-info-group">
                 <AppDropdown
+                  v-if="isOnline"
                   label="Компонент"
                   id="component-dropdown"
                   :options="componentOptions"
@@ -120,7 +139,16 @@
                   :loading="loadingComponents"
                   @update:modelValue="handleParameterComponentChange"
                   :required="true" />
+                <AppInput
+                  v-else
+                  label="Компонент (текст)"
+                  id="param-component-text"
+                  v-model="parameterRecord.componentText"
+                  placeholder="Введите название компонента"
+                  class="half-width"
+                  :required="true" />
                 <AppDropdown
+                  v-if="isOnline"
                   label="Параметр"
                   id="parameter-dropdown"
                   :options="parameterOptions"
@@ -129,6 +157,14 @@
                   class="half-width"
                   :loading="loadingParameters"
                   @update:modelValue="handleParameterChange"
+                  :required="true" />
+                <AppInput
+                  v-else
+                  label="Параметр (текст)"
+                  id="parameter-text"
+                  v-model="parameterRecord.parameterText"
+                  placeholder="Введите название параметра"
+                  class="half-width"
                   :required="true" />
               </div>
               
@@ -177,7 +213,19 @@
 
       <div class="button-container">
         <div class="main-actions">
-          <MainButton :label="getButtonLabel()" :loading="isSaving" @click="saveWork" class="save-btn" />
+          <button
+            v-if="!isOnline"
+            class="draft-btn"
+            @click="saveAsDraft"
+          >
+            Сохранить черновик
+          </button>
+          <MainButton
+            v-if="isOnline"
+            :label="getButtonLabel()"
+            :loading="isSaving"
+            @click="saveWork"
+            class="save-btn" />
         </div>
       </div>
     </div>
@@ -199,6 +247,8 @@ import ExistingDataBlock from '@/shared/ui/ExistingDataBlock.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { loadInspectionEntriesForWorkPlan, saveInspectionInfo, saveFaultInfo, saveParameterInfo, getUserData, loadComponentsByTypObjectForSelect, loadDefectsByComponentForSelect, loadComponentParametersForSelect, loadFaultEntriesForInspection, loadParameterEntriesForInspection } from '@/shared/api/inspections/inspectionsApi';
 import { formatDate, formatDateToISO } from '@/app/stores/date.js';
+import { useNetworkStatus } from '@/shared/offline/useNetworkStatus';
+import { saveDraft, deleteDraft } from '@/shared/offline/draftsStore';
 
 const props = defineProps({
   record: {
@@ -221,9 +271,19 @@ const props = defineProps({
     type: [Number, String],
     default: null,
   },
+  draftId: {
+    type: Number,
+    default: null,
+  },
+  draftData: {
+    type: Object,
+    default: null,
+  },
 });
 
 const emit = defineEmits(['close']);
+
+const { isOnline } = useNetworkStatus();
 
 const isSaving = ref(false);
 const activeTab = ref('info');
@@ -269,6 +329,8 @@ const defectRecord = ref({
   defectType: null,
   note: '',
   component: null,
+  componentText: '',
+  defectText: '',
 });
 
 const parameterRecord = ref({
@@ -286,6 +348,8 @@ const parameterRecord = ref({
   maxValue: null,
   value: '',
   note: '',
+  componentText: '',
+  parameterText: '',
 });
 
 const existingRecords = ref([]);
@@ -349,6 +413,64 @@ const validateMinMax = () => {
 
 const closeModal = () => {
   emit('close');
+};
+
+const saveAsDraft = async () => {
+  // Собираем все данные формы в зависимости от активного таба
+  const formFields = {
+    activeTab: activeTab.value,
+    info: {
+      coordinates: { ...newRecord.value.coordinates },
+      date: newRecord.value.date,
+      deviationReason: newRecord.value.deviationReason,
+    },
+    defect: {
+      startCoordinates: { ...defectRecord.value.startCoordinates },
+      componentText: defectRecord.value.componentText,
+      defectText: defectRecord.value.defectText,
+      note: defectRecord.value.note,
+    },
+    parameter: {
+      startCoordinates: { ...parameterRecord.value.startCoordinates },
+      componentText: parameterRecord.value.componentText,
+      parameterText: parameterRecord.value.parameterText,
+      minValue: parameterRecord.value.minValue,
+      maxValue: parameterRecord.value.maxValue,
+      value: parameterRecord.value.value,
+      note: parameterRecord.value.note,
+    },
+  };
+
+  try {
+    await saveDraft('workCard', {
+      id: props.record?.id,
+      pv: props.record?.pv,
+      objObject: props.record?.objObject,
+      name: props.record?.name,
+      section: props.section,
+      date: props.date,
+      sectionId: props.sectionId,
+      sectionPv: props.sectionPv,
+      objLocationClsSection: props.record?.objLocationClsSection,
+      pvLocationClsSection: props.record?.pvLocationClsSection,
+      StartKm: props.record?.StartKm,
+      StartPicket: props.record?.StartPicket,
+      StartLink: props.record?.StartLink,
+      FinishKm: props.record?.FinishKm,
+      FinishPicket: props.record?.FinishPicket,
+      FinishLink: props.record?.FinishLink,
+    }, formFields);
+
+    if (props.draftId) {
+      await deleteDraft(props.draftId);
+    }
+
+    notificationStore.showNotification('Черновик сохранен!', 'success');
+    emit('close');
+  } catch (error) {
+    console.error('Ошибка сохранения черновика:', error);
+    notificationStore.showNotification('Не удалось сохранить черновик.', 'error');
+  }
 };
 
 const updateCoordinates = (newCoordinates) => {
@@ -1021,7 +1143,7 @@ watch(
         FinishPicket: newRecordData.FinishPicket || null,
         FinishLink: newRecordData.FinishLink || null,
       };
-      
+
       inspectionBounds.value = {
         StartKm: newRecordData.StartKm || null,
         StartPicket: newRecordData.StartPicket || null,
@@ -1039,14 +1161,58 @@ watch(
         coordEndPk: newRecordData.FinishPicket || null,
         coordEndZv: newRecordData.FinishLink || null,
       });
-      
+
       loadExistingData(newRecordData);
-      
       loadComponents();
+
+      // Заполняем из черновика если есть
+      if (props.draftData) {
+        fillFromDraft(props.draftData);
+      }
     }
   },
   { immediate: true }
 );
+
+const fillFromDraft = (draft) => {
+  if (!draft) return;
+
+  if (draft.activeTab) {
+    activeTab.value = draft.activeTab;
+  }
+
+  // Info tab
+  if (draft.info) {
+    if (draft.info.coordinates) {
+      newRecord.value.coordinates = { ...newRecord.value.coordinates, ...draft.info.coordinates };
+    }
+    newRecord.value.date = draft.info.date || null;
+    newRecord.value.deviationReason = draft.info.deviationReason || '';
+  }
+
+  // Defects tab
+  if (draft.defect) {
+    if (draft.defect.startCoordinates) {
+      defectRecord.value.startCoordinates = { ...defectRecord.value.startCoordinates, ...draft.defect.startCoordinates };
+    }
+    defectRecord.value.componentText = draft.defect.componentText || '';
+    defectRecord.value.defectText = draft.defect.defectText || '';
+    defectRecord.value.note = draft.defect.note || '';
+  }
+
+  // Parameters tab
+  if (draft.parameter) {
+    if (draft.parameter.startCoordinates) {
+      parameterRecord.value.startCoordinates = { ...parameterRecord.value.startCoordinates, ...draft.parameter.startCoordinates };
+    }
+    parameterRecord.value.componentText = draft.parameter.componentText || '';
+    parameterRecord.value.parameterText = draft.parameter.parameterText || '';
+    parameterRecord.value.minValue = draft.parameter.minValue ?? null;
+    parameterRecord.value.maxValue = draft.parameter.maxValue ?? null;
+    parameterRecord.value.value = draft.parameter.value || '';
+    parameterRecord.value.note = draft.parameter.note || '';
+  }
+};
 </script>
 
 <style scoped>
@@ -1100,6 +1266,23 @@ watch(
 .main-actions {
   display: flex;
   gap: 12px;
+}
+
+.draft-btn {
+  padding: 10px 20px;
+  background: #fffbeb;
+  color: #b45309;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #fcd34d;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.draft-btn:hover {
+  background: #fef3c7;
+  border-color: #f59e0b;
 }
 
 .defects-content {

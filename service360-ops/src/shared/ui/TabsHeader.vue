@@ -8,7 +8,7 @@
       @click="selectTab(tab.name)"
     >
       <UiIcon :name="tab.icon" />
-      {{ tab.label }}
+      <span class="tab-label">{{ tab.label }}</span>
     </button>
   </div>
 </template>
@@ -37,11 +37,11 @@ const selectTab = (tabName) => {
 
 <style scoped>
 .tabs-header {
-  display: flex; /* Изменено: Используем flex для горизонтального расположения */
-  flex-wrap: nowrap; /* Изменено: Предотвращаем перенос на мобильных */
-  gap: 8px; /* Добавляем небольшой отступ между вкладками */
-  border-bottom: 1px solid #e0e6ed; /* Оставлено для первого ряда (будет переопределено в ResourcePlanningModal) */
-  margin-bottom: 16px; /* Оставлено для первого ряда (будет переопределено в ResourcePlanningModal) */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  border-bottom: 1px solid #e0e6ed;
+  margin-bottom: 16px;
 }
 
 .tab {
@@ -57,8 +57,9 @@ const selectTab = (tabName) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0; /* Добавлено, чтобы предотвратить сжатие */
-  justify-content: center; /* Центрируем содержимое таба */
+  flex-shrink: 0;
+  justify-content: center;
+  white-space: nowrap;
 }
 
 .tab:hover {
@@ -70,8 +71,46 @@ const selectTab = (tabName) => {
   border-bottom-color: #3182ce;
 }
 
-/* Стиль для иконки внутри таба (если он определен в UiIcon.vue) */
 .tab .icon {
   margin-right: 8px;
+}
+
+.tab-label {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .tabs-header {
+    gap: 4px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabs-header::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    padding: 10px 12px;
+    font-size: 13px;
+    gap: 6px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .tab-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .tab {
+    padding: 8px 10px;
+    font-size: 12px;
+    gap: 4px;
+  }
 }
 </style>

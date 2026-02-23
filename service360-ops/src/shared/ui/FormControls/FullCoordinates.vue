@@ -6,6 +6,7 @@
     </label>
     <div class="coordinate-group">
 <AppNumberInput
+        class="coord-start-km"
         :modelValue="currentStartKm"
         label="Начало (км)"
         placeholder="км"
@@ -16,6 +17,7 @@
         @blur="handleBlur"
       />
       <AppNumberInput
+        class="coord-start-pk"
         :modelValue="currentStartPk"
         label="Начало (пк)"
         placeholder="пк"
@@ -27,6 +29,7 @@
         @blur="handleBlur"
       />
       <AppNumberInput
+        class="coord-start-zv"
         :modelValue="currentStartZv"
         label="Начало (зв)"
         placeholder="зв"
@@ -38,6 +41,7 @@
         @blur="handleBlur"
       />
       <AppNumberInput
+        class="coord-end-km"
         :modelValue="currentEndKm"
         label="Конец (км)"
         placeholder="км"
@@ -48,6 +52,7 @@
         @blur="handleBlur"
       />
       <AppNumberInput
+        class="coord-end-pk"
         :modelValue="currentEndPk"
         label="Конец (пк)"
         placeholder="пк"
@@ -59,6 +64,7 @@
         @blur="handleBlur"
       />
       <AppNumberInput
+        class="coord-end-zv"
         :modelValue="currentEndZv"
         label="Конец (зв)"
         placeholder="зв"
@@ -395,5 +401,17 @@ onMounted(() => {
     width: 100%;
     min-width: auto;
   }
+
+  /* Переупорядочиваем поля:
+     Начало (км)  Конец (км)
+     Начало (пк)  Конец (пк)
+     Начало (зв)  Конец (зв)
+  */
+  .coord-start-km { order: 1; }
+  .coord-end-km   { order: 2; }
+  .coord-start-pk { order: 3; }
+  .coord-end-pk   { order: 4; }
+  .coord-start-zv { order: 5; }
+  .coord-end-zv   { order: 6; }
 }
 </style>

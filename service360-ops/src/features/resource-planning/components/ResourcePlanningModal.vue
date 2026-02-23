@@ -34,6 +34,7 @@
                 :record="record"
                 :sectionId="sectionId"
                 :sectionPv="sectionPv"
+                :draftData="draftData"
                 @saving="onSaving"
                 @saved="onInfoSaved"
               />
@@ -88,13 +89,21 @@
           <div class="button-container">
             <div class="main-actions">
               <button
-                v-if="activeTab === 'info'"
+                v-if="activeTab === 'info' && !isOnline"
+                class="draft-btn"
+                @click="saveAsDraft"
+              >
+                Сохранить черновик
+              </button>
+              <button
+                v-if="activeTab === 'info' && isOnline"
                 class="norma-btn"
                 @click="openNorma"
               >
                 Норма
               </button>
               <MainButton
+                v-if="isOnline"
                 :label="getButtonLabel()"
                 :loading="isSaving"
                 @click="saveData"
@@ -117,7 +126,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits, computed, nextTick } from 'vue';
+import { ref, watch, defineProps, defineEmits, computed } from 'vue';
 import ModalWrapper from '@/app/layouts/Modal/ModalWrapper.vue';
 import MainButton from '@/shared/ui/MainButton.vue';
 import TabsHeader from '@/shared/ui/TabsHeader.vue';
@@ -135,6 +144,8 @@ import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import { saveTaskLogNormative } from '@/shared/api/repairs/repairApi';
 import { formatDateToISO } from '@/app/stores/date.js';
+import { useNetworkStatus } from '@/shared/offline/useNetworkStatus';
+import { saveDraft, deleteDraft } from '@/shared/offline/draftsStore';
 
 const props = defineProps({
   record: { type: Object, default: null },
@@ -142,10 +153,13 @@ const props = defineProps({
   date: { type: String, default: null },
   sectionId: { type: [Number, String], default: null },
   sectionPv: { type: [Number, String], default: null },
+  draftId: { type: Number, default: null },
+  draftData: { type: Object, default: null },
 });
 
 const emit = defineEmits(['close']);
 
+const { isOnline } = useNetworkStatus();
 const notificationStore = useNotificationStore();
 
 const isSaving = ref(false);
@@ -297,6 +311,42 @@ const saveData = async () => {
   }
 };
 
+const saveAsDraft = async () => {
+  const formData = infoTab.value?.getFormData();
+  if (!formData) return;
+
+  if (!formData.taskText && !formData.task) {
+    notificationStore.showNotification('Введите хотя бы название задачи для сохранения черновика.', 'error');
+    return;
+  }
+
+  try {
+    await saveDraft('resourcePlanning', {
+      id: props.record?.id,
+      pv: props.record?.pv,
+      objWork: props.record?.objWork,
+      name: props.record?.name,
+      section: props.section,
+      date: props.date,
+      sectionId: props.sectionId,
+      sectionPv: props.sectionPv,
+      objLocationClsSection: props.record?.objLocationClsSection,
+      pvLocationClsSection: props.record?.pvLocationClsSection,
+    }, formData);
+
+    // Если это редактирование существующего черновика — удаляем старый
+    if (props.draftId) {
+      await deleteDraft(props.draftId);
+    }
+
+    notificationStore.showNotification('Черновик сохранен!', 'success');
+    emit('close');
+  } catch (error) {
+    console.error('Ошибка сохранения черновика:', error);
+    notificationStore.showNotification('Не удалось сохранить черновик.', 'error');
+  }
+};
+
 const handleTabChange = async (newTab) => {
   const resourceTabs = ['materials', 'externalServices', 'personnel', 'equipment', 'tools'];
   if (resourceTabs.includes(newTab) && !isInfoSaved.value) {
@@ -397,6 +447,23 @@ watch(
 .norma-btn:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
+}
+
+.draft-btn {
+  padding: 10px 20px;
+  background: #fffbeb;
+  color: #b45309;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #fcd34d;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.draft-btn:hover {
+  background: #fef3c7;
+  border-color: #f59e0b;
 }
 
 /* Transition */

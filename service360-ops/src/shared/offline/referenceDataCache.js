@@ -48,9 +48,30 @@ export const cachedLoadUnits = () =>
   getCachedOrFetch('units', () =>
     import('../api/repairs/repairApi').then(m => m.loadUnits()));
 
-export const cachedLoadTasks = (objWork) =>
-  getCachedOrFetch('tasks', () =>
-    import('../api/repairs/repairApi').then(m => m.loadTasks(objWork)));
+export const cachedLoadTasks = async (objWork) => {
+  const fetchFn = () =>
+    import('../api/repairs/repairApi').then(m => m.loadTasks(objWork));
+
+  // Задачи зависят от objWork, поэтому при онлайне всегда делаем свежий запрос
+  if (navigator.onLine) {
+    try {
+      const data = await fetchFn();
+      await db.tasks.clear();
+      if (data.length > 0) {
+        await db.tasks.bulkPut(data);
+      }
+      return data;
+    } catch (e) {
+      console.warn('Не удалось загрузить tasks, пробуем кэш', e);
+    }
+  }
+
+  // Офлайн-фолбэк
+  const stale = await db.tasks.toArray();
+  if (stale.length > 0) return stale;
+
+  throw new Error('Нет данных для tasks (офлайн, кэш пуст)');
+};
 
 export const cachedLoadPositions = () =>
   getCachedOrFetch('positions', () =>
@@ -67,6 +88,31 @@ export const cachedLoadToolTypes = () =>
 export const cachedLoadExternalServices = () =>
   getCachedOrFetch('externalServices', () =>
     import('../api/repairs/repairApi').then(m => m.loadExternalServices()));
+
+export const cachedLoadWorkPlanInspection = async () => {
+  const fetchFn = () =>
+    import('../api/inspections/inspectionsApi').then(m => m.loadWorkPlanInspectionUnfinished());
+
+  // Оперативные данные (незавершённые работы) — при онлайне всегда свежий запрос
+  if (navigator.onLine) {
+    try {
+      const data = await fetchFn();
+      await db.workPlanRecords.clear();
+      if (data.length > 0) {
+        await db.workPlanRecords.bulkPut(data);
+      }
+      return data;
+    } catch (e) {
+      console.warn('Не удалось загрузить workPlanRecords, пробуем кэш', e);
+    }
+  }
+
+  // Офлайн-фолбэк
+  const stale = await db.workPlanRecords.toArray();
+  if (stale.length > 0) return stale;
+
+  throw new Error('Нет данных для workPlanRecords (офлайн, кэш пуст)');
+};
 
 export async function prefetchAllReferenceData() {
   const loaders = [

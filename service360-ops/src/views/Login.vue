@@ -357,6 +357,26 @@ form {
 }
 
 @media (max-width: 768px) {
+  .form-fields :deep(.form-group label) {
+    font-size: 13px;
+  }
+
+  .form-fields :deep(.form-group .n-input) {
+    border-radius: 12px;
+    min-height: 50px;
+  }
+
+  .form-fields :deep(.form-group .n-input__input-el) {
+    border-radius: 12px;
+    min-height: 50px;
+    height: 50px;
+  }
+
+  .form-fields :deep(.form-group .n-input-wrapper) {
+    border-radius: 12px;
+    min-height: 50px;
+  }
+
   .login-page {
     padding: 0;
     background: #f7fafc;

@@ -20,3 +20,11 @@ db.version(1).stores({
   // Метаданные свежести кэша
   cacheMeta: 'key, updatedAt, expiresAt',
 });
+
+db.version(2).stores({
+  // Черновики офлайн-форм
+  drafts: '++id, formType, createdAt',
+
+  // Кэш данных плана работ (для офлайн-доступа к таблице)
+  workPlanRecords: '++_rowId, id',
+});

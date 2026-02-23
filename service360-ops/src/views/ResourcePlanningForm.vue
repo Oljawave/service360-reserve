@@ -69,7 +69,9 @@
       :date="selectedDate"
       :sectionId="selectedSection"
       :sectionPv="selectedSectionPv"
-      @close="isWorkCardModalOpen = false"
+      :draftId="currentDraftId"
+      :draftData="currentDraftFields"
+      @close="closePlanningModal"
     />
 
     <ConfirmationModal
@@ -83,12 +85,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, h } from 'vue';
+import { ref, computed, onMounted, watch, h } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
 import { loadWorkPlanCorrectionalUnfinished } from '@/shared/api/repairs/repairApi';
 import { completeThePlanWork } from '@/shared/api/plans/planWorkApi';
+import { activeDraft, clearActiveDraft } from '@/shared/offline/activeDraft';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
 import BaseTable from '@/app/layouts/Table/BaseTable.vue';
 import BackButton from '@/shared/ui/BackButton.vue';
@@ -110,6 +113,8 @@ const isWorkCardModalOpen = ref(false);
 const selectedRecord = ref(null);
 const isConfirmModalOpen = ref(false);
 const recordToComplete = ref(null);
+const currentDraftId = ref(null);
+const currentDraftFields = ref(null);
 const router = useRouter();
 const notificationStore = useNotificationStore();
 
@@ -181,7 +186,15 @@ const selectedSectionPv = computed(() => {
   return record ? record.pv : null;
 });
 
+const closePlanningModal = () => {
+  isWorkCardModalOpen.value = false;
+  currentDraftId.value = null;
+  currentDraftFields.value = null;
+};
+
 const onRowDoubleClick = (row) => {
+  currentDraftId.value = null;
+  currentDraftFields.value = null;
   selectedRecord.value = row;
   isWorkCardModalOpen.value = true;
 };
@@ -537,8 +550,42 @@ const onDayChange = (value) => {
   filterTableData();
 };
 
+const openFromDraft = (draft) => {
+  const rd = draft.recordData;
+  selectedRecord.value = {
+    id: rd.id,
+    pv: rd.pv,
+    objWork: rd.objWork,
+    name: rd.name,
+    objLocationClsSection: rd.objLocationClsSection,
+    pvLocationClsSection: rd.pvLocationClsSection,
+  };
+  currentDraftId.value = draft.id;
+  currentDraftFields.value = draft.formFields;
+
+  if (rd.sectionId) selectedSection.value = rd.sectionId;
+
+  isWorkCardModalOpen.value = true;
+  clearActiveDraft();
+};
+
+// Открытие черновика при навигации из DraftsPanel
+const isMounted = ref(false);
+
+watch(activeDraft, (draft) => {
+  if (draft && isMounted.value) {
+    openFromDraft(draft);
+  }
+});
+
 onMounted(async () => {
   await loadAllUnfinishedWork();
+  isMounted.value = true;
+
+  // Проверяем activeDraft после загрузки данных
+  if (activeDraft.value) {
+    openFromDraft(activeDraft.value);
+  }
 });
 
 </script>

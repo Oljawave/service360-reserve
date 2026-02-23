@@ -80,7 +80,9 @@
       :date="selectedDate"
       :sectionId="selectedSection"
       :sectionPv="selectedSectionPv"
-      @close="isWorkCardModalOpen = false"
+      :draftId="currentDraftId"
+      :draftData="currentDraftFields"
+      @close="closeWorkCardModal"
     />
 
     <ConfirmationModal
@@ -104,12 +106,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, h } from 'vue';
+import { ref, computed, onMounted, watch, h } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
-import { loadWorkPlanInspectionUnfinished, saveSeveralInspections } from '@/shared/api/inspections/inspectionsApi';
+import { saveSeveralInspections } from '@/shared/api/inspections/inspectionsApi';
 import { completeThePlanWork } from '@/shared/api/plans/planWorkApi';
+import { cachedLoadWorkPlanInspection } from '@/shared/offline/referenceDataCache';
+import { activeDraft, clearActiveDraft } from '@/shared/offline/activeDraft';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
 import BaseTable from '@/app/layouts/Table/BaseTable.vue';
 import BackButton from '@/shared/ui/BackButton.vue';
@@ -135,6 +139,8 @@ const selectedRows = ref([]);
 const isInspectionConfirmModalOpen = ref(false);
 const isSavingInspections = ref(false);
 const isCompletingWork = ref(false);
+const currentDraftId = ref(null);
+const currentDraftFields = ref(null);
 const router = useRouter();
 const notificationStore = useNotificationStore();
 
@@ -207,7 +213,15 @@ const selectedSectionPv = computed(() => {
   return record ? record.pv : null;
 });
 
+const closeWorkCardModal = () => {
+  isWorkCardModalOpen.value = false;
+  currentDraftId.value = null;
+  currentDraftFields.value = null;
+};
+
 const onRowDoubleClick = (row) => {
+  currentDraftId.value = null;
+  currentDraftFields.value = null;
   selectedRecord.value = row;
   isWorkCardModalOpen.value = true;
 };
@@ -406,7 +420,7 @@ const mapRecordToTableRow = (record) => ({
 const reloadTableDataOnly = async () => {
   isLoading.value = true;
   try {
-    const records = await loadWorkPlanInspectionUnfinished();
+    const records = await cachedLoadWorkPlanInspection();
     allRecords.value = records;
 
     // Просто обновляем таблицу с текущими фильтрами
@@ -421,7 +435,7 @@ const reloadTableDataOnly = async () => {
 const loadAllUnfinishedWork = async () => {
   isLoading.value = true;
   try {
-    const records = await loadWorkPlanInspectionUnfinished();
+    const records = await cachedLoadWorkPlanInspection();
     allRecords.value = records;
 
     // Извлекаем уникальные участки из загруженных данных
@@ -588,8 +602,47 @@ const onDayChange = (value) => {
   filterTableData();
 };
 
+const openFromDraft = (draft) => {
+  const rd = draft.recordData;
+  selectedRecord.value = {
+    id: rd.id,
+    pv: rd.pv,
+    objObject: rd.objObject,
+    name: rd.name,
+    objLocationClsSection: rd.objLocationClsSection,
+    pvLocationClsSection: rd.pvLocationClsSection,
+    StartKm: rd.StartKm,
+    StartPicket: rd.StartPicket,
+    StartLink: rd.StartLink,
+    FinishKm: rd.FinishKm,
+    FinishPicket: rd.FinishPicket,
+    FinishLink: rd.FinishLink,
+  };
+  currentDraftId.value = draft.id;
+  currentDraftFields.value = draft.formFields;
+
+  if (rd.sectionId) selectedSection.value = rd.sectionId;
+
+  isWorkCardModalOpen.value = true;
+  clearActiveDraft();
+};
+
+const isMounted = ref(false);
+
+watch(activeDraft, (draft) => {
+  if (draft && draft.formType === 'workCard' && isMounted.value) {
+    openFromDraft(draft);
+  }
+});
+
 onMounted(async () => {
   await loadAllUnfinishedWork();
+  isMounted.value = true;
+
+  // Проверяем activeDraft после загрузки данных
+  if (activeDraft.value && activeDraft.value.formType === 'workCard') {
+    openFromDraft(activeDraft.value);
+  }
 });
 
 </script>
