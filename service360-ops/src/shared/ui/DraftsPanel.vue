@@ -124,15 +124,23 @@ const togglePanel = () => {
 const openDraft = async (draft) => {
   panelOpen.value = false;
 
-  // Сначала навигируем, потом устанавливаем activeDraft.
-  // Это гарантирует, что целевой компонент будет смонтирован
-  // до того, как сработает watcher на activeDraft.
+  // Проверяем текущий маршрут
+  const currentRoute = router.currentRoute.value;
+  
+  // Определяем целевой маршрут для типа черновика
+  let targetRouteName = null;
   if (draft.formType === 'resourcePlanning') {
-    await router.push({ name: 'ResourcePlanningRecord' });
+    targetRouteName = 'ResourcePlanningRecord';
   } else if (draft.formType === 'workCard') {
-    await router.push({ name: 'InspectionRecord' });
+    targetRouteName = 'InspectionRecord';
   }
-
+  
+  // Навигируем только если мы не на целевом маршруте
+  if (targetRouteName && currentRoute.name !== targetRouteName) {
+    await router.push({ name: targetRouteName });
+  }
+  
+  // Устанавливаем активный черновик
   setActiveDraft(draft);
 };
 

@@ -24,7 +24,7 @@ app.use(router)
 
 // Suppress known Naive UI / Vue 3.5 slot compatibility warning
 app.config.warnHandler = (msg, _instance, trace) => {
-  if (msg.includes('Slot "default" invoked outside of the render function')) return;
+  if (msg.includes('invoked outside of the render function')) return;
   console.warn('[Vue warn]:', msg, trace);
 };
 

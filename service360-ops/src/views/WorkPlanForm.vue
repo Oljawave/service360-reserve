@@ -226,6 +226,40 @@ const onRowDoubleClick = (row) => {
   isWorkCardModalOpen.value = true;
 };
 
+// Функция для открытия черновика
+const openDraft = (draft) => {
+  if (!draft || draft.formType !== 'workCard') return;
+  
+  // Устанавливаем данные черновика
+  currentDraftId.value = draft.id;
+  currentDraftFields.value = draft.formFields;
+  
+  // Находим соответствующую запись в таблице по данным черновика
+  if (draft.recordData?.id) {
+    const record = tableData.value.find(r => r.id === draft.recordData.id);
+    if (record) {
+      selectedRecord.value = record;
+    } else {
+      // Если запись не найдена в текущей таблице, используем данные из черновика
+      selectedRecord.value = draft.recordData;
+    }
+  } else {
+    selectedRecord.value = draft.recordData || {};
+  }
+  
+  isWorkCardModalOpen.value = true;
+  
+  // Очищаем активный черновик после открытия
+  clearActiveDraft();
+};
+
+// Наблюдатель за активным черновиком
+watch(activeDraft, (newDraft) => {
+  if (newDraft && newDraft.formType === 'workCard') {
+    openDraft(newDraft);
+  }
+});
+
 const openConfirmationModal = (row) => {
   recordToComplete.value = row;
   isConfirmModalOpen.value = true;

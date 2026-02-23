@@ -415,6 +415,46 @@ const closeModal = () => {
   emit('close');
 };
 
+const fillFromDraft = (draft) => {
+  if (!draft) return;
+
+  if (draft.activeTab) {
+    activeTab.value = draft.activeTab;
+  }
+
+  // Info tab
+  if (draft.info) {
+    if (draft.info.coordinates) {
+      newRecord.value.coordinates = { ...newRecord.value.coordinates, ...draft.info.coordinates };
+    }
+    newRecord.value.date = draft.info.date || null;
+    newRecord.value.deviationReason = draft.info.deviationReason || '';
+  }
+
+  // Defects tab
+  if (draft.defect) {
+    if (draft.defect.startCoordinates) {
+      defectRecord.value.startCoordinates = { ...defectRecord.value.startCoordinates, ...draft.defect.startCoordinates };
+    }
+    defectRecord.value.componentText = draft.defect.componentText || '';
+    defectRecord.value.defectText = draft.defect.defectText || '';
+    defectRecord.value.note = draft.defect.note || '';
+  }
+
+  // Parameters tab
+  if (draft.parameter) {
+    if (draft.parameter.startCoordinates) {
+      parameterRecord.value.startCoordinates = { ...parameterRecord.value.startCoordinates, ...draft.parameter.startCoordinates };
+    }
+    parameterRecord.value.componentText = draft.parameter.componentText || '';
+    parameterRecord.value.parameterText = draft.parameter.parameterText || '';
+    parameterRecord.value.minValue = draft.parameter.minValue ?? null;
+    parameterRecord.value.maxValue = draft.parameter.maxValue ?? null;
+    parameterRecord.value.value = draft.parameter.value || '';
+    parameterRecord.value.note = draft.parameter.note || '';
+  }
+};
+
 const saveAsDraft = async () => {
   // Собираем все данные формы в зависимости от активного таба
   const formFields = {
@@ -1173,46 +1213,6 @@ watch(
   },
   { immediate: true }
 );
-
-const fillFromDraft = (draft) => {
-  if (!draft) return;
-
-  if (draft.activeTab) {
-    activeTab.value = draft.activeTab;
-  }
-
-  // Info tab
-  if (draft.info) {
-    if (draft.info.coordinates) {
-      newRecord.value.coordinates = { ...newRecord.value.coordinates, ...draft.info.coordinates };
-    }
-    newRecord.value.date = draft.info.date || null;
-    newRecord.value.deviationReason = draft.info.deviationReason || '';
-  }
-
-  // Defects tab
-  if (draft.defect) {
-    if (draft.defect.startCoordinates) {
-      defectRecord.value.startCoordinates = { ...defectRecord.value.startCoordinates, ...draft.defect.startCoordinates };
-    }
-    defectRecord.value.componentText = draft.defect.componentText || '';
-    defectRecord.value.defectText = draft.defect.defectText || '';
-    defectRecord.value.note = draft.defect.note || '';
-  }
-
-  // Parameters tab
-  if (draft.parameter) {
-    if (draft.parameter.startCoordinates) {
-      parameterRecord.value.startCoordinates = { ...parameterRecord.value.startCoordinates, ...draft.parameter.startCoordinates };
-    }
-    parameterRecord.value.componentText = draft.parameter.componentText || '';
-    parameterRecord.value.parameterText = draft.parameter.parameterText || '';
-    parameterRecord.value.minValue = draft.parameter.minValue ?? null;
-    parameterRecord.value.maxValue = draft.parameter.maxValue ?? null;
-    parameterRecord.value.value = draft.parameter.value || '';
-    parameterRecord.value.note = draft.parameter.note || '';
-  }
-};
 </script>
 
 <style scoped>
