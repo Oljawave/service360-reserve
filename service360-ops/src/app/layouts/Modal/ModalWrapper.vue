@@ -55,7 +55,6 @@ const onDelete = () => emit('delete')
 </script>
 
 <style scoped>
-/* Стили для анимации модального окна */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0.3s cubic-bezier(0.52, 0.02, 0.19, 1.02);
@@ -158,7 +157,6 @@ const onDelete = () => emit('delete')
   }
 }
 
-/* Tablet styles */
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 12px;
@@ -174,7 +172,6 @@ const onDelete = () => emit('delete')
   }
 }
 
-/* Mobile styles */
 @media (max-width: 640px) {
   .modal-overlay {
     padding: 0;
@@ -195,7 +192,6 @@ const onDelete = () => emit('delete')
     padding: 16px;
   }
 
-  /* Делаем grid layouts одноколоночными */
   .modal-body :deep(.form-section) {
     grid-template-columns: 1fr !important;
     gap: 16px !important;

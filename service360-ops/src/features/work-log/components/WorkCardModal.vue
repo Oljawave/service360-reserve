@@ -11,7 +11,7 @@
       <WorkHeaderInfo :record="record" :section="section" :date="date" />
 
       <div class="tabs-block">
-        <TabsHeader :tabs="tabs" :modelValue="activeTab" @update:modelValue="handleTabChange" />
+        <TabsHeader v-if="!singleTabMode" :tabs="tabs" :modelValue="activeTab" @update:modelValue="handleTabChange" />
 
         <div class="tab-content">
           <div v-if="activeTab === 'info'">
@@ -66,7 +66,7 @@
               <div class="defect-info-group">
                 <AppDropdown
                   v-if="isOnline"
-                  label="Компонент"
+                  :label="defectRecord.componentText ? `Компонент (${defectRecord.componentText})` : 'Компонент'"
                   id="component-dropdown"
                   :options="componentOptions"
                   v-model="defectRecord.component"
@@ -77,7 +77,7 @@
                   :required="true" />
                 <AppInput
                   v-else
-                  label="Компонент (текст)"
+                  label="Компонент"
                   id="component-text"
                   v-model="defectRecord.componentText"
                   placeholder="Введите название компонента"
@@ -85,7 +85,7 @@
                   :required="true" />
                 <AppDropdown
                   v-if="isOnline"
-                  label="Дефект / неисправность"
+                  :label="defectRecord.defectText ? `Дефект / неисправность (${defectRecord.defectText})` : 'Дефект / неисправность'"
                   id="defect-dropdown"
                   :options="defectOptions"
                   v-model="defectRecord.defectType"
@@ -95,7 +95,7 @@
                   :required="true" />
                 <AppInput
                   v-else
-                  label="Дефект (текст)"
+                  label="Дефект / неисправность"
                   id="defect-text"
                   v-model="defectRecord.defectText"
                   placeholder="Введите описание дефекта"
@@ -130,7 +130,7 @@
               <div class="parameter-info-group">
                 <AppDropdown
                   v-if="isOnline"
-                  label="Компонент"
+                  :label="parameterRecord.componentText ? `Компонент (${parameterRecord.componentText})` : 'Компонент'"
                   id="component-dropdown"
                   :options="componentOptions"
                   v-model="parameterRecord.component"
@@ -141,7 +141,7 @@
                   :required="true" />
                 <AppInput
                   v-else
-                  label="Компонент (текст)"
+                  label="Компонент"
                   id="param-component-text"
                   v-model="parameterRecord.componentText"
                   placeholder="Введите название компонента"
@@ -149,7 +149,7 @@
                   :required="true" />
                 <AppDropdown
                   v-if="isOnline"
-                  label="Параметр"
+                  :label="parameterRecord.parameterText ? `Параметр (${parameterRecord.parameterText})` : 'Параметр'"
                   id="parameter-dropdown"
                   :options="parameterOptions"
                   v-model="parameterRecord.parameterType"
@@ -160,7 +160,7 @@
                   :required="true" />
                 <AppInput
                   v-else
-                  label="Параметр (текст)"
+                  label="Параметр"
                   id="parameter-text"
                   v-model="parameterRecord.parameterText"
                   placeholder="Введите название параметра"
@@ -218,7 +218,7 @@
             class="draft-btn"
             @click="saveAsDraft"
           >
-            Сохранить черновик
+            {{ getDraftButtonLabel() }}
           </button>
           <MainButton
             v-if="isOnline"
@@ -248,7 +248,7 @@ import { useNotificationStore } from '@/app/stores/notificationStore';
 import { loadInspectionEntriesForWorkPlan, saveInspectionInfo, saveFaultInfo, saveParameterInfo, getUserData, loadComponentsByTypObjectForSelect, loadDefectsByComponentForSelect, loadComponentParametersForSelect, loadFaultEntriesForInspection, loadParameterEntriesForInspection } from '@/shared/api/inspections/inspectionsApi';
 import { formatDate, formatDateToISO } from '@/app/stores/date.js';
 import { useNetworkStatus } from '@/shared/offline/useNetworkStatus';
-import { saveDraft, deleteDraft } from '@/shared/offline/draftsStore';
+import { saveDraft, updateDraft, deleteDraft } from '@/shared/offline/draftsStore';
 
 const props = defineProps({
   record: {
@@ -279,6 +279,16 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  // Таб, который нужно открыть (из DraftsPanel)
+  openTab: {
+    type: String,
+    default: 'info',
+  },
+  // ID родительского черновика (для дочерних черновиков дефектов/параметров)
+  draftParentId: {
+    type: Number,
+    default: null,
+  },
 });
 
 const emit = defineEmits(['close']);
@@ -286,9 +296,14 @@ const emit = defineEmits(['close']);
 const { isOnline } = useNetworkStatus();
 
 const isSaving = ref(false);
-const activeTab = ref('info');
-const isInfoSaved = ref(false);
+const activeTab = ref(props.openTab || 'info');
+// single-tab режим: любой черновик из DraftsPanel — показываем только нужный таб без шапки
+const singleTabMode = computed(() => !!props.draftId || props.openTab === 'defects' || props.openTab === 'parameters');
+// isInfoSaved = true если открыт не таб info (значит инфо уже сохранена) или есть draftId
+const isInfoSaved = ref(props.openTab !== 'info' || !!props.draftId);
 const savedInspectionId = ref(null);
+// ID родительского черновика (info-черновик), к которому привязаны дефекты/параметры
+const localParentDraftId = ref(props.draftParentId || (props.openTab === 'info' && props.draftId ? props.draftId : null));
 const isCoordinatesOutOfBounds = ref(false);
 const isDefectCoordinatesOutOfBounds = ref(false);
 const isParameterCoordinatesOutOfBounds = ref(false);
@@ -418,8 +433,10 @@ const closeModal = () => {
 const fillFromDraft = (draft) => {
   if (!draft) return;
 
-  if (draft.activeTab) {
-    activeTab.value = draft.activeTab;
+  // Определяем активный таб (новый формат: draft.tab, старый: draft.activeTab)
+  const tab = draft.tab || draft.activeTab;
+  if (tab) {
+    activeTab.value = tab;
   }
 
   // Info tab
@@ -455,58 +472,127 @@ const fillFromDraft = (draft) => {
   }
 };
 
+const getRecordMetadata = () => ({
+  id: props.record?.id,
+  pv: props.record?.pv,
+  objObject: props.record?.objObject,
+  name: props.record?.name,
+  place: props.record?.place,
+  objectType: props.record?.objectType,
+  object: props.record?.object,
+  nameLocationClsSection: props.record?.nameLocationClsSection,
+  coordinates: props.record?.coordinates,
+  section: props.section,
+  date: props.date,
+  sectionId: props.sectionId,
+  sectionPv: props.sectionPv,
+  objLocationClsSection: props.record?.objLocationClsSection,
+  pvLocationClsSection: props.record?.pvLocationClsSection,
+  StartKm: props.record?.StartKm,
+  StartPicket: props.record?.StartPicket,
+  StartLink: props.record?.StartLink,
+  FinishKm: props.record?.FinishKm,
+  FinishPicket: props.record?.FinishPicket,
+  FinishLink: props.record?.FinishLink,
+});
+
 const saveAsDraft = async () => {
-  // Собираем все данные формы в зависимости от активного таба
-  const formFields = {
-    activeTab: activeTab.value,
-    info: {
-      coordinates: { ...newRecord.value.coordinates },
-      date: newRecord.value.date,
-      deviationReason: newRecord.value.deviationReason,
-    },
-    defect: {
-      startCoordinates: { ...defectRecord.value.startCoordinates },
-      componentText: defectRecord.value.componentText,
-      defectText: defectRecord.value.defectText,
-      note: defectRecord.value.note,
-    },
-    parameter: {
-      startCoordinates: { ...parameterRecord.value.startCoordinates },
-      componentText: parameterRecord.value.componentText,
-      parameterText: parameterRecord.value.parameterText,
-      minValue: parameterRecord.value.minValue,
-      maxValue: parameterRecord.value.maxValue,
-      value: parameterRecord.value.value,
-      note: parameterRecord.value.note,
-    },
-  };
-
   try {
-    await saveDraft('workCard', {
-      id: props.record?.id,
-      pv: props.record?.pv,
-      objObject: props.record?.objObject,
-      name: props.record?.name,
-      section: props.section,
-      date: props.date,
-      sectionId: props.sectionId,
-      sectionPv: props.sectionPv,
-      objLocationClsSection: props.record?.objLocationClsSection,
-      pvLocationClsSection: props.record?.pvLocationClsSection,
-      StartKm: props.record?.StartKm,
-      StartPicket: props.record?.StartPicket,
-      StartLink: props.record?.StartLink,
-      FinishKm: props.record?.FinishKm,
-      FinishPicket: props.record?.FinishPicket,
-      FinishLink: props.record?.FinishLink,
-    }, formFields);
+    if (activeTab.value === 'info') {
+      const formFields = {
+        tab: 'info',
+        info: {
+          coordinates: { ...newRecord.value.coordinates },
+          date: newRecord.value.date,
+          deviationReason: newRecord.value.deviationReason,
+        },
+      };
 
-    if (props.draftId) {
-      await deleteDraft(props.draftId);
+      if (localParentDraftId.value) {
+        // Обновляем существующий info-черновик
+        await updateDraft(localParentDraftId.value, formFields);
+      } else {
+        // Создаём новый info-черновик (родительский)
+        const id = await saveDraft('workCard', getRecordMetadata(), formFields);
+        localParentDraftId.value = id;
+      }
+
+      isInfoSaved.value = true;
+      notificationStore.showNotification(
+        'Черновик сохранён! Теперь доступны вкладки Неисправности и Параметры.',
+        'success'
+      );
+      // НЕ закрываем модал — пользователь может добавить дефекты/параметры
+
+    } else if (activeTab.value === 'defects') {
+      const formFields = {
+        tab: 'defects',
+        defect: {
+          startCoordinates: { ...defectRecord.value.startCoordinates },
+          componentText: defectRecord.value.componentText,
+          defectText: defectRecord.value.defectText,
+          note: defectRecord.value.note,
+        },
+      };
+
+      if (props.draftId && singleTabMode.value) {
+        // Редактирование существующего дочернего черновика дефекта
+        await updateDraft(props.draftId, formFields);
+        notificationStore.showNotification('Неисправность обновлена в черновике!', 'success');
+        emit('close');
+      } else {
+        // Новый дочерний черновик дефекта
+        await saveDraft('workCard', getRecordMetadata(), formFields, localParentDraftId.value);
+        // Сбрасываем форму дефекта
+        defectRecord.value = {
+          startCoordinates: { ...defectRecord.value.startCoordinates },
+          componentText: '',
+          defectText: '',
+          note: '',
+          component: null,
+          defectType: null,
+        };
+        notificationStore.showNotification('Неисправность сохранена в черновик!', 'success');
+      }
+
+    } else if (activeTab.value === 'parameters') {
+      const formFields = {
+        tab: 'parameters',
+        parameter: {
+          startCoordinates: { ...parameterRecord.value.startCoordinates },
+          componentText: parameterRecord.value.componentText,
+          parameterText: parameterRecord.value.parameterText,
+          minValue: parameterRecord.value.minValue,
+          maxValue: parameterRecord.value.maxValue,
+          value: parameterRecord.value.value,
+          note: parameterRecord.value.note,
+        },
+      };
+
+      if (props.draftId && singleTabMode.value) {
+        // Редактирование существующего дочернего черновика параметра
+        await updateDraft(props.draftId, formFields);
+        notificationStore.showNotification('Параметр обновлён в черновике!', 'success');
+        emit('close');
+      } else {
+        // Новый дочерний черновик параметра
+        await saveDraft('workCard', getRecordMetadata(), formFields, localParentDraftId.value);
+        // Сбрасываем форму параметра
+        parameterRecord.value = {
+          startCoordinates: { ...parameterRecord.value.startCoordinates },
+          componentText: '',
+          parameterText: '',
+          minValue: null,
+          maxValue: null,
+          value: '',
+          note: '',
+          component: null,
+          parameterType: null,
+        };
+        shouldShowMinMaxError.value = false;
+        notificationStore.showNotification('Параметр сохранён в черновик!', 'success');
+      }
     }
-
-    notificationStore.showNotification('Черновик сохранен!', 'success');
-    emit('close');
   } catch (error) {
     console.error('Ошибка сохранения черновика:', error);
     notificationStore.showNotification('Не удалось сохранить черновик.', 'error');
@@ -601,6 +687,17 @@ const getButtonLabel = () => {
       return 'Добавить параметр';
     default:
       return 'Сохранить';
+  }
+};
+
+const getDraftButtonLabel = () => {
+  switch (activeTab.value) {
+    case 'defects':
+      return 'Сохранить неисправность в черновик';
+    case 'parameters':
+      return 'Сохранить параметр в черновик';
+    default:
+      return isInfoSaved.value && localParentDraftId.value ? 'Обновить черновик' : 'Сохранить черновик';
   }
 };
 
@@ -1173,7 +1270,7 @@ watch(
 
 watch(
   () => props.record,
-  (newRecordData) => {
+  async (newRecordData) => {
     if (newRecordData) {
       objectBounds.value = {
         StartKm: newRecordData.StartKm || null,
@@ -1202,12 +1299,33 @@ watch(
         coordEndZv: newRecordData.FinishLink || null,
       });
 
-      loadExistingData(newRecordData);
+      const existingData = await loadExistingData(newRecordData);
       loadComponents();
+
+      // При открытии вкладки дефектов/параметров — ищем последний осмотр
+      // и загружаем существующие дефекты/параметры для ExistingDataBlock
+      if (props.openTab === 'defects' || props.openTab === 'parameters') {
+        if (existingData?.length > 0) {
+          const lastInspection = existingData[existingData.length - 1];
+          if (lastInspection?.id) {
+            savedInspectionId.value = lastInspection.id;
+            if (props.openTab === 'defects') {
+              await loadExistingDefects(lastInspection.id);
+            } else {
+              await loadExistingParameters(lastInspection.id);
+            }
+          }
+        }
+      }
 
       // Заполняем из черновика если есть
       if (props.draftData) {
         fillFromDraft(props.draftData);
+        // Если открыт info-черновик — считаем info сохранённой, разблокируем табы
+        if (props.draftId && (!props.openTab || props.openTab === 'info')) {
+          isInfoSaved.value = true;
+          localParentDraftId.value = props.draftId;
+        }
       }
     }
   },

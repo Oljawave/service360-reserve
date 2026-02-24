@@ -41,7 +41,6 @@ export default {
   cursor: not-allowed;
 }
 
-/* Mobile styles */
 @media (max-width: 768px) {
   .main-button {
     height: 50px;

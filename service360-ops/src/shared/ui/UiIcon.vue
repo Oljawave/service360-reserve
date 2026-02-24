@@ -8,12 +8,11 @@ import { computed } from 'vue'
 
 const props = defineProps({
   name: String,
-  color: String, // Добавлено свойство color
+  color: String,
 })
 
 const iconComponent = computed(() => icons[props.name] || icons['AlertCircle'])
 
-// Добавлено вычисляемое свойство для inline-стиля цвета
 const iconStyle = computed(() => (props.color ? { color: props.color } : {}))
 </script>
 
@@ -22,6 +21,6 @@ const iconStyle = computed(() => (props.color ? { color: props.color } : {}))
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  color: #4a5568; /* Цвет по умолчанию теперь в CSS, но может быть переопределен через props */
+  color: #4a5568;
 }
 </style>

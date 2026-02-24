@@ -28,3 +28,8 @@ db.version(2).stores({
   // Кэш данных плана работ (для офлайн-доступа к таблице)
   workPlanRecords: '++_rowId, id',
 });
+
+db.version(3).stores({
+  // Добавляем индекс parentDraftId для иерархических черновиков
+  drafts: '++id, formType, createdAt, parentDraftId',
+});

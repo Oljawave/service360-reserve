@@ -82,6 +82,8 @@
       :sectionPv="selectedSectionPv"
       :draftId="currentDraftId"
       :draftData="currentDraftFields"
+      :openTab="currentOpenTab"
+      :draftParentId="currentParentDraftId"
       @close="closeWorkCardModal"
     />
 
@@ -141,6 +143,8 @@ const isSavingInspections = ref(false);
 const isCompletingWork = ref(false);
 const currentDraftId = ref(null);
 const currentDraftFields = ref(null);
+const currentOpenTab = ref('info');
+const currentParentDraftId = ref(null);
 const router = useRouter();
 const notificationStore = useNotificationStore();
 
@@ -217,6 +221,8 @@ const closeWorkCardModal = () => {
   isWorkCardModalOpen.value = false;
   currentDraftId.value = null;
   currentDraftFields.value = null;
+  currentOpenTab.value = 'info';
+  currentParentDraftId.value = null;
 };
 
 const onRowDoubleClick = (row) => {
@@ -226,39 +232,6 @@ const onRowDoubleClick = (row) => {
   isWorkCardModalOpen.value = true;
 };
 
-// Функция для открытия черновика
-const openDraft = (draft) => {
-  if (!draft || draft.formType !== 'workCard') return;
-  
-  // Устанавливаем данные черновика
-  currentDraftId.value = draft.id;
-  currentDraftFields.value = draft.formFields;
-  
-  // Находим соответствующую запись в таблице по данным черновика
-  if (draft.recordData?.id) {
-    const record = tableData.value.find(r => r.id === draft.recordData.id);
-    if (record) {
-      selectedRecord.value = record;
-    } else {
-      // Если запись не найдена в текущей таблице, используем данные из черновика
-      selectedRecord.value = draft.recordData;
-    }
-  } else {
-    selectedRecord.value = draft.recordData || {};
-  }
-  
-  isWorkCardModalOpen.value = true;
-  
-  // Очищаем активный черновик после открытия
-  clearActiveDraft();
-};
-
-// Наблюдатель за активным черновиком
-watch(activeDraft, (newDraft) => {
-  if (newDraft && newDraft.formType === 'workCard') {
-    openDraft(newDraft);
-  }
-});
 
 const openConfirmationModal = (row) => {
   recordToComplete.value = row;
@@ -638,22 +611,36 @@ const onDayChange = (value) => {
 
 const openFromDraft = (draft) => {
   const rd = draft.recordData;
-  selectedRecord.value = {
-    id: rd.id,
-    pv: rd.pv,
-    objObject: rd.objObject,
-    name: rd.name,
-    objLocationClsSection: rd.objLocationClsSection,
-    pvLocationClsSection: rd.pvLocationClsSection,
-    StartKm: rd.StartKm,
-    StartPicket: rd.StartPicket,
-    StartLink: rd.StartLink,
-    FinishKm: rd.FinishKm,
-    FinishPicket: rd.FinishPicket,
-    FinishLink: rd.FinishLink,
-  };
+
+  // Если онлайн и данные загружены — ищем свежую запись по ID
+  const fullRecord = allRecords.value.find(r => r.id === rd.id);
+  selectedRecord.value = fullRecord
+    ? mapRecordToTableRow(fullRecord)
+    : {
+        id: rd.id,
+        pv: rd.pv,
+        objObject: rd.objObject,
+        name: rd.name,
+        place: rd.place,
+        objectType: rd.objectType,
+        object: rd.object,
+        nameLocationClsSection: rd.nameLocationClsSection,
+        coordinates: rd.coordinates,
+        objLocationClsSection: rd.objLocationClsSection,
+        pvLocationClsSection: rd.pvLocationClsSection,
+        StartKm: rd.StartKm,
+        StartPicket: rd.StartPicket,
+        StartLink: rd.StartLink,
+        FinishKm: rd.FinishKm,
+        FinishPicket: rd.FinishPicket,
+        FinishLink: rd.FinishLink,
+      };
+
   currentDraftId.value = draft.id;
   currentDraftFields.value = draft.formFields;
+  // Определяем таб для открытия и родительский ID
+  currentOpenTab.value = draft.formFields?.tab || 'info';
+  currentParentDraftId.value = draft.parentDraftId || null;
 
   if (rd.sectionId) selectedSection.value = rd.sectionId;
 

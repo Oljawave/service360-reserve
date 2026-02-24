@@ -1,6 +1,5 @@
 <template>
   <div class="sidebar-item-wrapper">
-    <!-- Родительский элемент (с дочерними или обычная ссылка) -->
     <component
       :is="children ? 'div' : 'router-link'"
       :to="!children ? to : undefined"
@@ -22,7 +21,6 @@
       />
     </component>
 
-    <!-- Дочерние элементы -->
     <transition name="expand">
       <div v-if="children && isExpanded && !isCollapsed" class="children-wrapper">
         <router-link
@@ -38,7 +36,6 @@
       </div>
     </transition>
 
-    <!-- Tooltip для collapsed состояния с дочерними элементами -->
     <div v-if="children && isCollapsed" class="collapsed-tooltip">
       <div class="tooltip-header">{{ label }}</div>
       <router-link
@@ -77,11 +74,9 @@ const route = useRoute()
 const isExpanded = ref(false)
 
 const isActive = computed(() => {
-  // Если это обычная ссылка без дочерних элементов
   if (props.to && !props.children) {
     return route.path.startsWith(props.to)
   }
-  // Если есть дочерние элементы, родитель не должен быть активным
   return false
 })
 
@@ -101,7 +96,6 @@ const handleChildClick = () => {
   emit('clicked')
 }
 
-// Автоматически раскрываем родительский элемент если активен дочерний
 if (props.children && props.children.some(child => route.path.startsWith(child.path))) {
   isExpanded.value = true
 }
@@ -194,7 +188,6 @@ if (props.children && props.children.some(child => route.path.startsWith(child.p
   color: #2b6cb0;
 }
 
-/* Дочерние элементы */
 .children-wrapper {
   display: flex;
   flex-direction: column;
@@ -222,7 +215,6 @@ if (props.children && props.children.some(child => route.path.startsWith(child.p
   display: block;
 }
 
-/* Анимация раскрытия */
 .expand-enter-active,
 .expand-leave-active {
   transition: all 0.3s ease;
@@ -240,7 +232,6 @@ if (props.children && props.children.some(child => route.path.startsWith(child.p
   max-height: 500px;
 }
 
-/* Tooltip для collapsed состояния с дочерними */
 .collapsed-tooltip {
   position: absolute;
   left: 100%;
@@ -258,7 +249,6 @@ if (props.children && props.children.some(child => route.path.startsWith(child.p
   min-width: 200px;
 }
 
-/* Мост между иконкой и tooltip для плавного перехода мышки */
 .collapsed-tooltip::before {
   content: '';
   position: absolute;
