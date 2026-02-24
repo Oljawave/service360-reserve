@@ -33,12 +33,16 @@
             <!-- Родительский черновик -->
             <div
               class="drafts-panel-item"
-              @click="openDraft(group.draft)"
+              :class="{ 'drafts-panel-item--submitted': group.draft.submitted }"
+              @click="!group.draft.submitted && openDraft(group.draft)"
             >
               <div class="drafts-panel-item-content">
                 <div class="drafts-panel-item-top">
                   <span class="drafts-panel-item-name">{{ getFormLabel(group.draft.formType) }}</span>
-                  <span class="drafts-panel-item-time">{{ formatTime(group.draft.createdAt) }}</span>
+                  <div class="drafts-panel-item-top-right">
+                    <UiIcon v-if="group.draft.submitted" name="CheckCircle" :size="8" class="drafts-submitted-icon" />
+                    <span class="drafts-panel-item-time">{{ formatTime(group.draft.createdAt) }}</span>
+                  </div>
                 </div>
                 <p class="drafts-panel-item-desc">{{ getDraftPreview(group.draft) }}</p>
               </div>
@@ -451,6 +455,28 @@ onBeforeUnmount(() => {
   background: #f8fafc;
 }
 
+.drafts-panel-item--submitted {
+  background: #f8fdf9;
+  cursor: default;
+  opacity: 0.85;
+}
+
+.drafts-panel-item--submitted:hover {
+  background: #f8fdf9;
+}
+
+.drafts-panel-item-top-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.drafts-submitted-icon {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
 .drafts-panel-item-content {
   flex: 1;
   min-width: 0;
@@ -477,7 +503,6 @@ onBeforeUnmount(() => {
   font-size: 11px;
   color: #94a3b8;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .drafts-panel-item-desc {

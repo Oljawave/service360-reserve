@@ -34,14 +34,10 @@ import UserNotifications from './app/layouts/UserNotifications.vue'
 import SplashScreen from './components/SplashScreen.vue'
 import { useSidebarStore } from './app/stores/sidebar'
 import { prefetchAllReferenceData } from './shared/offline/prefetchReferenceData'
-import { useSyncManager } from './shared/offline/useSyncManager'
 
 const route = useRoute()
 const isLoginPage = computed(() => route.path === '/login')
 const sidebar = useSidebarStore()
-
-// Офлайн-синхронизация
-useSyncManager()
 
 // Предзагрузка справочников для офлайн-работы
 onMounted(() => {

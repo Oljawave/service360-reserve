@@ -11,7 +11,7 @@
       <WorkHeaderInfo :record="record" :section="section" :date="date" />
 
       <div class="tabs-block">
-        <TabsHeader v-if="!singleTabMode" :tabs="tabs" :modelValue="activeTab" @update:modelValue="handleTabChange" />
+        <TabsHeader :tabs="tabs" :modelValue="activeTab" @update:modelValue="handleTabChange" />
 
         <div class="tab-content">
           <div v-if="activeTab === 'info'">
@@ -64,43 +64,43 @@
                   :required="true" />
               </div>
               <div class="defect-info-group">
-                <AppDropdown
-                  v-if="isOnline"
-                  :label="defectRecord.componentText ? `Компонент (${defectRecord.componentText})` : 'Компонент'"
-                  id="component-dropdown"
-                  :options="componentOptions"
-                  v-model="defectRecord.component"
-                  placeholder="Выберите компонент"
-                  class="half-width"
-                  :loading="loadingComponents"
-                  @update:modelValue="handleDefectComponentChange"
-                  :required="true" />
-                <AppInput
-                  v-else
-                  label="Компонент"
-                  id="component-text"
-                  v-model="defectRecord.componentText"
-                  placeholder="Введите название компонента"
-                  class="half-width"
-                  :required="true" />
-                <AppDropdown
-                  v-if="isOnline"
-                  :label="defectRecord.defectText ? `Дефект / неисправность (${defectRecord.defectText})` : 'Дефект / неисправность'"
-                  id="defect-dropdown"
-                  :options="defectOptions"
-                  v-model="defectRecord.defectType"
-                  placeholder="Выберите дефект"
-                  class="half-width"
-                  :loading="loadingDefects"
-                  :required="true" />
-                <AppInput
-                  v-else
-                  label="Дефект / неисправность"
-                  id="defect-text"
-                  v-model="defectRecord.defectText"
-                  placeholder="Введите описание дефекта"
-                  class="half-width"
-                  :required="true" />
+                <template v-if="isOnline">
+                  <AppDropdown
+                    label="Компонент"
+                    id="component-dropdown"
+                    :options="componentOptions"
+                    v-model="defectRecord.component"
+                    placeholder="Выберите компонент"
+                    class="half-width"
+                    :loading="loadingComponents"
+                    @update:modelValue="handleDefectComponentChange"
+                    :required="true" />
+                  <AppDropdown
+                    label="Дефект / неисправность"
+                    id="defect-dropdown"
+                    :options="defectOptions"
+                    v-model="defectRecord.defectType"
+                    placeholder="Выберите дефект"
+                    class="half-width"
+                    :loading="loadingDefects"
+                    :required="true" />
+                </template>
+                <template v-else>
+                  <AppInput
+                    label="Компонент"
+                    id="defect-component-text"
+                    v-model="defectRecord.componentText"
+                    placeholder="Введите компонент..."
+                    class="half-width"
+                    :required="true" />
+                  <AppInput
+                    label="Дефект / неисправность"
+                    id="defect-type-text"
+                    v-model="defectRecord.defectText"
+                    placeholder="Введите дефект..."
+                    class="half-width"
+                    :required="true" />
+                </template>
               </div>
               <AppInput
                 label="Примечание / заметка"
@@ -128,46 +128,46 @@
                   :required="true" />
               </div>
               <div class="parameter-info-group">
-                <AppDropdown
-                  v-if="isOnline"
-                  :label="parameterRecord.componentText ? `Компонент (${parameterRecord.componentText})` : 'Компонент'"
-                  id="component-dropdown"
-                  :options="componentOptions"
-                  v-model="parameterRecord.component"
-                  placeholder="Выберите компонент"
-                  class="half-width"
-                  :loading="loadingComponents"
-                  @update:modelValue="handleParameterComponentChange"
-                  :required="true" />
-                <AppInput
-                  v-else
-                  label="Компонент"
-                  id="param-component-text"
-                  v-model="parameterRecord.componentText"
-                  placeholder="Введите название компонента"
-                  class="half-width"
-                  :required="true" />
-                <AppDropdown
-                  v-if="isOnline"
-                  :label="parameterRecord.parameterText ? `Параметр (${parameterRecord.parameterText})` : 'Параметр'"
-                  id="parameter-dropdown"
-                  :options="parameterOptions"
-                  v-model="parameterRecord.parameterType"
-                  placeholder="Выберите параметр"
-                  class="half-width"
-                  :loading="loadingParameters"
-                  @update:modelValue="handleParameterChange"
-                  :required="true" />
-                <AppInput
-                  v-else
-                  label="Параметр"
-                  id="parameter-text"
-                  v-model="parameterRecord.parameterText"
-                  placeholder="Введите название параметра"
-                  class="half-width"
-                  :required="true" />
+                <template v-if="isOnline">
+                  <AppDropdown
+                    label="Компонент"
+                    id="component-dropdown"
+                    :options="componentOptions"
+                    v-model="parameterRecord.component"
+                    placeholder="Выберите компонент"
+                    class="half-width"
+                    :loading="loadingComponents"
+                    @update:modelValue="handleParameterComponentChange"
+                    :required="true" />
+                  <AppDropdown
+                    label="Параметр"
+                    id="parameter-dropdown"
+                    :options="parameterOptions"
+                    v-model="parameterRecord.parameterType"
+                    placeholder="Выберите параметр"
+                    class="half-width"
+                    :loading="loadingParameters"
+                    @update:modelValue="handleParameterChange"
+                    :required="true" />
+                </template>
+                <template v-else>
+                  <AppInput
+                    label="Компонент"
+                    id="param-component-text"
+                    v-model="parameterRecord.componentText"
+                    placeholder="Введите компонент..."
+                    class="half-width"
+                    :required="true" />
+                  <AppInput
+                    label="Параметр"
+                    id="param-type-text"
+                    v-model="parameterRecord.parameterText"
+                    placeholder="Введите параметр..."
+                    class="half-width"
+                    :required="true" />
+                </template>
               </div>
-              
+
               <div class="parameter-value-group">
                 <AppNumberInput
                   label="Минимальное значение"
@@ -213,15 +213,9 @@
 
       <div class="button-container">
         <div class="main-actions">
-          <button
-            v-if="!isOnline"
-            class="draft-btn"
-            @click="saveAsDraft"
-          >
-            {{ getDraftButtonLabel() }}
-          </button>
+          <button v-if="!isOnline" class="draft-btn" @click="saveAsDraft">{{ getDraftButtonLabel() }}</button>
           <MainButton
-            v-if="isOnline"
+            v-if="isOnline && !(activeTab === 'info' && existingRecords.length > 0)"
             :label="getButtonLabel()"
             :loading="isSaving"
             @click="saveWork"
@@ -233,7 +227,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, defineProps, defineEmits } from 'vue';
+import { ref, watch, computed } from 'vue';
 import ModalWrapper from '@/app/layouts/Modal/ModalWrapper.vue';
 import MainButton from '@/shared/ui/MainButton.vue';
 import FullCoordinates from '@/shared/ui/FormControls/FullCoordinates.vue';
@@ -245,69 +239,43 @@ import TabsHeader from '@/shared/ui/TabsHeader.vue';
 import WorkHeaderInfo from '@/shared/ui/WorkHeaderInfo.vue';
 import ExistingDataBlock from '@/shared/ui/ExistingDataBlock.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
-import { loadInspectionEntriesForWorkPlan, saveInspectionInfo, saveFaultInfo, saveParameterInfo, getUserData, loadComponentsByTypObjectForSelect, loadDefectsByComponentForSelect, loadComponentParametersForSelect, loadFaultEntriesForInspection, loadParameterEntriesForInspection } from '@/shared/api/inspections/inspectionsApi';
+import {
+  loadInspectionEntriesForWorkPlan,
+  saveInspectionInfo,
+  saveFaultInfo,
+  saveParameterInfo,
+  getUserData,
+  loadComponentsByTypObjectForSelect,
+  loadDefectsByComponentForSelect,
+  loadComponentParametersForSelect,
+  loadFaultEntriesForInspection,
+  loadParameterEntriesForInspection,
+} from '@/shared/api/inspections/inspectionsApi';
 import { formatDate, formatDateToISO } from '@/app/stores/date.js';
 import { useNetworkStatus } from '@/shared/offline/useNetworkStatus';
-import { saveDraft, updateDraft, deleteDraft } from '@/shared/offline/draftsStore';
+import { saveDraft, updateDraft } from '@/shared/offline/draftsStore';
 
 const props = defineProps({
-  record: {
-    type: Object,
-    default: null,
-  },
-  section: {
-    type: String,
-    default: null,
-  },
-  date: {
-    type: String,
-    default: null,
-  },
-  sectionId: {
-    type: [Number, String],
-    default: null,
-  },
-  sectionPv: {
-    type: [Number, String],
-    default: null,
-  },
-  draftId: {
-    type: Number,
-    default: null,
-  },
-  draftData: {
-    type: Object,
-    default: null,
-  },
-  // Таб, который нужно открыть (из DraftsPanel)
-  openTab: {
-    type: String,
-    default: 'info',
-  },
-  // ID родительского черновика (для дочерних черновиков дефектов/параметров)
-  draftParentId: {
-    type: Number,
-    default: null,
-  },
+  record: { type: Object, default: null },
+  section: { type: String, default: null },
+  date: { type: String, default: null },
+  sectionId: { type: [Number, String], default: null },
+  sectionPv: { type: [Number, String], default: null },
 });
 
 const emit = defineEmits(['close']);
 
+const notificationStore = useNotificationStore();
 const { isOnline } = useNetworkStatus();
+const localParentDraftId = ref(null);
 
 const isSaving = ref(false);
-const activeTab = ref(props.openTab || 'info');
-// single-tab режим: любой черновик из DraftsPanel — показываем только нужный таб без шапки
-const singleTabMode = computed(() => !!props.draftId || props.openTab === 'defects' || props.openTab === 'parameters');
-// isInfoSaved = true если открыт не таб info (значит инфо уже сохранена) или есть draftId
-const isInfoSaved = ref(props.openTab !== 'info' || !!props.draftId);
+const activeTab = ref('info');
+const isInfoSaved = ref(false);
 const savedInspectionId = ref(null);
-// ID родительского черновика (info-черновик), к которому привязаны дефекты/параметры
-const localParentDraftId = ref(props.draftParentId || (props.openTab === 'info' && props.draftId ? props.draftId : null));
 const isCoordinatesOutOfBounds = ref(false);
 const isDefectCoordinatesOutOfBounds = ref(false);
 const isParameterCoordinatesOutOfBounds = ref(false);
-
 const shouldShowMinMaxError = ref(false);
 const isUserTypingMinMax = ref(false);
 
@@ -317,16 +285,10 @@ const tabs = ref([
   { name: 'parameters', label: 'Параметры', icon: 'SlidersHorizontal' },
 ]);
 
-const notificationStore = useNotificationStore();
-
 const newRecord = ref({
   coordinates: {
-    coordStartKm: 0,
-    coordStartPk: 0,
-    coordStartZv: 0,
-    coordEndKm: 0,
-    coordEndPk: 0,
-    coordEndZv: 0,
+    coordStartKm: 0, coordStartPk: 0, coordStartZv: 0,
+    coordEndKm: 0, coordEndPk: 0, coordEndZv: 0,
   },
   date: null,
   deviationReason: '',
@@ -334,12 +296,8 @@ const newRecord = ref({
 
 const defectRecord = ref({
   startCoordinates: {
-    coordStartKm: 0,
-    coordStartPk: 0,
-    coordStartZv: 0,
-    coordEndKm: 0,
-    coordEndPk: 0,
-    coordEndZv: 0,
+    coordStartKm: 0, coordStartPk: 0, coordStartZv: 0,
+    coordEndKm: 0, coordEndPk: 0, coordEndZv: 0,
   },
   defectType: null,
   note: '',
@@ -350,12 +308,8 @@ const defectRecord = ref({
 
 const parameterRecord = ref({
   startCoordinates: {
-    coordStartKm: 0,
-    coordStartPk: 0,
-    coordStartZv: 0,
-    coordEndKm: 0,
-    coordEndPk: 0,
-    coordEndZv: 0,
+    coordStartKm: 0, coordStartPk: 0, coordStartZv: 0,
+    coordEndKm: 0, coordEndPk: 0, coordEndZv: 0,
   },
   component: null,
   parameterType: null,
@@ -379,32 +333,19 @@ const loadingDefects = ref(false);
 const loadingParameters = ref(false);
 
 const objectBounds = ref({
-  StartKm: null,
-  StartPicket: null,
-  StartLink: null,
-  FinishKm: null,
-  FinishPicket: null,
-  FinishLink: null,
+  StartKm: null, StartPicket: null, StartLink: null,
+  FinishKm: null, FinishPicket: null, FinishLink: null,
 });
 
 const inspectionBounds = ref({
-  StartKm: null,
-  StartPicket: null,
-  StartLink: null,
-  FinishKm: null,
-  FinishPicket: null,
-  FinishLink: null,
+  StartKm: null, StartPicket: null, StartLink: null,
+  FinishKm: null, FinishPicket: null, FinishLink: null,
 });
 
 const isMinMaxInvalid = computed(() => {
   const minVal = parseFloat(parameterRecord.value.minValue);
   const maxVal = parseFloat(parameterRecord.value.maxValue);
-  
-  if (!isNaN(minVal) && !isNaN(maxVal)) {
-    return minVal > maxVal;
-  }
-  
-  return false;
+  return !isNaN(minVal) && !isNaN(maxVal) ? minVal > maxVal : false;
 });
 
 const handleMinMaxFocus = () => {
@@ -426,80 +367,28 @@ const validateMinMax = () => {
   }
 };
 
-const closeModal = () => {
-  emit('close');
-};
+const closeModal = () => emit('close');
 
-const fillFromDraft = (draft) => {
-  if (!draft) return;
-
-  // Определяем активный таб (новый формат: draft.tab, старый: draft.activeTab)
-  const tab = draft.tab || draft.activeTab;
-  if (tab) {
-    activeTab.value = tab;
-  }
-
-  // Info tab
-  if (draft.info) {
-    if (draft.info.coordinates) {
-      newRecord.value.coordinates = { ...newRecord.value.coordinates, ...draft.info.coordinates };
-    }
-    newRecord.value.date = draft.info.date || null;
-    newRecord.value.deviationReason = draft.info.deviationReason || '';
-  }
-
-  // Defects tab
-  if (draft.defect) {
-    if (draft.defect.startCoordinates) {
-      defectRecord.value.startCoordinates = { ...defectRecord.value.startCoordinates, ...draft.defect.startCoordinates };
-    }
-    defectRecord.value.componentText = draft.defect.componentText || '';
-    defectRecord.value.defectText = draft.defect.defectText || '';
-    defectRecord.value.note = draft.defect.note || '';
-  }
-
-  // Parameters tab
-  if (draft.parameter) {
-    if (draft.parameter.startCoordinates) {
-      parameterRecord.value.startCoordinates = { ...parameterRecord.value.startCoordinates, ...draft.parameter.startCoordinates };
-    }
-    parameterRecord.value.componentText = draft.parameter.componentText || '';
-    parameterRecord.value.parameterText = draft.parameter.parameterText || '';
-    parameterRecord.value.minValue = draft.parameter.minValue ?? null;
-    parameterRecord.value.maxValue = draft.parameter.maxValue ?? null;
-    parameterRecord.value.value = draft.parameter.value || '';
-    parameterRecord.value.note = draft.parameter.note || '';
-  }
-};
-
-const getRecordMetadata = () => ({
-  id: props.record?.id,
-  pv: props.record?.pv,
-  objObject: props.record?.objObject,
-  name: props.record?.name,
-  place: props.record?.place,
-  objectType: props.record?.objectType,
-  object: props.record?.object,
-  nameLocationClsSection: props.record?.nameLocationClsSection,
-  coordinates: props.record?.coordinates,
-  section: props.section,
-  date: props.date,
-  sectionId: props.sectionId,
-  sectionPv: props.sectionPv,
-  objLocationClsSection: props.record?.objLocationClsSection,
+const getMetadata = () => ({
+  id: props.record?.id, pv: props.record?.pv, objObject: props.record?.objObject,
+  name: props.record?.name, place: props.record?.place, objectType: props.record?.objectType,
+  object: props.record?.object, nameLocationClsSection: props.record?.nameLocationClsSection,
+  coordinates: props.record?.coordinates, objLocationClsSection: props.record?.objLocationClsSection,
   pvLocationClsSection: props.record?.pvLocationClsSection,
-  StartKm: props.record?.StartKm,
-  StartPicket: props.record?.StartPicket,
-  StartLink: props.record?.StartLink,
-  FinishKm: props.record?.FinishKm,
-  FinishPicket: props.record?.FinishPicket,
-  FinishLink: props.record?.FinishLink,
+  StartKm: props.record?.StartKm, StartPicket: props.record?.StartPicket, StartLink: props.record?.StartLink,
+  FinishKm: props.record?.FinishKm, FinishPicket: props.record?.FinishPicket, FinishLink: props.record?.FinishLink,
 });
+
+const getDraftButtonLabel = () => {
+  if (activeTab.value === 'defects') return 'Сохранить неисправность в черновик';
+  if (activeTab.value === 'parameters') return 'Сохранить параметр в черновик';
+  return localParentDraftId.value ? 'Обновить черновик' : 'Сохранить черновик';
+};
 
 const saveAsDraft = async () => {
   try {
     if (activeTab.value === 'info') {
-      const formFields = {
+      const fields = {
         tab: 'info',
         info: {
           coordinates: { ...newRecord.value.coordinates },
@@ -507,25 +396,24 @@ const saveAsDraft = async () => {
           deviationReason: newRecord.value.deviationReason,
         },
       };
-
       if (localParentDraftId.value) {
-        // Обновляем существующий info-черновик
-        await updateDraft(localParentDraftId.value, formFields);
+        await updateDraft(localParentDraftId.value, fields);
+        notificationStore.showNotification('Черновик обновлён!', 'success');
       } else {
-        // Создаём новый info-черновик (родительский)
-        const id = await saveDraft('workCard', getRecordMetadata(), formFields);
+        const id = await saveDraft('workCard', getMetadata(), fields);
         localParentDraftId.value = id;
+        notificationStore.showNotification('Черновик сохранён! Теперь доступны вкладки Неисправности и Параметры.', 'success');
       }
-
       isInfoSaved.value = true;
-      notificationStore.showNotification(
-        'Черновик сохранён! Теперь доступны вкладки Неисправности и Параметры.',
-        'success'
-      );
-      // НЕ закрываем модал — пользователь может добавить дефекты/параметры
-
+      const savedCoords = { ...newRecord.value.coordinates };
+      defectRecord.value.startCoordinates = { ...savedCoords };
+      parameterRecord.value.startCoordinates = { ...savedCoords };
+      inspectionBounds.value = {
+        StartKm: savedCoords.coordStartKm, StartPicket: savedCoords.coordStartPk, StartLink: savedCoords.coordStartZv,
+        FinishKm: savedCoords.coordEndKm, FinishPicket: savedCoords.coordEndPk, FinishLink: savedCoords.coordEndZv,
+      };
     } else if (activeTab.value === 'defects') {
-      const formFields = {
+      const fields = {
         tab: 'defects',
         defect: {
           startCoordinates: { ...defectRecord.value.startCoordinates },
@@ -534,29 +422,12 @@ const saveAsDraft = async () => {
           note: defectRecord.value.note,
         },
       };
-
-      if (props.draftId && singleTabMode.value) {
-        // Редактирование существующего дочернего черновика дефекта
-        await updateDraft(props.draftId, formFields);
-        notificationStore.showNotification('Неисправность обновлена в черновике!', 'success');
-        emit('close');
-      } else {
-        // Новый дочерний черновик дефекта
-        await saveDraft('workCard', getRecordMetadata(), formFields, localParentDraftId.value);
-        // Сбрасываем форму дефекта
-        defectRecord.value = {
-          startCoordinates: { ...defectRecord.value.startCoordinates },
-          componentText: '',
-          defectText: '',
-          note: '',
-          component: null,
-          defectType: null,
-        };
-        notificationStore.showNotification('Неисправность сохранена в черновик!', 'success');
-      }
-
+      await saveDraft('workCard', getMetadata(), fields, localParentDraftId.value);
+      defectRecord.value = { startCoordinates: { ...defectRecord.value.startCoordinates }, defectType: null, note: '', component: null, componentText: '', defectText: '' };
+      defectOptions.value = [];
+      notificationStore.showNotification('Неисправность сохранена в черновик!', 'success');
     } else if (activeTab.value === 'parameters') {
-      const formFields = {
+      const fields = {
         tab: 'parameters',
         parameter: {
           startCoordinates: { ...parameterRecord.value.startCoordinates },
@@ -568,136 +439,23 @@ const saveAsDraft = async () => {
           note: parameterRecord.value.note,
         },
       };
-
-      if (props.draftId && singleTabMode.value) {
-        // Редактирование существующего дочернего черновика параметра
-        await updateDraft(props.draftId, formFields);
-        notificationStore.showNotification('Параметр обновлён в черновике!', 'success');
-        emit('close');
-      } else {
-        // Новый дочерний черновик параметра
-        await saveDraft('workCard', getRecordMetadata(), formFields, localParentDraftId.value);
-        // Сбрасываем форму параметра
-        parameterRecord.value = {
-          startCoordinates: { ...parameterRecord.value.startCoordinates },
-          componentText: '',
-          parameterText: '',
-          minValue: null,
-          maxValue: null,
-          value: '',
-          note: '',
-          component: null,
-          parameterType: null,
-        };
-        shouldShowMinMaxError.value = false;
-        notificationStore.showNotification('Параметр сохранён в черновик!', 'success');
-      }
+      await saveDraft('workCard', getMetadata(), fields, localParentDraftId.value);
+      parameterRecord.value = { startCoordinates: { ...parameterRecord.value.startCoordinates }, component: null, parameterType: null, minValue: null, maxValue: null, value: '', note: '', componentText: '', parameterText: '' };
+      parameterOptions.value = [];
+      notificationStore.showNotification('Параметр сохранён в черновик!', 'success');
     }
-  } catch (error) {
-    console.error('Ошибка сохранения черновика:', error);
+  } catch (err) {
+    console.error(err);
     notificationStore.showNotification('Не удалось сохранить черновик.', 'error');
-  }
-};
-
-const updateCoordinates = (newCoordinates) => {
-  newRecord.value.coordinates = newCoordinates;
-
-  // Проверка выхода за границы объекта (в реальном времени)
-  if (objectBounds.value && objectBounds.value.StartKm !== null) {
-    const newStartCoordinates = (newCoordinates.coordStartKm || 0) * 1000 + (newCoordinates.coordStartPk || 0) * 100 + (newCoordinates.coordStartZv || 0) * 25;
-    const newFinishCoordinates = (newCoordinates.coordEndKm || 0) * 1000 + (newCoordinates.coordEndPk || 0) * 100 + (newCoordinates.coordEndZv || 0) * 25;
-
-    const objectStartCoordinates = (objectBounds.value.StartKm || 0) * 1000 + (objectBounds.value.StartPicket || 0) * 100 + (objectBounds.value.StartLink || 0) * 25;
-    const objectFinishCoordinates = (objectBounds.value.FinishKm || 0) * 1000 + (objectBounds.value.FinishPicket || 0) * 100 + (objectBounds.value.FinishLink || 0) * 25;
-
-    // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
-    const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates;
-
-    // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
-    const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates;
-
-    if (!isStartInBounds || !isFinishInBounds) {
-      isCoordinatesOutOfBounds.value = true;
-      notificationStore.showNotification('Координаты не могут выходить за границы выбранного объекта', 'error');
-    } else {
-      isCoordinatesOutOfBounds.value = false;
-    }
-  } else {
-    isCoordinatesOutOfBounds.value = false;
-  }
-};
-
-const updateDefectCoordinates = (newCoordinates) => {
-  defectRecord.value.startCoordinates = newCoordinates;
-
-  // Проверка выхода за границы записи осмотра (в реальном времени)
-  if (inspectionBounds.value && inspectionBounds.value.StartKm !== null) {
-    const newStartCoordinates = (newCoordinates.coordStartKm || 0) * 1000 + (newCoordinates.coordStartPk || 0) * 100 + (newCoordinates.coordStartZv || 0) * 25;
-    const newFinishCoordinates = (newCoordinates.coordEndKm || 0) * 1000 + (newCoordinates.coordEndPk || 0) * 100 + (newCoordinates.coordEndZv || 0) * 25;
-
-    const inspectionStartCoordinates = (inspectionBounds.value.StartKm || 0) * 1000 + (inspectionBounds.value.StartPicket || 0) * 100 + (inspectionBounds.value.StartLink || 0) * 25;
-    const inspectionFinishCoordinates = (inspectionBounds.value.FinishKm || 0) * 1000 + (inspectionBounds.value.FinishPicket || 0) * 100 + (inspectionBounds.value.FinishLink || 0) * 25;
-
-    const isStartInBounds = newStartCoordinates >= inspectionStartCoordinates && newStartCoordinates <= inspectionFinishCoordinates;
-    const isFinishInBounds = newFinishCoordinates >= inspectionStartCoordinates && newFinishCoordinates <= inspectionFinishCoordinates;
-
-    if (!isStartInBounds || !isFinishInBounds) {
-      isDefectCoordinatesOutOfBounds.value = true;
-      notificationStore.showNotification('Координаты не могут выходить за границы записи осмотра', 'error');
-    } else {
-      isDefectCoordinatesOutOfBounds.value = false;
-    }
-  } else {
-    isDefectCoordinatesOutOfBounds.value = false;
-  }
-};
-
-const updateParameterCoordinates = (newCoordinates) => {
-  parameterRecord.value.startCoordinates = newCoordinates;
-
-  // Проверка выхода за границы записи осмотра (в реальном времени)
-  if (inspectionBounds.value && inspectionBounds.value.StartKm !== null) {
-    const newStartCoordinates = (newCoordinates.coordStartKm || 0) * 1000 + (newCoordinates.coordStartPk || 0) * 100 + (newCoordinates.coordStartZv || 0) * 25;
-    const newFinishCoordinates = (newCoordinates.coordEndKm || 0) * 1000 + (newCoordinates.coordEndPk || 0) * 100 + (newCoordinates.coordEndZv || 0) * 25;
-
-    const inspectionStartCoordinates = (inspectionBounds.value.StartKm || 0) * 1000 + (inspectionBounds.value.StartPicket || 0) * 100 + (inspectionBounds.value.StartLink || 0) * 25;
-    const inspectionFinishCoordinates = (inspectionBounds.value.FinishKm || 0) * 1000 + (inspectionBounds.value.FinishPicket || 0) * 100 + (inspectionBounds.value.FinishLink || 0) * 25;
-
-    const isStartInBounds = newStartCoordinates >= inspectionStartCoordinates && newStartCoordinates <= inspectionFinishCoordinates;
-    const isFinishInBounds = newFinishCoordinates >= inspectionStartCoordinates && newFinishCoordinates <= inspectionFinishCoordinates;
-
-    if (!isStartInBounds || !isFinishInBounds) {
-      isParameterCoordinatesOutOfBounds.value = true;
-      notificationStore.showNotification('Координаты не могут выходить за границы записи осмотра', 'error');
-    } else {
-      isParameterCoordinatesOutOfBounds.value = false;
-    }
-  } else {
-    isParameterCoordinatesOutOfBounds.value = false;
   }
 };
 
 const getButtonLabel = () => {
   switch (activeTab.value) {
-    case 'info':
-      return 'Добавить запись в журнал';
-    case 'defects':
-      return 'Добавить неисправность';
-    case 'parameters':
-      return 'Добавить параметр';
-    default:
-      return 'Сохранить';
-  }
-};
-
-const getDraftButtonLabel = () => {
-  switch (activeTab.value) {
-    case 'defects':
-      return 'Сохранить неисправность в черновик';
-    case 'parameters':
-      return 'Сохранить параметр в черновик';
-    default:
-      return isInfoSaved.value && localParentDraftId.value ? 'Обновить черновик' : 'Сохранить черновик';
+    case 'info': return 'Добавить запись в журнал';
+    case 'defects': return 'Добавить неисправность';
+    case 'parameters': return 'Добавить параметр';
+    default: return 'Сохранить';
   }
 };
 
@@ -706,9 +464,7 @@ const handleTabChange = async (newTab) => {
     notificationStore.showNotification('Сначала необходимо сохранить информацию по работе!', 'error');
     return;
   }
-
   activeTab.value = newTab;
-
   if (newTab === 'defects' && savedInspectionId.value) {
     await loadExistingDefects(savedInspectionId.value);
   } else if (newTab === 'parameters' && savedInspectionId.value) {
@@ -720,21 +476,21 @@ const saveWork = async () => {
   if (isSaving.value) return;
 
   if (activeTab.value === 'info') {
-    // Проверка выхода за границы объекта (бизнес-логика)
-    const newStartCoordinates = (newRecord.value.coordinates.coordStartKm || 0) * 1000 + (newRecord.value.coordinates.coordStartPk || 0) * 100 + (newRecord.value.coordinates.coordStartZv || 0) * 25;
-    const newFinishCoordinates = (newRecord.value.coordinates.coordEndKm || 0) * 1000 + (newRecord.value.coordinates.coordEndPk || 0) * 100 + (newRecord.value.coordinates.coordEndZv || 0) * 25;
+    const newStart = (newRecord.value.coordinates.coordStartKm || 0) * 1000
+      + (newRecord.value.coordinates.coordStartPk || 0) * 100
+      + (newRecord.value.coordinates.coordStartZv || 0) * 25;
+    const newFinish = (newRecord.value.coordinates.coordEndKm || 0) * 1000
+      + (newRecord.value.coordinates.coordEndPk || 0) * 100
+      + (newRecord.value.coordinates.coordEndZv || 0) * 25;
 
-    if (objectBounds.value && objectBounds.value.StartKm !== null) {
-      const objectStartCoordinates = (objectBounds.value.StartKm || 0) * 1000 + (objectBounds.value.StartPicket || 0) * 100 + (objectBounds.value.StartLink || 0) * 25;
-      const objectFinishCoordinates = (objectBounds.value.FinishKm || 0) * 1000 + (objectBounds.value.FinishPicket || 0) * 100 + (objectBounds.value.FinishLink || 0) * 25;
-
-      // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
-      const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates;
-
-      // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
-      const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates;
-
-      if (!isStartInBounds || !isFinishInBounds) {
+    if (objectBounds.value?.StartKm !== null) {
+      const objStart = (objectBounds.value.StartKm || 0) * 1000
+        + (objectBounds.value.StartPicket || 0) * 100
+        + (objectBounds.value.StartLink || 0) * 25;
+      const objFinish = (objectBounds.value.FinishKm || 0) * 1000
+        + (objectBounds.value.FinishPicket || 0) * 100
+        + (objectBounds.value.FinishLink || 0) * 25;
+      if (newStart < objStart || newStart > objFinish || newFinish < objStart || newFinish > objFinish) {
         notificationStore.showNotification('Координаты не могут выходить за границы выбранного объекта', 'error');
         return;
       }
@@ -743,13 +499,11 @@ const saveWork = async () => {
     isSaving.value = true;
     try {
       const user = await getUserData();
-
       const formattedDate = formatDateToISO(newRecord.value.date);
-
-      const dataToSave = {
+      const response = await saveInspectionInfo({
         name: `${props.record.id}-${formattedDate}`,
-        objLocationClsSection: (props.record.objLocationClsSection !== null && props.record.objLocationClsSection !== undefined) ? props.record.objLocationClsSection : props.sectionId,
-        pvLocationClsSection: (props.record.pvLocationClsSection !== null && props.record.pvLocationClsSection !== undefined) ? parseInt(props.record.pvLocationClsSection) : parseInt(props.sectionPv),
+        objLocationClsSection: props.record.objLocationClsSection ?? props.sectionId,
+        pvLocationClsSection: parseInt(props.record.pvLocationClsSection ?? props.sectionPv),
         objWorkPlan: props.record.id,
         pvWorkPlan: props.record.pv,
         objUser: user.id,
@@ -764,31 +518,22 @@ const saveWork = async () => {
         CreatedAt: new Date().toISOString().split('T')[0],
         UpdatedAt: new Date().toISOString().split('T')[0],
         ReasonDeviation: newRecord.value.deviationReason,
-      };
+      });
 
-      const response = await saveInspectionInfo(dataToSave);
-      
-      if (response?.result?.id) {
-        savedInspectionId.value = response.result.id;
-      } else if (response?.id) {
-        savedInspectionId.value = response.id;
-      } else if (response?.result?.records?.[0]?.id) {
-        savedInspectionId.value = response.result.records[0].id;
-      }
-      
+      if (response?.result?.id) savedInspectionId.value = response.result.id;
+      else if (response?.id) savedInspectionId.value = response.id;
+      else if (response?.result?.records?.[0]?.id) savedInspectionId.value = response.result.records[0].id;
+
       notificationStore.showNotification('Информация по работе успешно сохранена!', 'success');
       isInfoSaved.value = true;
-      
+
       const existingData = await loadExistingData(props.record);
-      
-      if (!savedInspectionId.value && existingData && existingData.length > 0) {
-        const lastRecord = existingData[existingData.length - 1];
-        if (lastRecord.id) {
-          savedInspectionId.value = lastRecord.id;
-        }
+      if (!savedInspectionId.value && existingData?.length > 0) {
+        const last = existingData[existingData.length - 1];
+        if (last?.id) savedInspectionId.value = last.id;
       }
-      
-      const savedCoordinates = {
+
+      const savedCoords = {
         coordStartKm: newRecord.value.coordinates.coordStartKm,
         coordStartPk: newRecord.value.coordinates.coordStartPk,
         coordStartZv: newRecord.value.coordinates.coordStartZv,
@@ -796,9 +541,8 @@ const saveWork = async () => {
         coordEndPk: newRecord.value.coordinates.coordEndPk,
         coordEndZv: newRecord.value.coordinates.coordEndZv,
       };
-      
-      defectRecord.value.startCoordinates = { ...savedCoordinates };
-      
+      defectRecord.value.startCoordinates = { ...savedCoords };
+      parameterRecord.value.startCoordinates = { ...savedCoords };
       inspectionBounds.value = {
         StartKm: newRecord.value.coordinates.coordStartKm,
         StartPicket: newRecord.value.coordinates.coordStartPk,
@@ -807,19 +551,10 @@ const saveWork = async () => {
         FinishPicket: newRecord.value.coordinates.coordEndPk,
         FinishLink: newRecord.value.coordinates.coordEndZv,
       };
-
-      parameterRecord.value.startCoordinates = { ...savedCoordinates };
     } catch (error) {
-      
-      let errorMessage = 'Не удалось сохранить информацию по работе.';
-      
-      if (error.response?.data?.error?.message) {
-        errorMessage = error.response.data.error.message;
-      } else if (error.response?.status === 500) {
-        errorMessage = 'Ошибка сервера. Попробуйте еще раз.';
-      }
-      
-      notificationStore.showNotification(errorMessage, 'error');
+      const msg = error.response?.data?.error?.message
+        || (error.response?.status === 500 ? 'Ошибка сервера. Попробуйте еще раз.' : 'Не удалось сохранить информацию по работе.');
+      notificationStore.showNotification(msg, 'error');
     } finally {
       isSaving.value = false;
     }
@@ -828,56 +563,30 @@ const saveWork = async () => {
       notificationStore.showNotification('Необходимо выбрать компонент и дефект!', 'error');
       return;
     }
-
-    if (!defectRecord.value.startCoordinates.coordStartKm || defectRecord.value.startCoordinates.coordStartPk === null || defectRecord.value.startCoordinates.coordStartPk === '') {
-      notificationStore.showNotification('Необходимо указать координаты дефекта!', 'error');
-      return;
-    }
-
     if (!savedInspectionId.value) {
       notificationStore.showNotification('Сначала необходимо сохранить информацию по работе!', 'error');
       return;
     }
 
-    // Проверка координат на выход за границы записи осмотра
-    if (inspectionBounds.value && inspectionBounds.value.StartKm !== null) {
-      const newStartCoordinates = (defectRecord.value.startCoordinates.coordStartKm || 0) * 1000 + (defectRecord.value.startCoordinates.coordStartPk || 0) * 100 + (defectRecord.value.startCoordinates.coordStartZv || 0) * 25;
-      const newFinishCoordinates = (defectRecord.value.startCoordinates.coordEndKm || 0) * 1000 + (defectRecord.value.startCoordinates.coordEndPk || 0) * 100 + (defectRecord.value.startCoordinates.coordEndZv || 0) * 25;
-
-      const inspectionStartCoordinates = (inspectionBounds.value.StartKm || 0) * 1000 + (inspectionBounds.value.StartPicket || 0) * 100 + (inspectionBounds.value.StartLink || 0) * 25;
-      const inspectionFinishCoordinates = (inspectionBounds.value.FinishKm || 0) * 1000 + (inspectionBounds.value.FinishPicket || 0) * 100 + (inspectionBounds.value.FinishLink || 0) * 25;
-
-      const isStartInBounds = newStartCoordinates >= inspectionStartCoordinates && newStartCoordinates <= inspectionFinishCoordinates;
-      const isFinishInBounds = newFinishCoordinates >= inspectionStartCoordinates && newFinishCoordinates <= inspectionFinishCoordinates;
-
-      if (!isStartInBounds || !isFinishInBounds) {
-        notificationStore.showNotification('Координаты не могут выходить за границы записи осмотра', 'error');
-        return;
-      }
-    }
-
     isSaving.value = true;
     try {
       const user = await getUserData();
-
-      const selectedDefect = defectOptions.value.find(d => d.value === (defectRecord.value.defectType.value || defectRecord.value.defectType));
-      
-      if (!selectedDefect) {
-        throw new Error('Выбранный дефект не найден');
-      }
+      const selectedDefect = defectOptions.value.find(
+        d => d.value === (defectRecord.value.defectType?.value || defectRecord.value.defectType)
+      );
+      if (!selectedDefect) throw new Error('Выбранный дефект не найден');
 
       const now = new Date();
-      const kazakhstanTime = new Date(now.getTime() + (5 * 60 * 60 * 1000));
-      const currentDateTime = kazakhstanTime.toISOString();
-      const currentDate = currentDateTime.split('T')[0];
-      
-      const dataToSave = {
-        name: `${currentDate}-${selectedDefect.value}`,
+      const kzTime = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+      const currentDateTime = kzTime.toISOString();
+
+      await saveFaultInfo({
+        name: `${currentDateTime.split('T')[0]}-${selectedDefect.value}`,
         objInspection: savedInspectionId.value,
         objDefect: selectedDefect.value,
         pvDefect: selectedDefect.pv || selectedDefect.value,
-        pvLocationClsSection: (props.record.pvLocationClsSection !== null && props.record.pvLocationClsSection !== undefined) ? parseInt(props.record.pvLocationClsSection) : parseInt(props.sectionPv),
-        objLocationClsSection: (props.record.objLocationClsSection !== null && props.record.objLocationClsSection !== undefined) ? props.record.objLocationClsSection : props.sectionId,
+        pvLocationClsSection: parseInt(props.record.pvLocationClsSection ?? props.sectionPv),
+        objLocationClsSection: props.record.objLocationClsSection ?? props.sectionId,
         StartKm: defectRecord.value.startCoordinates.coordStartKm,
         FinishKm: defectRecord.value.startCoordinates.coordEndKm ?? 0,
         StartPicket: defectRecord.value.startCoordinates.coordStartPk ?? 0,
@@ -889,34 +598,20 @@ const saveWork = async () => {
         fullNameUser: user.fullName,
         nameLocation: user.nameLocation,
         Description: defectRecord.value.note || '',
-        CreationDateTime: currentDateTime
-      };
-      
-      await saveFaultInfo(dataToSave);
+        CreationDateTime: currentDateTime,
+      });
 
       notificationStore.showNotification('Дефект успешно сохранен!', 'success');
-      
       await loadExistingDefects(savedInspectionId.value);
-      
       defectRecord.value = {
         startCoordinates: { ...defectRecord.value.startCoordinates },
-        defectType: null,
-        note: '',
-        component: null,
+        defectType: null, note: '', component: null,
       };
       defectOptions.value = [];
-      
     } catch (error) {
-      
-      let errorMessage = 'Не удалось сохранить дефект.';
-      
-      if (error.response?.data?.error?.message) {
-        errorMessage = error.response.data.error.message;
-      } else if (error.response?.status === 500) {
-        errorMessage = 'Ошибка сервера. Попробуйте еще раз.';
-      }
-      
-      notificationStore.showNotification(errorMessage, 'error');
+      const msg = error.response?.data?.error?.message
+        || (error.response?.status === 500 ? 'Ошибка сервера. Попробуйте еще раз.' : 'Не удалось сохранить дефект.');
+      notificationStore.showNotification(msg, 'error');
     } finally {
       isSaving.value = false;
     }
@@ -925,67 +620,39 @@ const saveWork = async () => {
       notificationStore.showNotification('Необходимо выбрать компонент и параметр!', 'error');
       return;
     }
-
-    if (!parameterRecord.value.startCoordinates.coordStartKm || parameterRecord.value.startCoordinates.coordStartPk === null || parameterRecord.value.startCoordinates.coordStartPk === '') {
-      notificationStore.showNotification('Необходимо указать координаты параметра!', 'error');
-      return;
-    }
-
     if (isMinMaxInvalid.value) {
       notificationStore.showNotification('Минимальное значение не может быть больше максимального значения!', 'error');
       shouldShowMinMaxError.value = true;
       return;
     }
-
     if (parameterRecord.value.value === null || parameterRecord.value.value === '') {
-        notificationStore.showNotification('Необходимо ввести значение параметра!', 'error');
-        return;
+      notificationStore.showNotification('Необходимо ввести значение параметра!', 'error');
+      return;
     }
-
     if (!savedInspectionId.value) {
       notificationStore.showNotification('Сначала необходимо сохранить информацию по работе!', 'error');
       return;
     }
 
-    // Проверка координат на выход за границы записи осмотра
-    if (inspectionBounds.value && inspectionBounds.value.StartKm !== null) {
-      const newStartCoordinates = (parameterRecord.value.startCoordinates.coordStartKm || 0) * 1000 + (parameterRecord.value.startCoordinates.coordStartPk || 0) * 100 + (parameterRecord.value.startCoordinates.coordStartZv || 0) * 25;
-      const newFinishCoordinates = (parameterRecord.value.startCoordinates.coordEndKm || 0) * 1000 + (parameterRecord.value.startCoordinates.coordEndPk || 0) * 100 + (parameterRecord.value.startCoordinates.coordEndZv || 0) * 25;
-
-      const inspectionStartCoordinates = (inspectionBounds.value.StartKm || 0) * 1000 + (inspectionBounds.value.StartPicket || 0) * 100 + (inspectionBounds.value.StartLink || 0) * 25;
-      const inspectionFinishCoordinates = (inspectionBounds.value.FinishKm || 0) * 1000 + (inspectionBounds.value.FinishPicket || 0) * 100 + (inspectionBounds.value.FinishLink || 0) * 25;
-
-      const isStartInBounds = newStartCoordinates >= inspectionStartCoordinates && newStartCoordinates <= inspectionFinishCoordinates;
-      const isFinishInBounds = newFinishCoordinates >= inspectionStartCoordinates && newFinishCoordinates <= inspectionFinishCoordinates;
-
-      if (!isStartInBounds || !isFinishInBounds) {
-        notificationStore.showNotification('Координаты не могут выходить за границы записи осмотра', 'error');
-        return;
-      }
-    }
-
     isSaving.value = true;
     try {
       const user = await getUserData();
-
-      const selectedParameter = parameterOptions.value.find(p => p.value === (parameterRecord.value.parameterType.value || parameterRecord.value.parameterType));
-      
-      if (!selectedParameter) {
-        throw new Error('Выбранный параметр не найден');
-      }
+      const selectedParam = parameterOptions.value.find(
+        p => p.value === (parameterRecord.value.parameterType?.value || parameterRecord.value.parameterType)
+      );
+      if (!selectedParam) throw new Error('Выбранный параметр не найден');
 
       const now = new Date();
-      const kazakhstanTime = new Date(now.getTime() + (5 * 60 * 60 * 1000));
-      const currentDateTime = kazakhstanTime.toISOString();
-      const currentDate = currentDateTime.split('T')[0];
-      
-      const dataToSave = {
-        name: `${currentDate}-${selectedParameter.value}`,
+      const kzTime = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+      const currentDateTime = kzTime.toISOString();
+
+      await saveParameterInfo({
+        name: `${currentDateTime.split('T')[0]}-${selectedParam.value}`,
         objInspection: savedInspectionId.value,
-        relobjComponentParams: selectedParameter.value,
-        pvComponentParams: selectedParameter.pv,
-        objLocationClsSection: (props.record.objLocationClsSection !== null && props.record.objLocationClsSection !== undefined) ? props.record.objLocationClsSection : props.sectionId,
-        pvLocationClsSection: (props.record.pvLocationClsSection !== null && props.record.pvLocationClsSection !== undefined) ? parseInt(props.record.pvLocationClsSection) : parseInt(props.sectionPv),
+        relobjComponentParams: selectedParam.value,
+        pvComponentParams: selectedParam.pv,
+        objLocationClsSection: props.record.objLocationClsSection ?? props.sectionId,
+        pvLocationClsSection: parseInt(props.record.pvLocationClsSection ?? props.sectionPv),
         ParamsLimit: parseFloat(parameterRecord.value.value),
         ParamsLimitMax: parseFloat(parameterRecord.value.maxValue) || 0,
         ParamsLimitMin: parseFloat(parameterRecord.value.minValue) || 0,
@@ -1000,38 +667,22 @@ const saveWork = async () => {
         fullNameUser: user.fullName,
         nameLocation: user.nameLocation,
         Description: parameterRecord.value.note || '',
-        CreationDateTime: currentDateTime
-      };
+        CreationDateTime: currentDateTime,
+      });
 
-      await saveParameterInfo(dataToSave);
-      
       notificationStore.showNotification('Параметр успешно сохранен!', 'success');
-      
       await loadExistingParameters(savedInspectionId.value);
-      
       parameterRecord.value = {
         startCoordinates: { ...parameterRecord.value.startCoordinates },
-        component: null,
-        parameterType: null,
-        minValue: null,
-        maxValue: null,
-        value: '',
-        note: '',
+        component: null, parameterType: null,
+        minValue: null, maxValue: null, value: '', note: '',
       };
       parameterOptions.value = [];
       shouldShowMinMaxError.value = false;
-      
     } catch (error) {
-      
-      let errorMessage = 'Не удалось сохранить параметр.';
-      
-      if (error.response?.data?.error?.message) {
-        errorMessage = error.response.data.error.message;
-      } else if (error.response?.status === 500) {
-        errorMessage = 'Ошибка сервера. Попробуйте еще раз.';
-      }
-      
-      notificationStore.showNotification(errorMessage, 'error');
+      const msg = error.response?.data?.error?.message
+        || (error.response?.status === 500 ? 'Ошибка сервера. Попробуйте еще раз.' : 'Не удалось сохранить параметр.');
+      notificationStore.showNotification(msg, 'error');
     } finally {
       isSaving.value = false;
     }
@@ -1039,63 +690,27 @@ const saveWork = async () => {
 };
 
 const formatCoordinates = (startKm, startPk, startZv, finishKm, finishPk, finishZv) => {
-  const isPresent = (val) => val !== null && val !== undefined && val !== '';
-
-  const createCoordPart = (km, pk, zv) => {
-    if (!isPresent(km) && !isPresent(pk) && km !== 0 && pk !== 0) {
-      return '';
-    }
-
-    let part = '';
-
-    if (isPresent(km) || km === 0) {
-      part += `${km}км`;
-    }
-
-    if (isPresent(pk) || pk === 0) {
-      if (part) {
-        part += ' ';
-      }
-      part += `${pk}пк`;
-    }
-
-    if (isPresent(zv) || zv === 0) {
-      if (part) {
-        part += ' ';
-      }
-      part += `${zv}зв`;
-    }
-
-    return part.trim();
+  const ok = v => v !== null && v !== undefined && v !== '';
+  const part = (km, pk, zv) => {
+    if (!ok(km) && !ok(pk) && km !== 0 && pk !== 0) return '';
+    return [ok(km) || km === 0 ? `${km}км` : '', ok(pk) || pk === 0 ? `${pk}пк` : '', ok(zv) || zv === 0 ? `${zv}зв` : '']
+      .filter(Boolean).join(' ');
   };
-
-  const startPart = createCoordPart(startKm, startPk, startZv);
-  const finishPart = createCoordPart(finishKm, finishPk, finishZv);
-  
-  if (startPart && finishPart) {
-    return `${startPart} — ${finishPart}`;
-  } else if (startPart) {
-    return startPart;
-  } else if (finishPart) {
-    return finishPart;
-  }
-  
-  return '';
+  const s = part(startKm, startPk, startZv);
+  const f = part(finishKm, finishPk, finishZv);
+  return s && f ? `${s} — ${f}` : s || f || '';
 };
 
-
 const loadExistingData = async (record) => {
-  if (!record || !record.id || !record.pv) {
-    return [];
-  }
+  if (!record?.id || !record?.pv) return [];
   try {
     const data = await loadInspectionEntriesForWorkPlan(record.id, record.pv);
     existingRecords.value = data.map(item => ({
       date: formatDate(item.FactDateEnd),
-      coordinates: formatCoordinates(item.StartKm, item.StartPicket, item.StartLink, item.FinishKm, item.FinishPicket, item.FinishLink)
+      coordinates: formatCoordinates(item.StartKm, item.StartPicket, item.StartLink, item.FinishKm, item.FinishPicket, item.FinishLink),
     }));
     return data;
-  } catch (error) {
+  } catch {
     notificationStore.showNotification('Не удалось загрузить ранее внесенные записи.', 'error');
     existingRecords.value = [];
     return [];
@@ -1103,30 +718,22 @@ const loadExistingData = async (record) => {
 };
 
 const loadExistingDefects = async (inspectionId) => {
-  if (!inspectionId) {
-    existingDefects.value = [];
-    return;
-  }
-  
+  if (!inspectionId) { existingDefects.value = []; return; }
   try {
     const data = await loadFaultEntriesForInspection(inspectionId);
     existingDefects.value = data.map(item => ({
       date: formatDate(item.CreationDateTime),
       coordinates: formatCoordinates(item.StartKm, item.StartPicket, item.StartLink, item.FinishKm, item.FinishPicket, item.FinishLink),
-      defect: item.nameDefect || 'Неизвестный дефект'
+      defect: item.nameDefect || 'Неизвестный дефект',
     }));
-  } catch (error) {
+  } catch {
     notificationStore.showNotification('Не удалось загрузить ранее внесенные дефекты.', 'error');
     existingDefects.value = [];
   }
 };
 
 const loadExistingParameters = async (inspectionId) => {
-  if (!inspectionId) {
-    existingParameters.value = [];
-    return;
-  }
-  
+  if (!inspectionId) { existingParameters.value = []; return; }
   try {
     const data = await loadParameterEntriesForInspection(inspectionId);
     existingParameters.value = data.map(item => ({
@@ -1134,28 +741,23 @@ const loadExistingParameters = async (inspectionId) => {
       coordinates: formatCoordinates(item.StartKm, item.StartPicket, item.StartLink, item.FinishKm, item.FinishPicket, item.FinishLink),
       component: item.nameComponent || 'Неизвестный компонент',
       parameter: item.nameComponentParams || 'Неизвестный параметр',
-      value: item.ParamsLimit || 'Не указано'
+      value: item.ParamsLimit || 'Не указано',
     }));
-  } catch (error) {
+  } catch {
     notificationStore.showNotification('Не удалось загрузить ранее внесенные параметры.', 'error');
     existingParameters.value = [];
   }
 };
 
 const loadComponents = async () => {
-  if (!props.record?.objObject) {
-    return;
-  }
-
+  if (!props.record?.objObject) return;
   loadingComponents.value = true;
   try {
-    const components = await loadComponentsByTypObjectForSelect(props.record.objObject);
-    componentOptions.value = components.map(component => ({
-      label: component.name || component.label,
-      value: component.id || component.value,
-      objComponent: component.id || component.value
+    const items = await loadComponentsByTypObjectForSelect(props.record.objObject);
+    componentOptions.value = items.map(c => ({
+      label: c.name || c.label, value: c.id || c.value, objComponent: c.id || c.value,
     }));
-  } catch (error) {
+  } catch {
     notificationStore.showNotification('Не удалось загрузить компоненты', 'error');
     componentOptions.value = [];
   } finally {
@@ -1164,20 +766,14 @@ const loadComponents = async () => {
 };
 
 const loadDefects = async (objComponent) => {
-  if (!objComponent) {
-    defectOptions.value = [];
-    return;
-  }
-
+  if (!objComponent) { defectOptions.value = []; return; }
   loadingDefects.value = true;
   try {
-    const defects = await loadDefectsByComponentForSelect(objComponent);
-    defectOptions.value = defects.map(defect => ({
-      label: defect.name || defect.label,
-      value: defect.id || defect.value,
-      pv: defect.pv || defect.id || defect.value
+    const items = await loadDefectsByComponentForSelect(objComponent);
+    defectOptions.value = items.map(d => ({
+      label: d.name || d.label, value: d.id || d.value, pv: d.pv || d.id || d.value,
     }));
-  } catch (error) {
+  } catch {
     notificationStore.showNotification('Не удалось загрузить дефекты', 'error');
     defectOptions.value = [];
   } finally {
@@ -1186,22 +782,16 @@ const loadDefects = async (objComponent) => {
 };
 
 const loadParameters = async (objComponent) => {
-  if (!objComponent) {
-    parameterOptions.value = [];
-    return;
-  }
-  
+  if (!objComponent) { parameterOptions.value = []; return; }
   loadingParameters.value = true;
   try {
-    const parameters = await loadComponentParametersForSelect(objComponent);
-    parameterOptions.value = parameters.map(parameter => ({
-      label: parameter.name || parameter.label,
-      value: parameter.id || parameter.value,
-      pv: parameter.pv || parameter.id || parameter.value,
-      paramslimitmin: parameter.paramslimitmin,
-      paramslimitmax: parameter.paramslimitmax
+    const items = await loadComponentParametersForSelect(objComponent);
+    parameterOptions.value = items.map(p => ({
+      label: p.name || p.label, value: p.id || p.value,
+      pv: p.pv || p.id || p.value,
+      paramslimitmin: p.paramslimitmin, paramslimitmax: p.paramslimitmax,
     }));
-  } catch (error) {
+  } catch {
     notificationStore.showNotification('Не удалось загрузить параметры', 'error');
     parameterOptions.value = [];
   } finally {
@@ -1209,123 +799,115 @@ const loadParameters = async (objComponent) => {
   }
 };
 
-const handleDefectComponentChange = async (selectedComponent) => {
+const handleDefectComponentChange = async (selected) => {
   defectRecord.value.defectType = null;
   defectOptions.value = [];
-
-  if (selectedComponent) {
-    const componentId = selectedComponent.value || selectedComponent;
-    const component = componentOptions.value.find(c => c.value === componentId);
-    if (component?.objComponent) {
-      await loadDefects(component.objComponent);
-    }
+  if (selected) {
+    const comp = componentOptions.value.find(c => c.value === (selected.value || selected));
+    if (comp?.objComponent) await loadDefects(comp.objComponent);
   }
 };
 
-const handleParameterComponentChange = async (selectedComponent) => {
+const handleParameterComponentChange = async (selected) => {
   parameterRecord.value.parameterType = null;
   parameterRecord.value.minValue = null;
   parameterRecord.value.maxValue = null;
-  
   shouldShowMinMaxError.value = false;
-  
-  if (selectedComponent) {
-    const componentId = selectedComponent.value || selectedComponent;
-    const component = componentOptions.value.find(c => c.value === componentId);
-    if (component?.objComponent) {
-      await loadParameters(component.objComponent);
-    }
+  if (selected) {
+    const comp = componentOptions.value.find(c => c.value === (selected.value || selected));
+    if (comp?.objComponent) await loadParameters(comp.objComponent);
   } else {
     parameterOptions.value = [];
   }
 };
 
-const handleParameterChange = (selectedParameter) => {
+const handleParameterChange = (selected) => {
   shouldShowMinMaxError.value = false;
-  
-  if (selectedParameter) {
-    const parameterId = selectedParameter.value || selectedParameter;
-    const parameter = parameterOptions.value.find(p => p.value === parameterId);
-    
-    if (parameter) {
-      parameterRecord.value.minValue = parameter.paramslimitmin || null;
-      parameterRecord.value.maxValue = parameter.paramslimitmax || null;
+  if (selected) {
+    const param = parameterOptions.value.find(p => p.value === (selected.value || selected));
+    if (param) {
+      parameterRecord.value.minValue = param.paramslimitmin || null;
+      parameterRecord.value.maxValue = param.paramslimitmax || null;
     }
   } else {
     parameterRecord.value.minValue = null;
     parameterRecord.value.maxValue = null;
   }
-  
   parameterRecord.value.value = '';
+};
+
+const updateCoordinates = (newCoords) => {
+  newRecord.value.coordinates = newCoords;
+  if (objectBounds.value?.StartKm !== null) {
+    const s = (newCoords.coordStartKm || 0) * 1000 + (newCoords.coordStartPk || 0) * 100 + (newCoords.coordStartZv || 0) * 25;
+    const f = (newCoords.coordEndKm || 0) * 1000 + (newCoords.coordEndPk || 0) * 100 + (newCoords.coordEndZv || 0) * 25;
+    const os = (objectBounds.value.StartKm || 0) * 1000 + (objectBounds.value.StartPicket || 0) * 100 + (objectBounds.value.StartLink || 0) * 25;
+    const of2 = (objectBounds.value.FinishKm || 0) * 1000 + (objectBounds.value.FinishPicket || 0) * 100 + (objectBounds.value.FinishLink || 0) * 25;
+    isCoordinatesOutOfBounds.value = s < os || s > of2 || f < os || f > of2;
+    if (isCoordinatesOutOfBounds.value) notificationStore.showNotification('Координаты не могут выходить за границы выбранного объекта', 'error');
+  } else {
+    isCoordinatesOutOfBounds.value = false;
+  }
+};
+
+const updateDefectCoordinates = (newCoords) => {
+  defectRecord.value.startCoordinates = newCoords;
+  if (inspectionBounds.value?.StartKm !== null) {
+    const s = (newCoords.coordStartKm || 0) * 1000 + (newCoords.coordStartPk || 0) * 100 + (newCoords.coordStartZv || 0) * 25;
+    const f = (newCoords.coordEndKm || 0) * 1000 + (newCoords.coordEndPk || 0) * 100 + (newCoords.coordEndZv || 0) * 25;
+    const is2 = (inspectionBounds.value.StartKm || 0) * 1000 + (inspectionBounds.value.StartPicket || 0) * 100 + (inspectionBounds.value.StartLink || 0) * 25;
+    const if2 = (inspectionBounds.value.FinishKm || 0) * 1000 + (inspectionBounds.value.FinishPicket || 0) * 100 + (inspectionBounds.value.FinishLink || 0) * 25;
+    isDefectCoordinatesOutOfBounds.value = s < is2 || s > if2 || f < is2 || f > if2;
+    if (isDefectCoordinatesOutOfBounds.value) notificationStore.showNotification('Координаты не могут выходить за границы записи осмотра', 'error');
+  } else {
+    isDefectCoordinatesOutOfBounds.value = false;
+  }
+};
+
+const updateParameterCoordinates = (newCoords) => {
+  parameterRecord.value.startCoordinates = newCoords;
+  if (inspectionBounds.value?.StartKm !== null) {
+    const s = (newCoords.coordStartKm || 0) * 1000 + (newCoords.coordStartPk || 0) * 100 + (newCoords.coordStartZv || 0) * 25;
+    const f = (newCoords.coordEndKm || 0) * 1000 + (newCoords.coordEndPk || 0) * 100 + (newCoords.coordEndZv || 0) * 25;
+    const is2 = (inspectionBounds.value.StartKm || 0) * 1000 + (inspectionBounds.value.StartPicket || 0) * 100 + (inspectionBounds.value.StartLink || 0) * 25;
+    const if2 = (inspectionBounds.value.FinishKm || 0) * 1000 + (inspectionBounds.value.FinishPicket || 0) * 100 + (inspectionBounds.value.FinishLink || 0) * 25;
+    isParameterCoordinatesOutOfBounds.value = s < is2 || s > if2 || f < is2 || f > if2;
+    if (isParameterCoordinatesOutOfBounds.value) notificationStore.showNotification('Координаты не могут выходить за границы записи осмотра', 'error');
+  } else {
+    isParameterCoordinatesOutOfBounds.value = false;
+  }
 };
 
 watch(
   () => [parameterRecord.value.minValue, parameterRecord.value.maxValue],
   () => {
-    if (!isUserTypingMinMax.value && shouldShowMinMaxError.value) {
-      validateMinMax();
-    }
+    if (!isUserTypingMinMax.value && shouldShowMinMaxError.value) validateMinMax();
   }
 );
 
 watch(
   () => props.record,
-  async (newRecordData) => {
-    if (newRecordData) {
-      objectBounds.value = {
-        StartKm: newRecordData.StartKm || null,
-        StartPicket: newRecordData.StartPicket || null,
-        StartLink: newRecordData.StartLink || null,
-        FinishKm: newRecordData.FinishKm || null,
-        FinishPicket: newRecordData.FinishPicket || null,
-        FinishLink: newRecordData.FinishLink || null,
-      };
+  async (rec) => {
+    if (!rec) return;
+    objectBounds.value = {
+      StartKm: rec.StartKm || null, StartPicket: rec.StartPicket || null, StartLink: rec.StartLink || null,
+      FinishKm: rec.FinishKm || null, FinishPicket: rec.FinishPicket || null, FinishLink: rec.FinishLink || null,
+    };
+    inspectionBounds.value = { ...objectBounds.value };
+    Object.assign(newRecord.value.coordinates, {
+      coordStartKm: rec.StartKm || null, coordStartPk: rec.StartPicket || null, coordStartZv: rec.StartLink || null,
+      coordEndKm: rec.FinishKm || null, coordEndPk: rec.FinishPicket || null, coordEndZv: rec.FinishLink || null,
+    });
 
-      inspectionBounds.value = {
-        StartKm: newRecordData.StartKm || null,
-        StartPicket: newRecordData.StartPicket || null,
-        StartLink: newRecordData.StartLink || null,
-        FinishKm: newRecordData.FinishKm || null,
-        FinishPicket: newRecordData.FinishPicket || null,
-        FinishLink: newRecordData.FinishLink || null,
-      };
+    const existingData = await loadExistingData(rec);
+    loadComponents();
 
-      Object.assign(newRecord.value.coordinates, {
-        coordStartKm: newRecordData.StartKm || null,
-        coordStartPk: newRecordData.StartPicket || null,
-        coordStartZv: newRecordData.StartLink || null,
-        coordEndKm: newRecordData.FinishKm || null,
-        coordEndPk: newRecordData.FinishPicket || null,
-        coordEndZv: newRecordData.FinishLink || null,
-      });
-
-      const existingData = await loadExistingData(newRecordData);
-      loadComponents();
-
-      // При открытии вкладки дефектов/параметров — ищем последний осмотр
-      // и загружаем существующие дефекты/параметры для ExistingDataBlock
-      if (props.openTab === 'defects' || props.openTab === 'parameters') {
-        if (existingData?.length > 0) {
-          const lastInspection = existingData[existingData.length - 1];
-          if (lastInspection?.id) {
-            savedInspectionId.value = lastInspection.id;
-            if (props.openTab === 'defects') {
-              await loadExistingDefects(lastInspection.id);
-            } else {
-              await loadExistingParameters(lastInspection.id);
-            }
-          }
-        }
-      }
-
-      // Заполняем из черновика если есть
-      if (props.draftData) {
-        fillFromDraft(props.draftData);
-        // Если открыт info-черновик — считаем info сохранённой, разблокируем табы
-        if (props.draftId && (!props.openTab || props.openTab === 'info')) {
-          isInfoSaved.value = true;
-          localParentDraftId.value = props.draftId;
-        }
+    // Если есть существующий осмотр — разблокируем табы
+    if (existingData?.length > 0) {
+      const last = existingData[existingData.length - 1];
+      if (last?.id) {
+        savedInspectionId.value = last.id;
+        isInfoSaved.value = true;
       }
     }
   },
@@ -1362,16 +944,8 @@ watch(
   flex: 1;
 }
 
-.date-picker {
-  width: 100%;
-}
-
 .full-width-input {
   width: 100%;
-}
-
-.spacer-24 {
-  height: 24px;
 }
 
 .button-container {
@@ -1409,9 +983,7 @@ watch(
   gap: 16px;
 }
 
-.defect-heading {
-  color: #c70039;
-}
+.defect-heading { color: #c70039; }
 
 .defect-info-group {
   display: grid;
@@ -1419,24 +991,17 @@ watch(
   gap: 24px;
 }
 
-.half-width {
-  width: 100%;
-}
+.half-width { width: 100%; }
 
-.text-area {
-  height: 100px;
-}
+.text-area { height: 100px; }
 
-/* New parameter section styles */
 .parameters-content {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.parameters-heading {
-  color: #3182ce;
-}
+.parameters-heading { color: #3182ce; }
 
 .parameter-info-group {
   display: grid;
@@ -1444,20 +1009,15 @@ watch(
   gap: 24px;
 }
 
-.value-input {
-  width: 50%;
-}
+.value-input { width: 50%; }
 
-/* Info tab specific styles */
 .new-info-content {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.info-heading {
-  color: #3182ce;
-}
+.info-heading { color: #3182ce; }
 
 .parameter-value-group {
   display: flex;
@@ -1465,29 +1025,10 @@ watch(
 }
 
 @media (max-width: 768px) {
-  .coordinates-input-group {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .button-container {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .main-actions {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .defect-info-group,
-  .parameter-info-group {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .value-input {
-    width: 100%;
-  }
+  .coordinates-input-group { flex-direction: column; gap: 12px; }
+  .button-container { flex-direction: column; gap: 16px; }
+  .main-actions { width: 100%; justify-content: center; }
+  .defect-info-group, .parameter-info-group { grid-template-columns: 1fr; gap: 12px; }
+  .value-input { width: 100%; }
 }
 </style>

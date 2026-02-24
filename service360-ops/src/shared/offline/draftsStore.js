@@ -45,6 +45,16 @@ export async function deleteDraftWithChildren(id) {
   await refreshDraftsCount();
 }
 
+export async function submitParentDraft(id) {
+  const children = await db.drafts.where('parentDraftId').equals(id).toArray();
+  if (children.length > 0) {
+    await db.drafts.update(id, { submitted: true });
+  } else {
+    await db.drafts.delete(id);
+  }
+  await refreshDraftsCount();
+}
+
 export async function clearAllDrafts() {
   await db.drafts.clear();
   await refreshDraftsCount();

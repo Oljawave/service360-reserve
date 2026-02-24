@@ -73,6 +73,7 @@
       />
     </div>
 
+    <!-- Онлайн: открывается по double-click на строке -->
     <WorkCardModal
       v-if="isWorkCardModalOpen"
       :record="selectedRecord"
@@ -80,11 +81,35 @@
       :date="selectedDate"
       :sectionId="selectedSection"
       :sectionPv="selectedSectionPv"
-      :draftId="currentDraftId"
-      :draftData="currentDraftFields"
-      :openTab="currentOpenTab"
-      :draftParentId="currentParentDraftId"
       @close="closeWorkCardModal"
+    />
+
+    <!-- Черновики: открывается из DraftsPanel -->
+    <!-- Info-черновик (нет parentDraftId) -->
+    <DraftInspectionModal
+      v-if="isDraftModalOpen && !currentDraft?.parentDraftId"
+      :record="currentDraft?.recordData"
+      :draftId="currentDraft?.id"
+      :formFields="currentDraft?.formFields"
+      @close="closeDraftModal"
+    />
+    <!-- Дочерний черновик: Неисправность -->
+    <DraftDefectModal
+      v-if="isDraftModalOpen && currentDraft?.parentDraftId && currentDraft?.formFields?.tab === 'defects'"
+      :record="currentDraft?.recordData"
+      :draftId="currentDraft?.id"
+      :formFields="currentDraft?.formFields"
+      :parentDraftId="currentDraft?.parentDraftId"
+      @close="closeDraftModal"
+    />
+    <!-- Дочерний черновик: Параметр -->
+    <DraftParameterModal
+      v-if="isDraftModalOpen && currentDraft?.parentDraftId && currentDraft?.formFields?.tab === 'parameters'"
+      :record="currentDraft?.recordData"
+      :draftId="currentDraft?.id"
+      :formFields="currentDraft?.formFields"
+      :parentDraftId="currentDraft?.parentDraftId"
+      @close="closeDraftModal"
     />
 
     <ConfirmationModal
@@ -118,6 +143,9 @@ import { cachedLoadWorkPlanInspection } from '@/shared/offline/referenceDataCach
 import { activeDraft, clearActiveDraft } from '@/shared/offline/activeDraft';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
 import BaseTable from '@/app/layouts/Table/BaseTable.vue';
+import DraftInspectionModal from '@/features/work-log/components/DraftInspectionModal.vue';
+import DraftDefectModal from '@/features/work-log/components/DraftDefectModal.vue';
+import DraftParameterModal from '@/features/work-log/components/DraftParameterModal.vue';
 import BackButton from '@/shared/ui/BackButton.vue';
 import UiButton from '@/shared/ui/UiButton.vue';
 import WorkCardModal from '@/features/work-log/components/WorkCardModal.vue';
@@ -141,10 +169,8 @@ const selectedRows = ref([]);
 const isInspectionConfirmModalOpen = ref(false);
 const isSavingInspections = ref(false);
 const isCompletingWork = ref(false);
-const currentDraftId = ref(null);
-const currentDraftFields = ref(null);
-const currentOpenTab = ref('info');
-const currentParentDraftId = ref(null);
+const isDraftModalOpen = ref(false);
+const currentDraft = ref(null);
 const router = useRouter();
 const notificationStore = useNotificationStore();
 
@@ -219,15 +245,14 @@ const selectedSectionPv = computed(() => {
 
 const closeWorkCardModal = () => {
   isWorkCardModalOpen.value = false;
-  currentDraftId.value = null;
-  currentDraftFields.value = null;
-  currentOpenTab.value = 'info';
-  currentParentDraftId.value = null;
+};
+
+const closeDraftModal = () => {
+  isDraftModalOpen.value = false;
+  currentDraft.value = null;
 };
 
 const onRowDoubleClick = (row) => {
-  currentDraftId.value = null;
-  currentDraftFields.value = null;
   selectedRecord.value = row;
   isWorkCardModalOpen.value = true;
 };
@@ -612,39 +637,20 @@ const onDayChange = (value) => {
 const openFromDraft = (draft) => {
   const rd = draft.recordData;
 
-  // Если онлайн и данные загружены — ищем свежую запись по ID
+  // Если онлайн — обогащаем метаданные свежими данными из загруженной таблицы
   const fullRecord = allRecords.value.find(r => r.id === rd.id);
-  selectedRecord.value = fullRecord
-    ? mapRecordToTableRow(fullRecord)
-    : {
-        id: rd.id,
-        pv: rd.pv,
-        objObject: rd.objObject,
-        name: rd.name,
-        place: rd.place,
-        objectType: rd.objectType,
-        object: rd.object,
-        nameLocationClsSection: rd.nameLocationClsSection,
-        coordinates: rd.coordinates,
-        objLocationClsSection: rd.objLocationClsSection,
-        pvLocationClsSection: rd.pvLocationClsSection,
-        StartKm: rd.StartKm,
-        StartPicket: rd.StartPicket,
-        StartLink: rd.StartLink,
-        FinishKm: rd.FinishKm,
-        FinishPicket: rd.FinishPicket,
-        FinishLink: rd.FinishLink,
-      };
+  if (fullRecord) {
+    draft = {
+      ...draft,
+      recordData: {
+        ...rd,
+        ...mapRecordToTableRow(fullRecord),
+      },
+    };
+  }
 
-  currentDraftId.value = draft.id;
-  currentDraftFields.value = draft.formFields;
-  // Определяем таб для открытия и родительский ID
-  currentOpenTab.value = draft.formFields?.tab || 'info';
-  currentParentDraftId.value = draft.parentDraftId || null;
-
-  if (rd.sectionId) selectedSection.value = rd.sectionId;
-
-  isWorkCardModalOpen.value = true;
+  currentDraft.value = draft;
+  isDraftModalOpen.value = true;
   clearActiveDraft();
 };
 
