@@ -46,7 +46,7 @@
                 </div>
                 <p class="drafts-panel-item-desc">{{ getDraftPreview(group.draft) }}</p>
               </div>
-              <button class="drafts-delete-btn" @click.stop="handleDeleteParent(group.draft.id)">
+              <button v-if="group.children.length === 0" class="drafts-delete-btn" @click.stop="askDelete(group.draft.id, true)">
                 <UiIcon name="Trash2" :size="14" />
               </button>
             </div>
@@ -65,7 +65,7 @@
                 <span class="drafts-child-label">{{ getChildLabel(child) }}</span>
                 <span class="drafts-child-desc">{{ getChildPreview(child) }}</span>
               </div>
-              <button class="drafts-delete-btn drafts-delete-btn--small" @click.stop="handleDelete(child.id)">
+              <button class="drafts-delete-btn drafts-delete-btn--small" @click.stop="askDelete(child.id, false)">
                 <UiIcon name="Trash2" :size="12" />
               </button>
             </div>
@@ -73,6 +73,14 @@
         </div>
       </div>
     </Transition>
+
+    <ConfirmationModal
+      v-if="confirmModal.show"
+      title="Удаление черновика"
+      message="Вы уверены, что хотите удалить этот черновик?"
+      @confirm="confirmDelete"
+      @cancel="confirmModal.show = false"
+    />
   </div>
 </template>
 
@@ -80,6 +88,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import UiIcon from '@/shared/ui/UiIcon.vue';
+import ConfirmationModal from '@/shared/ui/ConfirmationModal.vue';
 import { draftsCount, getDrafts, deleteDraft, deleteDraftWithChildren, clearAllDrafts } from '@/shared/offline/draftsStore';
 import { setActiveDraft } from '@/shared/offline/activeDraft';
 import { useNotificationStore } from '@/app/stores/notificationStore';
@@ -244,14 +253,22 @@ const openChildDraft = async (child) => {
   await navigateAndOpen(child);
 };
 
-const handleDelete = async (id) => {
-  await deleteDraft(id);
-  drafts.value = drafts.value.filter(d => d.id !== id);
+const confirmModal = ref({ show: false, id: null, isParent: false });
+
+const askDelete = (id, isParent) => {
+  confirmModal.value = { show: true, id, isParent };
 };
 
-const handleDeleteParent = async (id) => {
-  await deleteDraftWithChildren(id);
-  drafts.value = drafts.value.filter(d => d.id !== id && d.parentDraftId !== id);
+const confirmDelete = async () => {
+  const { id, isParent } = confirmModal.value;
+  confirmModal.value = { show: false, id: null, isParent: false };
+  if (isParent) {
+    await deleteDraftWithChildren(id);
+    drafts.value = drafts.value.filter(d => d.id !== id && d.parentDraftId !== id);
+  } else {
+    await deleteDraft(id);
+    drafts.value = drafts.value.filter(d => d.id !== id);
+  }
 };
 
 const handleClearAll = async () => {

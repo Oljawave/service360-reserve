@@ -67,10 +67,10 @@
           />
         </div>
         <div class="parameter-value-group">
-          <AppNumberInput :label="paramForm.minValue !== null && paramForm.minValue !== undefined ? `Минимальное значение (${paramForm.minValue})` : 'Минимальное значение'" id="dp-min" v-model="paramForm.minValue" placeholder="Введите минимальное значение" class="half-width value-input" :required="true" />
-          <AppNumberInput :label="paramForm.maxValue !== null && paramForm.maxValue !== undefined ? `Максимальное значение (${paramForm.maxValue})` : 'Максимальное значение'" id="dp-max" v-model="paramForm.maxValue" placeholder="Введите максимальное значение" class="half-width value-input" :required="true" />
+          <AppNumberInput :label="draftMinValue !== null ? `Минимальное значение (${draftMinValue})` : 'Минимальное значение'" id="dp-min" v-model="paramForm.minValue" placeholder="Введите минимальное значение" class="half-width value-input" :required="true" />
+          <AppNumberInput :label="draftMaxValue !== null ? `Максимальное значение (${draftMaxValue})` : 'Максимальное значение'" id="dp-max" v-model="paramForm.maxValue" placeholder="Введите максимальное значение" class="half-width value-input" :required="true" />
         </div>
-        <AppNumberInput label="Значение" id="dp-val" v-model="paramForm.value" placeholder="Введите значение" class="half-width value-input" :required="true" />
+        <AppNumberInput :label="draftValue !== null && draftValue !== '' ? `Значение (${draftValue})` : 'Значение'" id="dp-val" v-model="paramForm.value" placeholder="Введите значение" class="half-width value-input" :required="true" />
         <AppInput
           label="Примечание / заметка"
           id="dp-note"
@@ -138,6 +138,11 @@ const notificationStore = useNotificationStore();
 const isSaving = ref(false);
 const savedInspectionId = ref(null);
 const existingParameters = ref([]);
+
+// Значения из черновика — фиксированные хинты для лейблов
+const draftMinValue = ref(null);
+const draftMaxValue = ref(null);
+const draftValue = ref(null);
 
 const paramForm = ref({
   startCoordinates: { coordStartKm: 0, coordStartPk: 0, coordStartZv: 0, coordEndKm: 0, coordEndPk: 0, coordEndZv: 0 },
@@ -317,6 +322,10 @@ onMounted(async () => {
     paramForm.value.maxValue = f.maxValue ?? null;
     paramForm.value.value = f.value || '';
     paramForm.value.note = f.note || '';
+    // Фиксируем черновые значения для лейблов — не меняются при выборе компонента/параметра
+    draftMinValue.value = f.minValue ?? null;
+    draftMaxValue.value = f.maxValue ?? null;
+    draftValue.value = f.value || null;
   }
 
   if (isOnline.value) {
