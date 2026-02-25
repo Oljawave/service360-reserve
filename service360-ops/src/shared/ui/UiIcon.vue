@@ -21,6 +21,6 @@ const iconStyle = computed(() => (props.color ? { color: props.color } : {}))
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  color: #4a5568;
+  color: currentColor;
 }
 </style>

@@ -41,7 +41,9 @@
     </div>
     <div class="table-section">
       <div class="table-header">
-        <h2>План работ{{ formattedDate ? ' на ' + formattedDate : '' }}</h2>
+        <div class="table-header-top">
+          <h2>План работ{{ formattedDate ? ' на ' + formattedDate : '' }}</h2>
+        </div>
         <div class="table-subheader">
           <p class="subtitle">
             Отображаются только незавершенные работы. Для детального просмотра дважды кликните по строке.
@@ -49,7 +51,14 @@
           <span class="total-count">Всего работ: {{ tableData.length }}</span>
         </div>
       </div>
+      <MobileCardList
+        v-if="isMobile"
+        :rows="tableData"
+        :loading="isLoading"
+        @row-dblclick="onRowDoubleClick"
+      />
       <BaseTable
+        v-else
         :columns="columns"
         :rows="tableData"
         :loading="isLoading"
@@ -85,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, h } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, h } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
@@ -94,10 +103,14 @@ import { completeThePlanWork } from '@/shared/api/plans/planWorkApi';
 import { activeDraft, clearActiveDraft } from '@/shared/offline/activeDraft';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
 import BaseTable from '@/app/layouts/Table/BaseTable.vue';
+import MobileCardList from '@/app/layouts/Table/MobileCardList.vue';
 import BackButton from '@/shared/ui/BackButton.vue';
 import UiButton from '@/shared/ui/UiButton.vue';
 import ResourcePlanningModal from '@/features/resource-planning/components/ResourcePlanningModal.vue';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal.vue';
+
+const isMobile = ref(window.innerWidth <= 640);
+const handleResize = () => { isMobile.value = window.innerWidth <= 640; };
 
 const selectedSection = ref(null);
 const selectedMonth = ref(null);
@@ -328,6 +341,7 @@ const mapRecordToTableRow = (record) => ({
   pv: record.pv,
   cls: record.cls,
   planDateEnd: record.PlanDateEnd || 'Не указано',
+  planDate: record.PlanDateEnd || null,
   name: record.fullNameWork || 'Без названия',
   place: record.nameSection || 'Не указано',
   objectType: record.nameClsObject || 'Неизвестно',
@@ -578,7 +592,12 @@ watch(activeDraft, (draft) => {
   }
 });
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
+
 onMounted(async () => {
+  window.addEventListener('resize', handleResize);
   await loadAllUnfinishedWork();
   isMounted.value = true;
 
@@ -679,6 +698,13 @@ onMounted(async () => {
   gap: 8px;
   margin-bottom: 24px;
   flex-shrink: 0; /* Prevents header from shrinking */
+}
+
+.table-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
 }
 
 .table-header h2 {
@@ -786,7 +812,7 @@ onMounted(async () => {
 
   .table-section {
     padding: 16px;
-    overflow-x: auto;
+    overflow-y: auto;
   }
 
   .table-header {
@@ -795,6 +821,11 @@ onMounted(async () => {
 
   .table-header h2 {
     font-size: 15px;
+  }
+
+  .table-header-top {
+    flex-direction: row;
+    align-items: center;
   }
 
   .table-subheader {

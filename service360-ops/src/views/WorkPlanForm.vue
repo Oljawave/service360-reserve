@@ -43,12 +43,14 @@
       <div class="table-header">
         <div class="table-header-top">
           <h2>План работ{{ formattedDate ? ' на ' + formattedDate : '' }}</h2>
-          <UiButton
+          <button
             v-if="canInsert"
-            text="Добавить осмотр"
-            icon="Plus"
+            class="action-btn"
             @click="goToInspectionRecord"
-          />
+          >
+            <UiIcon name="Plus" />
+            <span>Добавить осмотр</span>
+          </button>
         </div>
         <div class="table-subheader">
           <p class="subtitle">
@@ -57,7 +59,17 @@
           <span class="total-count">Всего работ: {{ tableData.length }}</span>
         </div>
       </div>
+      <MobileCardList
+        v-if="isMobile"
+        :rows="tableData"
+        :loading="isLoading"
+        :showCheckbox="true"
+        :selectedRows="selectedRows"
+        @row-dblclick="onRowDoubleClick"
+        @update:selectedRows="selectedRows = $event"
+      />
       <BaseTable
+        v-else
         :columns="columns"
         :rows="tableData"
         :loading="isLoading"
@@ -133,7 +145,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, h } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch, h } from 'vue';
 import { useRouter } from 'vue-router';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
@@ -143,13 +155,18 @@ import { cachedLoadWorkPlanInspection } from '@/shared/offline/referenceDataCach
 import { activeDraft, clearActiveDraft } from '@/shared/offline/activeDraft';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
 import BaseTable from '@/app/layouts/Table/BaseTable.vue';
+import MobileCardList from '@/app/layouts/Table/MobileCardList.vue';
 import DraftInspectionModal from '@/features/work-log/components/DraftInspectionModal.vue';
 import DraftDefectModal from '@/features/work-log/components/DraftDefectModal.vue';
 import DraftParameterModal from '@/features/work-log/components/DraftParameterModal.vue';
 import BackButton from '@/shared/ui/BackButton.vue';
 import UiButton from '@/shared/ui/UiButton.vue';
+import UiIcon from '@/shared/ui/UiIcon.vue';
 import WorkCardModal from '@/features/work-log/components/WorkCardModal.vue';
 import ConfirmationModal from '@/shared/ui/ConfirmationModal.vue';
+
+const isMobile = ref(window.innerWidth <= 640);
+const handleResize = () => { isMobile.value = window.innerWidth <= 640; };
 
 const selectedSection = ref(null);
 const selectedMonth = ref(null);
@@ -431,6 +448,7 @@ const mapRecordToTableRow = (record) => ({
   pv: record.pv,
   cls: record.cls,
   planDateEnd: record.PlanDateEnd || 'Не указано',
+  planDate: record.PlanDateEnd || null,
   name: record.fullNameWork || 'Без названия',
   place: record.nameSection || 'Не указано',
   objectType: record.nameClsObject || 'Неизвестно',
@@ -654,6 +672,10 @@ const openFromDraft = (draft) => {
   clearActiveDraft();
 };
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
+
 const isMounted = ref(false);
 
 watch(activeDraft, (draft) => {
@@ -663,6 +685,7 @@ watch(activeDraft, (draft) => {
 });
 
 onMounted(async () => {
+  window.addEventListener('resize', handleResize);
   await loadAllUnfinishedWork();
   isMounted.value = true;
 
@@ -849,6 +872,25 @@ onMounted(async () => {
   }
 }
 
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  color: #1a202c;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.action-btn:hover {
+  background: #edf2f7;
+}
+
 /* Mobile styles */
 @media (max-width: 640px) {
   .plan-form-page {
@@ -879,6 +921,32 @@ onMounted(async () => {
     width: 100%;
   }
 
+  .action-btn {
+    background: #3182ce;
+    border: none;
+    color: #fff;
+    border-radius: 50%;
+    padding: 12px;
+    width: 48px;
+    height: 48px;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+
+  .action-btn span {
+    display: none;
+  }
+
+  .action-btn :deep(.icon) {
+    color: #fff;
+    width: 24px;
+    height: 24px;
+  }
+
+  .action-btn:hover {
+    background: #2c5aa0;
+  }
+
   .table-section {
     padding: 16px;
     overflow-x: auto;
@@ -893,8 +961,8 @@ onMounted(async () => {
   }
 
   .table-header-top {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
     gap: 12px;
   }
 
