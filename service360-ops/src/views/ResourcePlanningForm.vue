@@ -812,7 +812,8 @@ onMounted(async () => {
 
   .table-section {
     padding: 16px;
-    overflow-y: auto;
+    flex-grow: 0;
+    flex-shrink: 0;
   }
 
   .table-header {
