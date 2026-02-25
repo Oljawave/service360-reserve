@@ -4,7 +4,7 @@
       <h2 class="title" v-if="!isMobile && hasActiveFilters">{{ title }}</h2>
       <div v-if="isMobile" class="mobile-header-top">
         <h2 class="title">{{ title }}</h2>
-        <TableActions :actions="actions" :isMobile="isMobile" />
+        <TableActions :actions="actions" :isMobile="isMobile" :isSmallScreen="isSmallScreen" />
       </div>
 
       <div v-if="isMobile && showFilters && hasActiveFilters" class="mobile-filters">
@@ -47,7 +47,7 @@
           />
         </div>
         <slot name="custom-header"></slot>
-        <TableActions :actions="actions" :isMobile="isMobile" />
+        <TableActions :actions="actions" :isMobile="isMobile" :isSmallScreen="isSmallScreen" />
       </div>
       <div v-if="!isMobile" class="controls-footer">
         <slot name="controls-footer"></slot>
@@ -137,8 +137,10 @@ import MobileCardList from './MobileCardList.vue'; // New import
 
 // Simple useIsMobile helper (replace with actual global logic if available)
 const isMobile = ref(window.innerWidth <= 768);
+const isSmallScreen = ref(window.innerWidth > 768 && window.innerWidth <= 1600);
 const updateIsMobile = () => {
   isMobile.value = window.innerWidth <= 768;
+  isSmallScreen.value = window.innerWidth > 768 && window.innerWidth <= 1600;
 };
 
 const props = defineProps({
@@ -474,11 +476,36 @@ onUnmounted(() => {
 .filters {
   display: flex;
   gap: 16px;
+  align-items: flex-end;
 }
 
 .table-wrapper.mobile-view .filters {
   flex-grow: 1;
   gap: 8px;
+}
+
+@media (min-width: 769px) and (max-width: 1600px) {
+  .controls-header {
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .filters {
+    gap: 8px;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .filters :deep(.form-group) {
+    min-width: 120px;
+    max-width: 170px;
+  }
+
+  .filters :deep(label) {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
 }
 
 .table-footer {

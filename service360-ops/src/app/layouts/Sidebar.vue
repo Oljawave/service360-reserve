@@ -133,7 +133,7 @@ const filteredItems = computed(() => filterItems(JSON.parse(JSON.stringify(allIt
 
 <style scoped>
 .sidebar {
-  width: 250px;
+  width: var(--sidebar-width, 250px);
   background-color: #F8FAFC;
   padding: 16px 8px;
   display: flex;
@@ -150,12 +150,12 @@ const filteredItems = computed(() => filterItems(JSON.parse(JSON.stringify(allIt
 @media (max-width: 768px) {
   .sidebar {
     position: fixed;
-    left: -250px;
+    left: calc(-1 * var(--sidebar-width, 250px));
     top: 0;
     height: 100%;
     z-index: 1000;
     transition: left 0.3s ease;
-    width: 250px;
+    width: var(--sidebar-width, 250px);
   }
 
   .sidebar:not(.mobile-open) {
@@ -164,7 +164,7 @@ const filteredItems = computed(() => filterItems(JSON.parse(JSON.stringify(allIt
 }
 
 .sidebar.collapsed {
-  width: 60px;
+  width: var(--sidebar-collapsed-width, 60px);
   padding: 16px 4px;
 }
 
