@@ -216,7 +216,7 @@ const isFactDateOnTime = (key) => {
   padding: 14px 16px;
   font-size: 14px;
   color: #1a202c;
-  vertical-align: top;
+  vertical-align: middle;
 }
 
 .index-icon-wrap {
