@@ -9,7 +9,7 @@
   >
     <div class="work-card-content">
       <!-- Основной контент с табами -->
-      <div v-show="!showNorma">
+      <div v-show="!showNorma && !showFact">
           <WorkHeaderInfo :record="record" :section="section" :date="date" />
           <div class="tabs-block">
             <TabsHeader
@@ -102,6 +102,13 @@
               >
                 Норма
               </button>
+              <button
+                v-if="activeTab === 'info' && isOnline"
+                class="fact-btn"
+                @click="openFact"
+              >
+                Факт
+              </button>
               <MainButton
                 v-if="isOnline"
                 :label="getButtonLabel()"
@@ -121,6 +128,18 @@
         @back="showNorma = false"
         @apply="onNormaApply"
       />
+
+      <!-- Факт -->
+      <FactView
+        v-if="showFact"
+        :objWork="factObjWork"
+        :objTask="factObjTask"
+        :plannedVolume="factPlannedVolume"
+        :objLocationClsSection="factObjLocationClsSection"
+        :date="factDate"
+        @back="showFact = false"
+        @apply="onFactApply"
+      />
     </div>
   </ModalWrapper>
 </template>
@@ -139,6 +158,7 @@ import PersonnelTab from './tabs/PersonnelTab.vue';
 import EquipmentTab from './tabs/EquipmentTab.vue';
 import ToolsTab from './tabs/ToolsTab.vue';
 import NormativeView from './tabs/NormativeView.vue';
+import FactView from './tabs/FactView.vue';
 
 import { useNotificationStore } from '@/app/stores/notificationStore';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
@@ -174,6 +194,14 @@ const normaObjWork = ref(null);
 const normaObjTask = ref(null);
 const normaPlannedVolume = ref(null);
 
+// Fact view state
+const showFact = ref(false);
+const factObjWork = ref(null);
+const factObjTask = ref(null);
+const factPlannedVolume = ref(null);
+const factObjLocationClsSection = ref(null);
+const factDate = ref(null);
+
 const disabledTabs = computed(() => isInfoSaved.value ? [] : ['materials', 'externalServices', 'personnel', 'equipment', 'tools']);
 
 const tabsRow1 = ref([
@@ -206,6 +234,81 @@ const tabRefs = {
 };
 
 const closeModal = () => { emit('close'); };
+
+const openFact = () => {
+  const selectedTask = infoTab.value?.getSelectedTask();
+  if (!selectedTask) {
+    notificationStore.showNotification('Пожалуйста, выберите задачу.', 'error');
+    return;
+  }
+  const volume = infoTab.value.getPlannedVolume();
+  factObjWork.value = props.record?.objWork;
+  factObjTask.value = selectedTask.value;
+  factPlannedVolume.value = volume;
+  factObjLocationClsSection.value = (props.record?.objLocationClsSection !== null && props.record?.objLocationClsSection !== undefined)
+    ? props.record.objLocationClsSection
+    : props.sectionId;
+  factDate.value = formatDateToISO(new Date());
+  showFact.value = true;
+};
+
+const onFactApply = async (factData) => {
+  if (isSaving.value) return;
+  isSaving.value = true;
+
+  try {
+    const formData = infoTab.value.getFormData();
+    const user = await getUserData();
+    const today = formatDateToISO(new Date());
+
+    const payload = {
+      name: `${props.record.id}-${today}`,
+      objWorkPlan: props.record.id,
+      pvWorkPlan: props.record.pv,
+      objTask: formData.task.value,
+      pvTask: formData.task.pv,
+      objUser: user.id,
+      pvUser: user.pv,
+      Value: formData.plannedVolume ? Number(formData.plannedVolume) : null,
+      PlanDateStart: formData.dateStartPlan ? formatDateToISO(formData.dateStartPlan) : null,
+      PlanDateEnd: formData.dateEndPlan ? formatDateToISO(formData.dateEndPlan) : null,
+      CreatedAt: today,
+      UpdatedAt: today,
+      objLocationClsSection: (props.record.objLocationClsSection !== null && props.record.objLocationClsSection !== undefined) ? props.record.objLocationClsSection : props.sectionId,
+      pvLocationClsSection: (props.record.pvLocationClsSection !== null && props.record.pvLocationClsSection !== undefined) ? parseInt(props.record.pvLocationClsSection) : parseInt(props.sectionPv),
+      id: factData.id,
+      relcls: factData.relcls,
+      idrom1: factData.idrom1,
+      clsrom1: factData.clsrom1,
+      idrom2: factData.idrom2,
+      clsrom2: factData.clsrom2,
+      material: factData.material || [],
+      tool: factData.tool || [],
+      equipment: factData.equipment || [],
+      service: factData.service || [],
+      personnel: factData.personnel || [],
+    };
+
+    const response = await saveTaskLogNormative(payload);
+
+    if (response.error) {
+      throw new Error(response.error.message || JSON.stringify(response.error));
+    }
+
+    notificationStore.showNotification('Фактические ресурсы успешно применены!', 'success');
+    showFact.value = false;
+    infoTab.value?.loadExisting();
+  } catch (error) {
+    let errorMessage = 'Не удалось применить фактические ресурсы.';
+    if (error.response?.data?.error?.message) {
+      errorMessage = error.response.data.error.message;
+    }
+    console.error('Ошибка применения фактических ресурсов:', error);
+    notificationStore.showNotification(errorMessage, 'error');
+  } finally {
+    isSaving.value = false;
+  }
+};
 
 const openNorma = () => {
   if (!infoTab.value?.isFormValid()) {
@@ -373,6 +476,7 @@ watch(
       savedTaskLogCls.value = null;
       activeTab.value = 'info';
       showNorma.value = false;
+      showFact.value = false;
     }
   },
   { immediate: true }
@@ -445,6 +549,23 @@ watch(
 }
 
 .norma-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.fact-btn {
+  padding: 10px 20px;
+  background: white;
+  color: #64748b;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.fact-btn:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
 }

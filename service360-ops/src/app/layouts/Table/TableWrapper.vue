@@ -242,10 +242,16 @@ const sortedAndFilteredRows = computed(() => {
     Object.keys(columnFilters.value).forEach(columnKey => {
       const filterValue = columnFilters.value[columnKey];
       if (filterValue && filterValue.trim()) {
+        const column = props.columns.find(c => c.key === columnKey);
         processedRows = processedRows.filter(row => {
           const cellValue = row[columnKey];
           if (cellValue == null) return false;
-          return String(cellValue).toLowerCase().includes(filterValue.toLowerCase().trim());
+          const cellStr = String(cellValue).toLowerCase();
+          const filterStr = filterValue.toLowerCase().trim();
+          if (column?.filterType === 'exact') {
+            return cellStr === filterStr;
+          }
+          return cellStr.includes(filterStr);
         });
       }
     });

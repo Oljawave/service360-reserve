@@ -602,6 +602,23 @@ export async function saveTaskLogNormative(data) {
   }
 }
 
+export async function loadResourceAverage({ objTask, Value, objLocationClsSection, objWork, periodType = 41, date }) {
+  try {
+    const response = await axios.post(
+      API_REPAIR_URL,
+      {
+        method: "data/loadResourceAverage",
+        params: [{ objTask, Value, objLocationClsSection, objWork, periodType, date }],
+      },
+      { withCredentials: true }
+    );
+    return response.data.result || [];
+  } catch (error) {
+    console.error("Ошибка при загрузке фактических ресурсов:", error);
+    throw error;
+  }
+}
+
 export async function loadResourceNormative(objWork, objTask, Value) {
   try {
     const response = await axios.post(
