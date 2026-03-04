@@ -370,7 +370,6 @@ onUnmounted(() => {
   box-shadow: none;
   border-radius: 0;
   gap: 12px;
-  min-height: 100vh;
   overflow-y: auto;
 }
 

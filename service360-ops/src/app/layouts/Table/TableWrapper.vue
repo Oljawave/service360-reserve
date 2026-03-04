@@ -417,7 +417,7 @@ onUnmounted(() => {
   flex-direction: column;
   gap: 16px;
   flex: 1;
-  min-height: calc(100vh - 100px);
+  min-height: 0;
   box-sizing: border-box;
 }
 
@@ -427,7 +427,6 @@ onUnmounted(() => {
   box-shadow: none;
   border-radius: 0;
   gap: 12px;
-  min-height: 100vh;
   overflow-y: auto;
 }
 

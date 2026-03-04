@@ -69,7 +69,6 @@ const visiblePages = computed(() => {
   gap: 6px;
   justify-content: flex-end;
   align-items: center;
-  padding: 16px;
   font-size: 14px;
 }
 

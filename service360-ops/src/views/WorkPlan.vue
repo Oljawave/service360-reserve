@@ -413,9 +413,9 @@ const tableActions = computed(() => {
 
 <style scoped>
 .work-plan-page {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
 }
 </style>

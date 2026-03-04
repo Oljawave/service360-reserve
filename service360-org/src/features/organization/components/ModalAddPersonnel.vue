@@ -207,7 +207,11 @@ const saveData = async () => {
       return
     }
 
-    await savePersonnel(form.value)
+    const payload = {
+      ...form.value,
+      phone: form.value.phone.replace(/^\+7/, '')
+    }
+    await savePersonnel(payload)
 
     notificationStore.showNotification('Сотрудник успешно добавлен', 'success')
 

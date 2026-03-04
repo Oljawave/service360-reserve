@@ -167,10 +167,10 @@ const tableWidthClass = computed(() => {
 
 <style scoped>
 .table-container {
+  flex: 1;
+  min-height: 0;
   overflow-x: auto;
   overflow-y: auto;
-  /* Reduced max-height slightly for better fit on various screens */
-  max-height: 65vh; 
   background: #fff;
   border-radius: 12px;
   border: 1px solid #e2e8f0;

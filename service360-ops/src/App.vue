@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted, onUnmounted } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Sidebar from './app/layouts/Sidebar.vue'
 import Navbar from './app/layouts/Navbar.vue'
@@ -39,30 +39,10 @@ const route = useRoute()
 const isLoginPage = computed(() => route.path === '/login')
 const sidebar = useSidebarStore()
 
-// Компенсация высоты при CSS zoom на маленьких экранах (ZenBook 1536px = 1920px@125%)
-// С zoom:0.88 на html, 100vh становится viewport*0.88 — нужно компенсировать через JS
-const ZOOM_FACTOR = 0.88
-const updateZoomHeight = () => {
-  const w = window.innerWidth
-  if (w >= 1441 && w <= 1600) {
-    const h = Math.ceil(window.innerHeight / ZOOM_FACTOR)
-    document.documentElement.style.setProperty('--app-height', h + 'px')
-  } else {
-    document.documentElement.style.removeProperty('--app-height')
-  }
-}
-
 onMounted(() => {
-  updateZoomHeight()
-  window.addEventListener('resize', updateZoomHeight)
-
   if (localStorage.getItem('personnalInfo')) {
     prefetchAllReferenceData();
   }
-})
-
-onUnmounted(() => {
-  window.removeEventListener('resize', updateZoomHeight)
 })
 
 // Динамическое кэширование WorkLog
@@ -101,15 +81,16 @@ watch(
 <style scoped>
 .app-layout {
   display: flex;
-  height: 100vh;
-  overflow: hidden; 
+  height: 108vh;
+  overflow: hidden;
 }
 
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; 
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .login-layout {
@@ -123,17 +104,6 @@ watch(
 
 .sidebar-overlay {
   display: none;
-}
-
-/* На zoom-экранах 100vh урезан zoom-ом, используем --app-height из JS */
-@media (min-width: 1441px) and (max-width: 1600px) {
-  .app-layout {
-    height: var(--app-height, 100vh);
-    overflow: hidden;
-  }
-  .login-layout {
-    height: var(--app-height, 100vh);
-  }
 }
 
 @media (max-width: 768px) {
