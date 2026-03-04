@@ -82,6 +82,12 @@ const allItems = [
     ]
   },
   {
+    label: 'Услуги',
+    path: '/services',
+    icon: 'Handshake',
+    permission: 'serv'
+  },
+  {
     label: 'Организация',
     icon: 'FolderTree',
     children: [

@@ -286,7 +286,7 @@ const loadWorkPlanWrapper = async ({ page, limit, filters: filterValues }) => {
       FinishLink: r.FinishLink,
       nameLocationClsSection: r.nameLocationClsSection,
       objLocationClsSection: r.objLocationClsSection,
-      status: (r.FactDateEnd && r.FactDateEnd !== '0000-01-01') ? 'Завершен' : 'Не завершен',
+      status: (r.FactDateEnd && r.FactDateEnd !== '0000-01-01') ? 'Да' : 'Нет',
     }));
 
     // The loadFn no longer needs to slice the data since TableWrapper is now handling full data loading
@@ -319,46 +319,7 @@ const columns = computed(() => {
     { key: 'coordinates', label: 'Координаты' },
     { key: 'object', label: 'Объект' },
     { key: 'planDate', label: 'Плановая дата' },
-    {
-      key: 'status',
-      label: 'Статус работы',
-      filterType: 'exact',
-      component: {
-        setup(_, ctx) {
-          return () => {
-            const status = ctx.attrs.row?.status;
-            const fulfilled = status === 'Завершен';
-            return h('span', {
-              style: {
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '3px 12px',
-                borderRadius: '999px',
-                fontSize: '13px',
-                fontWeight: '500',
-                whiteSpace: 'nowrap',
-                background: fulfilled ? '#f0fdf4' : '#FFF5F5',
-                color: fulfilled ? '#4ade80' : '#fb7185',
-                border: fulfilled ? '1.5px solid #4ade80' : '1.5px solid #fb7185',
-              },
-            }, [
-              h('span', {
-                style: {
-                  width: '7px',
-                  height: '7px',
-                  borderRadius: '50%',
-                  flexShrink: '0',
-                  display: 'inline-block',
-                  background: fulfilled ? '#4ade80' : '#fb7185',
-                },
-              }),
-              ' ' + status,
-            ]);
-          };
-        },
-      },
-    },
+    { key: 'status', label: 'Завершен' },
   ];
 
   // Добавляем столбец действий только если есть привилегия plan:finish
@@ -372,7 +333,7 @@ const columns = computed(() => {
             const rowData = context.attrs.row;
 
             // Не показываем кнопку если работа уже завершена
-            if (rowData?.status === 'Завершен') return null;
+            if (rowData?.status === 'Да') return null;
 
             return h(UiButton, {
               text: 'Завершить работу',

@@ -12,6 +12,7 @@ import Materials from '@/views/Materials.vue'
 import ThirdPartyServices from '@/views/ThirdPartyServices.vue'
 import Personnel from '@/views/Personnel.vue'
 import Clients from '@/views/Clients.vue'
+import Services from '@/views/Services.vue'
 import PassportData from '@/views/PassportData.vue'
 import Profile from '@/views/Profile.vue'
 import { isAuthenticated } from '@/shared/api/auth/auth'
@@ -79,6 +80,12 @@ const routes = [
     path: '/resources/thirdparty-services',
     name: 'ThirdPartyServices',
     component: ThirdPartyServices,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/services',
+    name: 'Services',
+    component: Services,
     meta: { requiresAuth: true }
   },
   {

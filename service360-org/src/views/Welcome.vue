@@ -136,6 +136,13 @@ const allCards = [
     permission: 'team'
   },
   {
+    icon: 'Handshake',
+    title: 'Услуги',
+    description: 'Справочник услуг',
+    path: '/services',
+    permission: 'serv'
+  },
+  {
     icon: 'Users',
     title: 'Клиенты',
     description: 'Управление клиентами',
