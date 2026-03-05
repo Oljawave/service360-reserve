@@ -123,7 +123,6 @@ const handleKeydown = (e) => {
     return
   }
 
-  // Заменяем запятую на точку
   if (e.key === ',' && props.allowDecimal) {
     e.preventDefault()
     const input = e.target
@@ -131,20 +130,17 @@ const handleKeydown = (e) => {
     const end = input.selectionEnd
     const currentValue = input.value || ''
 
-    // Проверяем, что точка еще не введена
     if (!currentValue.includes('.')) {
       const newValue = currentValue.substring(0, start) + '.' + currentValue.substring(end)
       input.value = newValue
       input.setSelectionRange(start + 1, start + 1)
 
-      // Эмитим событие для обновления внутреннего значения
       const event = new Event('input', { bubbles: true })
       input.dispatchEvent(event)
     }
     return
   }
 
-  // Разрешаем десятичный разделитель только если allowDecimal включен
   if (isDecimalSeparator && !props.allowDecimal) {
     e.preventDefault()
     return

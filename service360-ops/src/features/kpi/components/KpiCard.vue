@@ -40,7 +40,7 @@ const formattedMonthlyValue = computed(() => {
   if (isNaN(num)) {
     return props.monthlyValue;
   }
-  // Округляем до 2 знаков и убираем лишние нули
+
   return parseFloat(num.toFixed(2));
 });
 </script>

@@ -38,7 +38,7 @@ const props = defineProps({
     default: false
   },
   status: String,
-  hint: String // 👈 добавили
+  hint: String
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -49,7 +49,6 @@ const updateValue = (selectedValue) => {
 }
 
 const renderLabel = (option) => {
-  // Проверяем, что label существует и является строкой
   const labelText = String(option.label ?? '');
   return h(
     'div',
@@ -73,11 +72,11 @@ label {
 }
 
 .required-asterisk {
-  color: #e53e3e; 
-  font-size: 14px; 
+  color: #e53e3e;
+  font-size: 14px;
   margin-left: 2px;
-  vertical-align: top; 
-  line-height: 1.2; 
+  vertical-align: top;
+  line-height: 1.2;
 }
 
 .hint {

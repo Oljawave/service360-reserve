@@ -82,16 +82,15 @@ const emit = defineEmits(['close', 'save']);
 const notificationStore = useNotificationStore();
 
 const isLoading = ref(false);
-const selectedLocation = ref(null); // Должен хранить объект { value, label }
-const selectedPerformers = ref([]); // Должен хранить массив ID
-const allPerformers = ref([]); // Полный список исполнителей с деталями
+const selectedLocation = ref(null);  
+const selectedPerformers = ref([]);
+const allPerformers = ref([]); 
 
-// Уникальные участки из загруженных исполнителей
 const locationOptions = computed(() => {
   const uniqueLocations = new Map();
 
   allPerformers.value.forEach(performer => {
-    // Используем objLocation как ключ для уникальности и как значение
+
     if (performer.objLocation && performer.nameLocation) {
       uniqueLocations.set(performer.objLocation, {
         value: performer.objLocation,
@@ -103,7 +102,6 @@ const locationOptions = computed(() => {
   return Array.from(uniqueLocations.values());
 });
 
-// Отфильтрованные исполнители по выбранному участку
 const filteredPerformers = computed(() => {
   const locationValue = selectedLocation.value?.value;
   if (!locationValue) {
@@ -115,26 +113,24 @@ const filteredPerformers = computed(() => {
   );
 });
 
-// Опции для выпадающего списка исполнителей
 const performerOptions = computed(() => {
-  // Option value должен быть ID исполнителя, а label - его ФИО
+  
   return filteredPerformers.value.map(performer => ({
     label: performer.fullName,
     value: performer.id
   }));
 });
 
-// Проверка валидности формы
+
 const isFormValid = computed(() => {
-  // Проверяем, что value участка существует и что в selectedPerformers есть хотя бы один ID
+ 
   return selectedLocation.value?.value && selectedPerformers.value.length > 0;
 });
 
-// Загрузка исполнителей при открытии модалки
+
 watch(() => props.isOpen, async (newValue) => {
   if (newValue) {
     await loadPerformers();
-    // Сброс при открытии
     selectedLocation.value = null; 
     selectedPerformers.value = [];
   } else {
@@ -170,7 +166,6 @@ const loadPerformers = async () => {
 };
 
 const handleLocationChange = (value) => {
-  // При смене участка сбрасываем выбранных исполнителей
   selectedPerformers.value = [];
 };
 
@@ -185,20 +180,14 @@ const handleOverlayClick = () => {
 const savePerformers = () => {
   if (!isFormValid.value) return;
 
-  // Получаем полные объекты исполнителей, которые были выбраны
   const selectedPerformerData = allPerformers.value.filter(performer => 
     selectedPerformers.value.includes(performer.id)
   );
 
   emit('save', {
-    // Передаем только value участка
     location: selectedLocation.value.value, 
     performers: selectedPerformerData
   });
-
-  // Закрытие модального окна происходит в ResourceEditTable.vue после успешной обработки
-  // Если вы хотите закрыть модалку сразу после emit:
-  // closeModal(); 
 };
 
 const resetForm = () => {
@@ -209,7 +198,7 @@ const resetForm = () => {
 </script>
 
 <style scoped>
-/* Стили не менялись, но для полноты ответа оставим их структуру */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -378,7 +367,6 @@ const resetForm = () => {
   transform: none;
 }
 
-/* Tablet styles */
 @media (max-width: 768px) {
   .modal-overlay {
     padding: 12px;
@@ -390,7 +378,6 @@ const resetForm = () => {
   }
 }
 
-/* Mobile styles */
 @media (max-width: 640px) {
   .modal-overlay {
     padding: 0;

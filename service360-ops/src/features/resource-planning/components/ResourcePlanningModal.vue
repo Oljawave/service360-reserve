@@ -188,13 +188,11 @@ const isInfoSaved = ref(false);
 const savedTaskLogId = ref(null);
 const savedTaskLogCls = ref(null);
 
-// Norma view state
 const showNorma = ref(false);
 const normaObjWork = ref(null);
 const normaObjTask = ref(null);
 const normaPlannedVolume = ref(null);
 
-// Fact view state
 const showFact = ref(false);
 const factObjWork = ref(null);
 const factObjTask = ref(null);
@@ -216,7 +214,6 @@ const tabsRow2 = ref([
   { name: 'tools', label: 'Инструменты', icon: 'Hammer' },
 ]);
 
-// Template refs
 const infoTab = ref(null);
 const materialsTab = ref(null);
 const externalServicesTab = ref(null);
@@ -437,7 +434,7 @@ const saveAsDraft = async () => {
       pvLocationClsSection: props.record?.pvLocationClsSection,
     }, formData);
 
-    // Если это редактирование существующего черновика — удаляем старый
+
     if (props.draftId) {
       await deleteDraft(props.draftId);
     }

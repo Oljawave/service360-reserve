@@ -9,12 +9,12 @@
           <span class="data-cell number-cell">№</span>
 
           <template v-if="dataType === 'planning'">
-            <span class="data-cell task-cell">ЗАДАЧА</span> 
+            <span class="data-cell task-cell">ЗАДАЧА</span>
             <span class="data-cell volume-plan-cell">ОБЪЕМ</span>
             <span class="data-cell start-date-plan-cell">НАЧАЛО</span>
             <span class="data-cell end-date-plan-cell">КОНЕЦ</span>
           </template>
-          
+
           <template v-else-if="dataType === 'materials'">
             <span class="data-cell material-cell">МАТЕРИАЛ</span>
             <span class="data-cell unit-cell">ЕД. ИЗМ.</span>
@@ -118,7 +118,7 @@ const props = defineProps({
   },
   dataType: {
     type: String,
-    default: 'info', 
+    default: 'info',
     validator: (value) => ['info', 'defects', 'parameters', 'planning', 'materials', 'externalServices', 'personal', 'personnel', 'equipment', 'tools'].includes(value)
   }
 });
@@ -174,7 +174,7 @@ const getHeaderClass = () => {
       return 'tools-header';
     default:
       return '';
-  } 
+  }
 };
 </script>
 
@@ -215,54 +215,42 @@ const getHeaderClass = () => {
   min-width: fit-content;
 }
 
-
-/* --- СТИЛИ ДЛЯ ЗАГОЛОВКОВ (HEADER ROW STYLES) --- */
-/* INFO Header (Default) - Для заголовка без специального класса */
 .data-row.header-row:not(.defects-header):not(.parameters-header):not(.planning-header):not(.materials-header):not(.external-services-header):not(.personnel-header):not(.equipment-header):not(.tools-header) {
-  grid-template-columns: 60px 140px 200px; /* № | ДАТА | КООРДИНАТЫ */
+  grid-template-columns: 60px 140px 200px;
 }
 
-/* DEFECTS Header */
 .data-row.defects-header {
   grid-template-columns: 60px 140px 200px 200px;
 }
 
-/* PARAMETERS Header */
 .data-row.parameters-header {
   grid-template-columns: 60px 140px 200px 150px 150px 100px;
 }
 
-/* PLANNING Header */
 .data-row.planning-header {
-  grid-template-columns: 60px 205px 80px 110px 110px; /* № | ЗАДАЧА | Объем | Начало | Конец */
+  grid-template-columns: 60px 205px 80px 110px 110px;
 }
 
-/* MATERIALS Header */
 .data-row.materials-header {
-  grid-template-columns: 60px 250px 150px 100px; /* № | МАТЕРИАЛ | ЕД. ИЗМ. | ОБЪЕМ */
+  grid-template-columns: 60px 250px 150px 100px;
 }
 
-/* EXTERNAL SERVICES Header */
 .data-row.external-services-header {
-  grid-template-columns: 60px 300px 100px; /* № | СЕРВИС | ОБЪЕМ */
+  grid-template-columns: 60px 300px 100px;
 }
 
-/* PERSONNEL Header */
 .data-row.personnel-header {
-  grid-template-columns: 60px 220px 140px 100px; /* № | ДОЛЖНОСТЬ | КОЛ-ВО | ЧАСЫ */
+  grid-template-columns: 60px 220px 140px 100px;
 }
 
-/* EQUIPMENT Header */
 .data-row.equipment-header {
-  grid-template-columns: 60px 220px 140px 100px; /* № | ТИП ТЕХНИКИ | КОЛ-ВО | ЧАСЫ */
+  grid-template-columns: 60px 220px 140px 100px;
 }
 
-/* TOOLS Header - ИСПРАВЛЕНО: увеличены колонки для корректного отображения */
 .data-row.tools-header {
-  grid-template-columns: 60px 360px 140px; /* № | ИНСТРУМЕНТ | КОЛИЧЕСТВО */
+  grid-template-columns: 60px 360px 140px;
 }
 
-/* --- ОБЩИЕ СТИЛИ ЗАГОЛОВКОВ --- */
 .data-row.header-row {
   position: sticky;
   top: 0;
@@ -275,68 +263,55 @@ const getHeaderClass = () => {
   margin-bottom: 4px;
 }
 
-/* --- СТИЛИ ДЛЯ СТРОК ДАННЫХ (DATA ROW STYLES) --- */
-
-/* INFO Data Row - Определяется наличием date-cell, но отсутствием специфичных ячеек */
 .data-row:not(.header-row):not(.empty-row):has(.date-cell):not(:has(.defect-cell)):not(:has(.component-cell)) {
-    grid-template-columns: 60px 140px 200px; /* № | ДАТА | КООРДИНАТЫ */
+    grid-template-columns: 60px 140px 200px;
 }
 
-/* DEFECTS Data Row */
 .data-row:not(.header-row):not(.empty-row):has(.defect-cell) {
   grid-template-columns: 60px 140px 200px 200px;
-  
+
   .date-cell, .coords-cell, .defect-cell { display: block; }
 }
 
-/* PARAMETERS Data Row */
 .data-row:not(.header-row):not(.empty-row):has(.component-cell) {
   grid-template-columns: 60px 140px 200px 150px 150px 100px;
 
   .date-cell, .coords-cell, .component-cell, .parameter-cell, .value-cell { display: block; }
 }
 
-/* PLANNING Data Row */
 .data-row:not(.header-row):not(.empty-row):has(.task-cell) {
-  grid-template-columns: 60px 205px 80px 110px 110px; /* № | ЗАДАЧА | Объем | Начало | Конец */
+  grid-template-columns: 60px 205px 80px 110px 110px;
 
   .task-cell, .volume-plan-cell, .start-date-plan-cell, .end-date-plan-cell { display: block; }
 }
 
-/* MATERIALS Data Row */
 .data-row:not(.header-row):not(.empty-row):has(.material-cell) {
-  grid-template-columns: 60px 250px 150px 100px; /* № | МАТЕРИАЛ | ЕД. ИЗМ. | ОБЪЕМ */
+  grid-template-columns: 60px 250px 150px 100px;
 
   .material-cell, .unit-cell, .volume-material-cell { display: block; }
 }
 
-/* EXTERNAL SERVICES Data Row */
 .data-row:not(.header-row):not(.empty-row):has(.service-cell) {
-  grid-template-columns: 60px 300px 100px; /* № | СЕРВИС | ОБЪЕМ */
+  grid-template-columns: 60px 300px 100px;
 
   .service-cell, .volume-service-cell { display: block; }
 }
 
-/* PERSONAL Data Row */
 .data-row:not(.header-row):not(.empty-row):has(.position-cell) {
-  grid-template-columns: 60px 220px 140px 100px; /* № | ДОЛЖНОСТЬ | КОЛИЧЕСТВО | ЧАСЫ */
+  grid-template-columns: 60px 220px 140px 100px;
   .position-cell, .quantity-cell, .hours-cell { display: block; }
 }
 
-/* EQUIPMENT Data Row */
 .data-row:not(.header-row):not(.empty-row):has(.equipment-type-cell) {
-  grid-template-columns: 60px 220px 140px 100px; /* № | ТИП ТЕХНИКИ | КОЛИЧЕСТВО | ЧАСЫ */
+  grid-template-columns: 60px 220px 140px 100px;
   .equipment-type-cell, .quantity-cell, .hours-cell { display: block; }
 }
 
-/* TOOLS Data Row - ИСПРАВЛЕНО: такие же размеры как у personnel и equipment */
 .data-row:not(.header-row):not(.empty-row):has(.tool-type-cell) {
-  grid-template-columns: 60px 360px 140px; /* № | ИНСТРУМЕНТ | КОЛИЧЕСТВО */
+  grid-template-columns: 60px 360px 140px;
   .tool-type-cell, .quantity-cell { display: block; }
 }
 
-
-/* --- ОБЩИЕ СТИЛИ ЯЧЕЕК --- */
 .data-row:not(.header-row) {
   color: #2d3748;
 }

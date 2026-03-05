@@ -88,26 +88,21 @@ const farmSelectRef = ref(null);
 const expandedButton = ref(null);
 const pinnedButton = ref(null);
 
-// Функция для закрытия меню по клику вне элемента
 const closeFarmMenuOnOutsideClick = (event) => {
-  // Проверяем, не является ли целью клика сам элемент выпадающего списка или его потомок
+
   if (farmSelectRef.value && !farmSelectRef.value.contains(event.target)) {
     isFarmDropdownOpen.value = false;
-    // Важно: Удаляем слушатель после закрытия
     document.removeEventListener('click', closeFarmMenuOnOutsideClick);
   }
 };
 
 const toggleFarmMenu = () => {
   if (isFarmDropdownOpen.value) {
-    // Если меню открыто, закрываем его и удаляем слушатель
     isFarmDropdownOpen.value = false;
     document.removeEventListener('click', closeFarmMenuOnOutsideClick);
   } else {
-    // Если меню закрыто, открываем его и добавляем слушатель
+  
     isFarmDropdownOpen.value = true;
-    // Добавляем слушатель, чтобы закрыть меню при следующем клике вне него
-    // Используем setTimeout, чтобы клик, который открывает меню, не закрыл его сразу же
     setTimeout(() => {
         document.addEventListener('click', closeFarmMenuOnOutsideClick);
     }, 0);
@@ -117,7 +112,7 @@ const toggleFarmMenu = () => {
 const selectFarm = (farm) => {
   emit('selectFarm', farm);
   isFarmDropdownOpen.value = false;
-  // Важно: Удаляем слушатель после выбора
+
   document.removeEventListener('click', closeFarmMenuOnOutsideClick);
 };
 
@@ -126,35 +121,33 @@ const toggleRailwayStatus = () => {
 };
 
 const handleWidthClick = () => {
-  // Всегда фиксируем новую кнопку
+
   pinnedButton.value = 'width';
   expandedButton.value = 'width';
   emit('switchToWidth');
 };
 
 const handleStatusClick = () => {
-  // Всегда фиксируем новую кнопку
+
   pinnedButton.value = 'status';
   expandedButton.value = 'status';
   emit('switchToStatus');
 };
 
 const handleSkewClick = () => {
-  // Всегда фиксируем новую кнопку
+ 
   pinnedButton.value = 'skew';
   expandedButton.value = 'skew';
   emit('switchToSkew');
 };
 
 const handleMouseLeave = (buttonName) => {
-  // Сворачиваем кнопку только если она не зафиксирована
-  // Активная (зафиксированная) кнопка остаётся развёрнутой
+
   if (pinnedButton.value !== buttonName) {
     expandedButton.value = null;
   }
 };
 
-// Дополнительный хук для очистки слушателя, если компонент будет уничтожен
 import { onUnmounted } from 'vue';
 onUnmounted(() => {
   document.removeEventListener('click', closeFarmMenuOnOutsideClick);

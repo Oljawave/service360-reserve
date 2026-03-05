@@ -63,7 +63,6 @@ const showWeatherTooltip = ref(false);
   font-size: 14px;
 }
 
-/* Анимация раскрытия */
 .weather-expand-enter-active,
 .weather-expand-leave-active {
   transition: all 0.3s ease;

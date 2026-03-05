@@ -146,7 +146,6 @@ const createNewObjectForm = (dataToCopy = {}) => ({
   isInvalidRange: false,
   isOutOfBounds: false,
   isCoordinatesOutOfBounds: false,
-  // Копируем опции для корректной инициализации (если они были загружены)
   objectTypeOptions: dataToCopy.objectTypeOptions ? JSON.parse(JSON.stringify(dataToCopy.objectTypeOptions)) : [],
   objectOptions: dataToCopy.objectOptions ? JSON.parse(JSON.stringify(dataToCopy.objectOptions)) : [],
   filteredRecordsByPlace: dataToCopy.filteredRecordsByPlace ? JSON.parse(JSON.stringify(dataToCopy.filteredRecordsByPlace)) : [],
@@ -356,7 +355,6 @@ const updateCoordinates = (newCoordinates, index) => {
   const objectForm = form.value.incidents[index];
   objectForm.coordinates = newCoordinates;
 
-  // Проверка выхода за границы объекта (в реальном времени)
   if (objectForm.objectBounds) {
     const newStartCoordinates = (newCoordinates.coordStartKm || 0) * 1000 + (newCoordinates.coordStartPk || 0) * 100 + (newCoordinates.coordStartZv || 0) * 25;
     const newFinishCoordinates = (newCoordinates.coordEndKm || 0) * 1000 + (newCoordinates.coordEndPk || 0) * 100 + (newCoordinates.coordEndZv || 0) * 25;
@@ -364,10 +362,8 @@ const updateCoordinates = (newCoordinates, index) => {
     const objectStartCoordinates = objectForm.objectBounds.startAbs;
     const objectFinishCoordinates = objectForm.objectBounds.endAbs;
 
-    // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
     const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates;
 
-    // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
     const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates;
 
     if (!isStartInBounds || !isFinishInBounds) {
@@ -384,12 +380,11 @@ const updateCoordinates = (newCoordinates, index) => {
 const addObject = () => {
   const lastIncident = form.value.incidents[form.value.incidents.length - 1];
   
-  // Проверяем, что ключевые поля заполнены в последнем инциденте
   if (
     lastIncident.place && lastIncident.objectType && lastIncident.object && 
-    lastIncident.coordinates.coordStartKm !== null // Простой признак того, что координаты были введены/заполнены
+    lastIncident.coordinates.coordStartKm !== null 
   ) {
-    // Копируем данные для нового инцидента
+  
     const dataToCopy = {
       place: lastIncident.place,
       objectType: lastIncident.objectType,
@@ -403,7 +398,7 @@ const addObject = () => {
     
     form.value.incidents.push(createNewObjectForm(dataToCopy));
   } else {
-    // Если не заполнены, добавляем пустой инцидент
+ 
     form.value.incidents.push(createNewObjectForm());
   }
 };
@@ -550,13 +545,12 @@ const saveData = async () => {
 
       let errorMessage = 'Ошибка при сохранении инцидентов';
 
-      // Проверяем разные варианты структуры ответа
       if (error.response?.data?.error?.message) {
         errorMessage = error.response.data.error.message;
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data) {
-        // Если data - это строка или объект с другой структурой
+    
         errorMessage = typeof error.response.data === 'string'
           ? error.response.data
           : JSON.stringify(error.response.data);
@@ -647,7 +641,6 @@ const closeModal = () => {
   font-weight: normal;
 }
 
-/* Tablet and Mobile styles */
 @media (max-width: 1024px) {
   .form-section {
     grid-template-columns: 1fr !important;

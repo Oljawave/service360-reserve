@@ -124,8 +124,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  // Показывать ли кнопки начать/завершить задачу (для WorkLogForm)
-  // Если false - только проверка прав без workflow (для ResourcePlanningEdit)
+
   showWorkflowActions: {
     type: Boolean,
     default: true,
@@ -143,7 +142,7 @@ const getFormattedDate = (date = new Date()) => {
 };
 
 const buttonState = computed(() => {
-  // Режим без workflow (для ResourcePlanningEdit) - только проверка прав res:upd
+  
   if (!props.showWorkflowActions) {
     if (!props.canUpdate) {
       return {
@@ -153,7 +152,7 @@ const buttonState = computed(() => {
         hidden: false
       };
     }
-    // Если права есть - скрываем кнопку (workflow не нужен)
+
     return {
       text: '',
       disabled: true,
@@ -162,11 +161,9 @@ const buttonState = computed(() => {
     };
   }
 
-  // Режим с workflow (для WorkLogForm) - проверка прав ftl:upd + логика начать/завершить
   const hasFactStart = props.recordData.startDateFact && props.recordData.startDateFact !== '-';
   const hasFactEnd = props.recordData.endDateFact && props.recordData.endDateFact !== '-';
 
-  // Проверяем права доступа ftl:upd
   if (!props.canUpdate) {
     return {
       text: 'Нет прав для управления задачей',
@@ -176,8 +173,6 @@ const buttonState = computed(() => {
     };
   }
 
-  // Логика:
-  // 1. Если FactDateStart отсутствует -> Начать задачу
   if (!hasFactStart) {
     return {
       text: 'Начать задачу',
@@ -185,7 +180,7 @@ const buttonState = computed(() => {
       actionType: 'start',
       hidden: false
     };
-  // 2. Если FactDateEnd отсутствует (а FactDateStart есть) -> Завершить задачу
+
   } else if (!hasFactEnd) {
     return {
       text: 'Завершить задачу',
@@ -193,7 +188,7 @@ const buttonState = computed(() => {
       actionType: 'complete',
       hidden: false
     };
-  // 3. Если есть оба -> Задача завершена (disabled)
+
   } else {
     return {
       text: 'Задача завершена',
@@ -216,7 +211,7 @@ const handleStartTask = async () => {
 
     await saveTaskLogFact(payload);
     notificationStore.showNotification('Задача успешно начата!', 'success');
-    props.onTaskUpdated(); // Обновление компонента WorkLogForm
+    props.onTaskUpdated(); 
   } catch (error) {
     console.error('Ошибка при запуске задачи:', error);
     notificationStore.showNotification('Не удалось начать задачу.', 'error');
@@ -228,20 +223,20 @@ const handleCompleteTask = async (actualVolume, newObjectNumber, reasonDeviation
     const payload = {
       id: props.taskLogId,
       objWorkPlan: props.objWorkPlan,
-      Value: actualVolume,                          // Фактический объем из модального окна
+      Value: actualVolume,                          
       FactDateEnd: getFormattedDate(),
-      ReasonDeviation: reasonDeviation || '',       // Причина отклонения от плана
-      Number: newObjectNumber || '',                // Новый номер объекта (приборы)
-      objObject: props.recordData.objObject,        // objObject записи
-      fullNameWork: props.recordData.fullNameWork,  // fullNameWork записи
-      idUser: props.recordData.idUser,              // idUser записи
-      idUpdatedAt: props.recordData.idUpdatedAt,    // idUpdatedAt записи
+      ReasonDeviation: reasonDeviation || '',       
+      Number: newObjectNumber || '',                
+      objObject: props.recordData.objObject,        
+      fullNameWork: props.recordData.fullNameWork,  
+      idUser: props.recordData.idUser,              
+      idUpdatedAt: props.recordData.idUpdatedAt,    
     };
 
     await saveTaskLogFact(payload);
     isModalOpen.value = false;
     notificationStore.showNotification('Задача успешно завершена!', 'success');
-    props.onTaskUpdated(); // Обновление компонента WorkLogForm
+    props.onTaskUpdated();
   } catch (error) {
     console.error('Ошибка при завершении задачи:', error);
     notificationStore.showNotification('Не удалось завершить задачу.', 'error');
@@ -258,7 +253,7 @@ const handleButtonClick = () => {
 </script>
 
 <style scoped>
-/* Ваши стили... */
+
 .info-section {
   display: grid;
   grid-template-columns: minmax(300px, 1fr) minmax(300px, 0.7fr);
@@ -368,7 +363,7 @@ const handleButtonClick = () => {
   border-top: 1px solid #e2e8f0;
   margin: 0 -24px;
 }
-/* Обновленные стили для кнопки */
+
 .task-action-button {
   width: 100%;
   padding: 11px 16px; 

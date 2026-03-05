@@ -9,9 +9,9 @@
         <h3 class="summary-title">Свод по фактическим ресурсам</h3>
         <p class="modal-description">Проверьте заполненные данные перед завершением задачи</p>
 
-        <!-- Свод по ресурсам -->
+ 
         <div class="resources-summary">
-          <!-- Материалы -->
+
           <div v-if="resources.materials && resources.materials.length > 0" class="resource-section">
             <div class="section-header">Материалы</div>
             <div class="resource-table">
@@ -22,7 +22,6 @@
             </div>
           </div>
 
-          <!-- Инструменты -->
           <div v-if="flattenedTools.length > 0" class="resource-section">
             <div class="section-header">Инструменты</div>
             <div class="resource-table">
@@ -33,7 +32,6 @@
             </div>
           </div>
 
-          <!-- Техника -->
           <div v-if="flattenedEquipment.length > 0" class="resource-section">
             <div class="section-header">Техника</div>
             <div class="resource-table">
@@ -44,7 +42,6 @@
             </div>
           </div>
 
-          <!-- Услуги сторонних организаций -->
           <div v-if="resources.services && resources.services.length > 0" class="resource-section">
             <div class="section-header">Услуги сторонних организаций</div>
             <div class="resource-table">
@@ -55,7 +52,6 @@
             </div>
           </div>
 
-          <!-- Исполнители -->
           <div v-if="resources.performers && resources.performers.length > 0" class="resource-section">
             <div class="section-header">Исполнители</div>
             <div class="resource-table">
@@ -140,9 +136,9 @@ const reasonDeviation = ref('');
 
 watch(() => props.isOpen, (newVal) => {
   if (newVal) {
-    actualVolume.value = props.maxVolume === Infinity ? null : props.maxVolume; // Предзаполнить плановым объемом
-    newObjectNumber.value = ''; // Очистить новый номер объекта при открытии
-    reasonDeviation.value = ''; // Очистить комментарий при открытии
+    actualVolume.value = props.maxVolume === Infinity ? null : props.maxVolume; 
+    newObjectNumber.value = ''; 
+    reasonDeviation.value = ''; 
   }
 });
 
@@ -151,13 +147,11 @@ const isVolumeValid = computed(() => {
   return val !== null && val >= 0;
 });
 
-// Функция для обрезки длинных названий
 const truncateName = (name, maxLength = 50) => {
   if (!name) return '';
   return name.length > maxLength ? name.substring(0, maxLength) + '...' : name;
 };
 
-// Развернутый список инструментов с их деталями
 const flattenedTools = computed(() => {
   const tools = [];
   if (props.resources.tools) {
@@ -180,7 +174,6 @@ const flattenedTools = computed(() => {
   return tools;
 });
 
-// Развернутый список техники с их деталями
 const flattenedEquipment = computed(() => {
   const equipment = [];
   if (props.resources.equipment) {

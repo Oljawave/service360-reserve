@@ -12,7 +12,6 @@ import { ref, onMounted } from 'vue'
 const show = ref(true)
 
 onMounted(() => {
-  // Скрываем splash screen через 2 секунды
   setTimeout(() => {
     show.value = false
   }, 2000)

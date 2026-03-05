@@ -66,7 +66,6 @@ const toggleExpand = async (id) => {
   } else {
     expandedIds.value.add(id)
 
-    // Отмечаем как прочитанное при первом раскрытии
     const notif = notifications.value.find(n => n.id === id)
     if (notif && isUnread(notif)) {
       try {

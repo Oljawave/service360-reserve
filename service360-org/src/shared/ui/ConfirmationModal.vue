@@ -49,7 +49,7 @@ const onCancel = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1100; /* Higher than other modals */
+  z-index: 1100;
 }
 
 .modal-card {

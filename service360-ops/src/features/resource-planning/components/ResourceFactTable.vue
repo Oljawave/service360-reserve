@@ -129,12 +129,10 @@ const emit = defineEmits(['update:rows', 'save-row', 'add-row', 'delete-row']);
 
 const newRow = ref(null);
 
-// --- Вспомогательные функции для отображения ---
 
 const getNameLabel = (value) => {
   const option = props.nameOptions.find((opt) => opt.value === value);
-  // Используем name_text, если он есть, для существующих строк,
-  // иначе пытаемся найти по value или просто возвращаем value
+
   return props.rows.find(r => r.name === value)?.name_text || option?.label || value;
 };
 
@@ -143,10 +141,8 @@ const getUnitLabel = (value) => {
   return props.rows.find(r => r.unit === value)?.unit_text || option?.label || value;
 };
 
-// --- Логика редактирования существующей строки ---
-
 const updateExistingRow = (index, value) => {
-  // Копируем, чтобы избежать мутации пропсов напрямую
+
   const updatedRows = [...props.rows];
   updatedRows[index].fact = value;
   emit('update:rows', updatedRows);
@@ -160,7 +156,6 @@ const saveFact = (index) => {
   });
 };
 
-// --- Логика добавления новой строки ---
 
 const addNewRow = () => {
   if (!newRow.value) {
@@ -173,7 +168,6 @@ const addNewRow = () => {
 };
 
 const isNewRowValid = computed(() => {
-  // Для добавления нужен выбранный материал/услуга и единица измерения
   return newRow.value && newRow.value.name && newRow.value.unit;
 });
 
@@ -194,7 +188,6 @@ const cancelNewRow = () => {
 </script>
 
 <style scoped>
-/* Стили из ResourceEditTable.vue, адаптированные для ResourceFactTable.vue */
 .resource-edit-section {
   background: white;
   border-radius: 12px;
@@ -292,7 +285,6 @@ const cancelNewRow = () => {
   color: #94a3b8;
 }
 
-/* Колонки */
 .resource-table .name-column {
   width: 40%;
 }
@@ -317,7 +309,6 @@ const cancelNewRow = () => {
   justify-content: flex-end;
 }
 
-/* Кнопки действий */
 td.actions-column {
   text-align: right;
   vertical-align: middle;
@@ -378,7 +369,6 @@ td.actions-column {
   font-size: 14px;
 }
 
-/* Скрываем лейблы в основной таблице */
 .resource-table :deep(label) {
   display: none;
 }

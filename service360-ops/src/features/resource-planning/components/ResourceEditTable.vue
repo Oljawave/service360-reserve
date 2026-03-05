@@ -441,19 +441,13 @@ const isModalOpen = ref(false);
 const currentRowIndex = ref(null);
 const currentPositionPv = ref(null);
 
-// Для подтверждения удаления
 const showDeleteConfirmation = ref(false);
 const pendingDeleteData = ref(null);
 
-// Показывать ли колонку единиц измерения (только если unitOptions передан и не пустой)
 const showUnitColumn = computed(() => {
   return !props.isPerformer && props.unitOptions && props.unitOptions.length > 0;
 });
 
-/**
- * Рассчитывает фактические значения по количеству и часам
- * на основе детального списка исполнителей.
- */
 const calculatePerformerFacts = (performers = []) => {
   const factCount = performers.length;
   const factHours = performers.reduce((sum, p) => sum + (p.time || 0), 0);
@@ -478,7 +472,7 @@ const initializeExistingRows = (rows) => {
         factHours: row.factHours || factHours,
         expanded: false,
         performers: performers,
-        positionPv: row.positionPv || null, // PV позиции для загрузки исполнителей
+        positionPv: row.positionPv || null,
       };
     });
   } else if (props.isTool) {
@@ -529,7 +523,7 @@ const initializeExistingRows = (rows) => {
 };
 
 watch(() => props.rows, (newRows) => {
-  // Сохраняем состояние expanded и несохраненных элементов перед обновлением
+
   const expandedStates = new Map();
   const unsavedPerformers = new Map();
   const unsavedDetails = new Map();
@@ -539,7 +533,6 @@ watch(() => props.rows, (newRows) => {
       expandedStates.set(row.id, true);
     }
 
-    // Сохраняем несохраненных исполнителей (isNew === true)
     if (props.isPerformer && row.performers && Array.isArray(row.performers)) {
       const unsaved = row.performers.filter(p => p.isNew === true);
       if (unsaved.length > 0) {
@@ -547,7 +540,6 @@ watch(() => props.rows, (newRows) => {
       }
     }
 
-    // Сохраняем несохраненные детали инструментов/техники (isNew === true)
     if ((props.isTool || props.isEquipment) && row.details && Array.isArray(row.details)) {
       const unsaved = row.details.filter(d => d.isNew === true);
       if (unsaved.length > 0) {
@@ -556,21 +548,16 @@ watch(() => props.rows, (newRows) => {
     }
   });
 
-  // Обновляем данные
   existingRows.value = initializeExistingRows(newRows);
 
-  // Восстанавливаем состояние expanded и несохраненных элементов
   existingRows.value.forEach((row) => {
     if (expandedStates.has(row.id)) {
       row.expanded = true;
     }
 
-    // Восстанавливаем несохраненных исполнителей
     if (props.isPerformer && unsavedPerformers.has(row.id)) {
       const unsaved = unsavedPerformers.get(row.id);
 
-      // Фильтруем дубликаты - добавляем только тех исполнителей, которых еще нет
-      // Проверяем по id и pv исполнителя
       const existingPerformerKeys = new Set(
         row.performers.map(p => `${p.id}_${p.pv}`)
       );
@@ -582,19 +569,15 @@ watch(() => props.rows, (newRows) => {
       if (uniqueUnsaved.length > 0) {
         row.performers = [...row.performers, ...uniqueUnsaved];
 
-        // Пересчитываем факты
         const { factCount, factHours } = calculatePerformerFacts(row.performers);
         row.factCount = factCount;
         row.factHours = factHours;
       }
     }
 
-    // Восстанавливаем несохраненные детали инструментов/техники
     if ((props.isTool || props.isEquipment) && unsavedDetails.has(row.id)) {
       const unsaved = unsavedDetails.get(row.id);
 
-      // Фильтруем дубликаты - добавляем только те детали, которых еще нет
-      // Проверяем по id и pv
       const existingDetailKeys = new Set(
         row.details.map(d => `${d.id}_${d.pv || ''}`)
       );
@@ -606,12 +589,11 @@ watch(() => props.rows, (newRows) => {
       if (uniqueUnsaved.length > 0) {
         row.details = [...row.details, ...uniqueUnsaved];
 
-        // Пересчитываем факты
         if (props.isTool) {
-          // Для инструментов только количество
+
           row.factCount = row.details.length;
         } else {
-          // Для техники - количество и часы
+ 
           const { factCount, factHours } = calculatePerformerFacts(row.details);
           row.factCount = factCount;
           row.factHours = factHours;
@@ -625,7 +607,6 @@ const toggleRow = (index) => {
   existingRows.value[index].expanded = !existingRows.value[index].expanded;
 };
 
-// Открытие модалки добавления исполнителей
 const openAddPerformerModal = (index) => {
   currentRowIndex.value = index;
   const row = existingRows.value[index];
@@ -633,22 +614,18 @@ const openAddPerformerModal = (index) => {
   isModalOpen.value = true;
 };
 
-// Закрытие модалки
 const closeAddPerformerModal = () => {
   isModalOpen.value = false;
   currentRowIndex.value = null;
   currentPositionPv.value = null;
 };
 
-// Обработка добавления исполнителей из модалки
 const handleAddPerformers = ({ location, performers }) => {
   if (currentRowIndex.value === null) return;
 
   const rowIndex = currentRowIndex.value;
   const row = existingRows.value[rowIndex];
 
-  // Добавляем новых исполнителей в массив performers на фронте
-  // Формируем объекты исполнителей с полями, необходимыми для отображения
   const newPerformers = performers.map(performer => ({
     id: performer.id,
     cls: performer.cls,
@@ -661,22 +638,18 @@ const handleAddPerformers = ({ location, performers }) => {
     objLocation: performer.objLocation,
     pvLocation: performer.pvLocation,
     nameLocation: performer.nameLocation,
-    time: 0, // Изначально часы работы = 0
-    isNew: true, // Флаг, что это новый исполнитель (еще не сохранен на бэке)
+    time: 0,
+    isNew: true,
   }));
 
-  // Добавляем новых исполнителей к существующим
   row.performers = [...row.performers, ...newPerformers];
 
-  // Пересчитываем факты
   const { factCount, factHours } = calculatePerformerFacts(row.performers);
   row.factCount = factCount;
   row.factHours = factHours;
 
-  // Закрываем модалку
   closeAddPerformerModal();
 
-  // Уведомление (опционально)
   const notificationStore = useNotificationStore();
   notificationStore.showNotification(
     `Добавлено исполнителей: ${newPerformers.length}. Не забудьте сохранить их данные.`,
@@ -692,7 +665,6 @@ const updateExistingPerformer = (rowIndex, performerIndex, field, value) => {
   const performer = existingRows.value[rowIndex].performers[performerIndex];
   performer[field] = value;
 
-  // Пересчитываем факты при изменении часов работы
   if (field === 'time') {
     const row = existingRows.value[rowIndex];
     const { factCount, factHours } = calculatePerformerFacts(row.performers);
@@ -728,11 +700,9 @@ const deletePerformer = (rowIndex, performerIndex) => {
   const row = existingRows.value[rowIndex];
   const performer = row.performers[performerIndex];
 
-  // Если это новый исполнитель (еще не сохранен на бэке), просто удаляем из массива
   if (performer.isNew) {
     row.performers.splice(performerIndex, 1);
 
-    // Пересчитываем факты
     const { factCount, factHours } = calculatePerformerFacts(row.performers);
     row.factCount = factCount;
     row.factHours = factHours;
@@ -740,7 +710,6 @@ const deletePerformer = (rowIndex, performerIndex) => {
     const notificationStore = useNotificationStore();
     notificationStore.showNotification('Исполнитель удален.', 'success');
   } else {
-    // Если исполнитель уже сохранен, показываем модальное окно подтверждения
     pendingDeleteData.value = { rowIndex, performerIndex, row, performer };
     showDeleteConfirmation.value = true;
   }
@@ -749,9 +718,8 @@ const deletePerformer = (rowIndex, performerIndex) => {
 const confirmDeletePerformer = () => {
   if (!pendingDeleteData.value) return;
 
-  // Проверяем, что удаляем: исполнителя или ресурс (инструмент/техника)
   if (pendingDeleteData.value.performer) {
-    // Удаление исполнителя
+ 
     const { row, performer, performerIndex } = pendingDeleteData.value;
 
     emit('delete-performer', {
@@ -760,7 +728,7 @@ const confirmDeletePerformer = () => {
       performerIndex: performerIndex
     });
   } else if (pendingDeleteData.value.detail) {
-    // Удаление инструмента или техники
+ 
     const { detail } = pendingDeleteData.value;
 
     emit('delete-resource', {
@@ -769,7 +737,6 @@ const confirmDeletePerformer = () => {
     });
   }
 
-  // Закрываем модальное окно и очищаем данные
   showDeleteConfirmation.value = false;
   pendingDeleteData.value = null;
 };
@@ -779,9 +746,6 @@ const cancelDeletePerformer = () => {
   pendingDeleteData.value = null;
 };
 
-// --- Обработка инструментов и техники ---
-
-// Открытие модалки добавления инструментов/техники
 const openAddResourceModal = (index) => {
   currentRowIndex.value = index;
   const row = existingRows.value[index];
@@ -789,20 +753,17 @@ const openAddResourceModal = (index) => {
   isModalOpen.value = true;
 };
 
-// Закрытие модалки добавления инструментов/техники
 const closeAddResourceModal = () => {
   isModalOpen.value = false;
   currentRowIndex.value = null;
   currentPositionPv.value = null;
 };
 
-// Обработка добавления инструментов
 const handleAddTools = ({ location, tools }) => {
   if (currentRowIndex.value === null) return;
 
   const row = existingRows.value[currentRowIndex.value];
 
-  // Преобразуем выбранные инструменты в детали
   const newTools = tools.map(tool => ({
     id: tool.id,
     cls: tool.cls,
@@ -815,16 +776,12 @@ const handleAddTools = ({ location, tools }) => {
     isNew: true,
   }));
 
-  // Добавляем новые инструменты к существующим
   row.details = [...row.details, ...newTools];
 
-  // Пересчитываем количество
   row.factCount = row.details.length;
 
-  // Закрываем модалку
   closeAddResourceModal();
 
-  // Уведомление
   const notificationStore = useNotificationStore();
   notificationStore.showNotification(
     `Добавлено инструментов: ${newTools.length}. Не забудьте сохранить количество.`,
@@ -832,13 +789,11 @@ const handleAddTools = ({ location, tools }) => {
   );
 };
 
-// Обработка добавления техники
 const handleAddEquipments = ({ location, equipments }) => {
   if (currentRowIndex.value === null) return;
 
   const row = existingRows.value[currentRowIndex.value];
 
-  // Преобразуем выбранную технику в детали
   const newEquipments = equipments.map(equipment => ({
     id: equipment.id,
     cls: equipment.cls,
@@ -851,18 +806,14 @@ const handleAddEquipments = ({ location, equipments }) => {
     isNew: true,
   }));
 
-  // Добавляем новую технику к существующей
   row.details = [...row.details, ...newEquipments];
 
-  // Пересчитываем факты
   const { factCount, factHours } = calculatePerformerFacts(row.details);
   row.factCount = factCount;
   row.factHours = factHours;
 
-  // Закрываем модалку
   closeAddResourceModal();
 
-  // Уведомление
   const notificationStore = useNotificationStore();
   notificationStore.showNotification(
     `Добавлено техники: ${newEquipments.length}. Не забудьте сохранить данные.`,
@@ -870,12 +821,10 @@ const handleAddEquipments = ({ location, equipments }) => {
   );
 };
 
-// Обновление деталей инструмента/техники
 const updateExistingDetail = (rowIndex, detailIndex, field, value) => {
   const detail = existingRows.value[rowIndex].details[detailIndex];
   detail[field] = value;
 
-  // Пересчитываем факты при изменении часов работы (только для техники)
   if (field === 'time' && props.isEquipment) {
     const row = existingRows.value[rowIndex];
     const { factCount, factHours } = calculatePerformerFacts(row.details);
@@ -884,7 +833,6 @@ const updateExistingDetail = (rowIndex, detailIndex, field, value) => {
   }
 };
 
-// Сохранение деталей инструмента/техники
 const saveResourceDetails = (rowIndex, detailIndex) => {
   const row = existingRows.value[rowIndex];
   const detail = row.details[detailIndex];
@@ -897,16 +845,13 @@ const saveResourceDetails = (rowIndex, detailIndex) => {
   });
 };
 
-// Удаление детали инструмента/техники
 const deleteResourceDetail = (rowIndex, detailIndex) => {
   const row = existingRows.value[rowIndex];
   const detail = row.details[detailIndex];
 
-  // Если это новый элемент (еще не сохранен на бэке), просто удаляем из массива
   if (detail.isNew) {
     row.details.splice(detailIndex, 1);
 
-    // Пересчитываем факты
     if (props.isTool) {
       row.factCount = row.details.length;
     } else {
@@ -921,19 +866,18 @@ const deleteResourceDetail = (rowIndex, detailIndex) => {
       'success'
     );
   } else {
-    // Если элемент уже сохранен, показываем модальное окно подтверждения
+   
     pendingDeleteData.value = { rowIndex, detailIndex, row, detail };
     showDeleteConfirmation.value = true;
   }
 };
 
-// --- Обработка новых строк для не-исполнителей ---
 const addNewRow = () => {
   const row = {
     name: null,
     fact: 0,
   };
-  // Добавляем unit только если нужна колонка единиц измерения
+ 
   if (showUnitColumn.value) {
     row.unit = null;
   }
@@ -948,7 +892,7 @@ const isNewRowValid = computed(() => {
   if (!newRow.value || !newRow.value.name) {
     return false;
   }
-  // Если нужна колонка единиц измерения, проверяем что unit заполнен
+
   if (showUnitColumn.value && !newRow.value.unit) {
     return false;
   }

@@ -45,7 +45,7 @@ onMounted(() => {
   }
 })
 
-// Динамическое кэширование WorkLog
+
 const keepAliveInclude = ref([])
 
 watch(
@@ -54,22 +54,19 @@ watch(
     const workLogPath = '/work-log'
     const workLogFormPathPrefix = '/work-log/record/'
 
-    // При заходе на WorkLog - добавляем в кэш
     if (newPath === workLogPath) {
-      // Если пришли с WorkLogForm - оставляем в кэше (уже закэширован)
-      // Если пришли откуда-то ещё - это свежий заход, но всё равно кэшируем
-      // чтобы при переходе на WorkLogForm состояние сохранилось
+
       if (!keepAliveInclude.value.includes('WorkLog')) {
         keepAliveInclude.value = ['WorkLog']
       }
     }
-    // При переходе на WorkLogForm - сохраняем WorkLog в кэше
+
     else if (newPath.startsWith(workLogFormPathPrefix)) {
       if (!keepAliveInclude.value.includes('WorkLog')) {
         keepAliveInclude.value = ['WorkLog']
       }
     }
-    // При уходе на любую другую страницу - очищаем кэш
+
     else {
       keepAliveInclude.value = []
     }

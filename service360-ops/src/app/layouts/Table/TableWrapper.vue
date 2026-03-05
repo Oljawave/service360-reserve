@@ -133,9 +133,9 @@ import Pagination from './Pagination.vue';
 import ColumnFilter from './ColumnFilter.vue';
 import AppDatePicker from '@/shared/ui/FormControls/AppDatePicker.vue';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
-import MobileCardList from './MobileCardList.vue'; // New import
+import MobileCardList from './MobileCardList.vue';
 
-// Simple useIsMobile helper (replace with actual global logic if available)
+
 const isMobile = ref(window.innerWidth <= 768);
 const isSmallScreen = ref(window.innerWidth > 768 && window.innerWidth <= 1600);
 const updateIsMobile = () => {
@@ -185,7 +185,6 @@ const page = ref(1);
 const selectedRow = ref(null);
 const showEditModal = ref(false);
 
-// Восстанавливаем columnFilters из localStorage при инициализации
 const getInitialColumnFilters = () => {
   if (props.storageKey) {
     try {
@@ -221,7 +220,7 @@ const hasActiveFilters = computed(() => {
 const sortedAndFilteredRows = computed(() => {
   let processedRows = [...rows.value];
 
-  if (sortKey.value && !isMobile.value) { // Only sort in desktop view
+  if (sortKey.value && !isMobile.value) {
     processedRows.sort((a, b) => {
       const aValue = a[sortKey.value];
       const bValue = b[sortKey.value];
@@ -237,7 +236,7 @@ const sortedAndFilteredRows = computed(() => {
     });
   }
 
-  // Column filters only apply in desktop view (as they are not rendered in mobile)
+ 
   if (!isMobile.value) { 
     Object.keys(columnFilters.value).forEach(columnKey => {
       const filterValue = columnFilters.value[columnKey];
@@ -378,7 +377,6 @@ const applyColumnFilter = ({ columnKey, value }) => {
   columnFilters.value[columnKey] = value;
   page.value = 1;
 
-  // Сохраняем фильтры столбцов в localStorage
   if (props.storageKey) {
     try {
       localStorage.setItem(`${props.storageKey}_columnFilters`, JSON.stringify(columnFilters.value));

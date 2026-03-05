@@ -128,7 +128,7 @@ const initialCoordinates = {
 }
 
 const form = ref({
-  // Оставленные поля
+
   factDateEnd: null,
   nameLocationClsSection: '',
   nameSection: '',
@@ -141,7 +141,7 @@ const form = ref({
   paramsLimit: '',
   
   rawData: null, 
-  id: null, // Добавлено поле для хранения ID записи для удаления
+  id: null,
 })
 
 const minLimitDisplay = computed(() => {

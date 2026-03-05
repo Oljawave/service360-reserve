@@ -237,7 +237,6 @@ const fillFromDraft = (draftFields) => {
   newRecord.value.dateStartPlan = draftFields.dateStartPlan || null;
   newRecord.value.dateEndPlan = draftFields.dateEndPlan || null;
 
-  // Если онлайн и есть taskText — ищем совпадение в дропдауне
   if (isOnline.value && draftFields.taskText && taskOptions.value.length > 0) {
     const match = taskOptions.value.find(opt =>
       opt.label.toLowerCase().includes(draftFields.taskText.toLowerCase())

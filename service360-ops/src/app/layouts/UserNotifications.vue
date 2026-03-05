@@ -54,7 +54,6 @@ const fetchNotifications = async () => {
   try {
     const records = await loadNotificationUser()
 
-    // Показываем только те, у которых нет TimeReading (непрочитанные) и которые не были закрыты
     const newNotifications = records.filter(r => {
       const notRead = !r.TimeReading || r.TimeReading === '0000-01-01T00:00:00'
       return notRead && !dismissedIds.value.has(r.id)

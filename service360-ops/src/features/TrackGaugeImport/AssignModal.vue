@@ -97,7 +97,7 @@ const emit = defineEmits(['close']);
 const loading = ref(false);
 const assignData = ref([]);
 const tofiOptions = ref([]);
-const tofiOptionsRaw = ref([]); // Храним полные данные опций
+const tofiOptionsRaw = ref([]); 
 const editingIndex = ref(null);
 const editingValue = ref(null);
 const saving = ref(false);
@@ -129,24 +129,22 @@ const startEdit = async (index, currentValue) => {
   editingIndex.value = index;
   editingValue.value = currentValue;
 
-  // Определяем тип кода и загружаем соответствующие опции
+
   try {
     let options = [];
 
     if (code && code.includes('kod_otstup')) {
-      // Для kod_otstup используем loadRelObjForSelect
+
       const data = await loadRelObjForSelect(code);
       options = data;
     } else if (code && code.includes('kod_napr')) {
-      // Для kod_napr используем loadObjForSelect
+ 
       const data = await loadObjForSelect(code);
       options = data;
     }
 
-    // Сохраняем полные данные опций для использования при сохранении
     tofiOptionsRaw.value = options;
 
-    // Формируем опции для dropdown - используем id как value
     tofiOptions.value = options.map(option => ({
       value: option.id,
       label: option.name || option.label || option
@@ -170,10 +168,8 @@ const saveEdit = async (index) => {
     return;
   }
 
-  // AppDropdown возвращает объект {value, label}, поэтому берем value из него
   const selectedId = typeof editingValue.value === 'object' ? editingValue.value.value : editingValue.value;
 
-  // Находим выбранный элемент по id
   const selectedOption = tofiOptionsRaw.value.find(opt => opt.id === selectedId || opt.id === Number(selectedId));
 
   if (!selectedOption) {
@@ -184,7 +180,6 @@ const saveEdit = async (index) => {
 
   const item = assignData.value[index];
 
-  // Формируем данные для сохранения
   const assignDataToSave = {
     cod: item.cod,
     id: selectedOption.id,
@@ -196,7 +191,6 @@ const saveEdit = async (index) => {
   try {
     await saveAssign(assignDataToSave);
 
-    // Обновляем локальные данные после успешного сохранения
     assignData.value[index].name = selectedOption.name;
 
     editingIndex.value = null;

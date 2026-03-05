@@ -46,7 +46,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-// Создаем карту: childValue -> parentValue
 const childToParentMap = computed(() => {
   const map = {}
   props.options.forEach(parent => {
@@ -59,7 +58,6 @@ const childToParentMap = computed(() => {
   return map
 })
 
-// Создаем карту: value -> label для fallback
 const valueToLabelMap = computed(() => {
   const map = {}
   props.options.forEach(parent => {
@@ -73,7 +71,6 @@ const valueToLabelMap = computed(() => {
   return map
 })
 
-// Fallback для отображения выбранных значений
 const createFallbackOption = (value) => {
   return {
     label: valueToLabelMap.value[value] || value,
@@ -87,15 +84,13 @@ const handleUpdate = (newValues) => {
     return
   }
 
-  // Логика: с каждого родителя можно выбрать только одну дочку
   const lastSelected = newValues[newValues.length - 1]
   const lastParent = childToParentMap.value[lastSelected]
 
-  // Фильтруем: оставляем только те, у которых другой родитель, + последний выбранный
   const filtered = newValues.filter((val, idx) => {
-    if (idx === newValues.length - 1) return true // последний всегда оставляем
+    if (idx === newValues.length - 1) return true
     const parent = childToParentMap.value[val]
-    return parent !== lastParent // оставляем только с другим родителем
+    return parent !== lastParent
   })
 
   emit('update:modelValue', filtered)

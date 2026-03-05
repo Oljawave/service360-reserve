@@ -113,7 +113,6 @@ watch(() => props.selectedRows, (newVal) => {
 }, { deep: true });
 
 watch(() => props.rows, () => {
-  // Очищаем выбранные строки, которых больше нет во ВСЕХ данных (allRows)
   if (allRowsData.value.length > 0) {
     internalSelectedRows.value = internalSelectedRows.value.filter(selectedId =>
       allRowsData.value.some(row => (row.id || row.index) === selectedId)
@@ -151,7 +150,7 @@ const isSomeSelected = computed(() => {
 
 const toggleSelectAll = (checked) => {
   if (checked) {
-    // Выбираем все строки из allRows (все страницы)
+  
     internalSelectedRows.value = allRowsData.value.map(row => row.id || row.index);
   } else {
     internalSelectedRows.value = [];

@@ -54,7 +54,7 @@ const props = defineProps({
   },
   mode: {
     type: String,
-    default: 'status', // 'status' или 'width'
+    default: 'status',
   },
   isLoading: {
     type: Boolean,
@@ -101,17 +101,17 @@ const toggleLegend = (legendType) => {
 
 const getSegmentColor = (paramsLimit, skewType = null) => {
   if (props.mode === 'skew') {
-    // Режим перекосов - цвет зависит от типа отклонения
-    if (skewType === 'level') return '#f59e0b'; // Оранжевый для откл. от уровня
-    if (skewType === 'skew') return '#ec4899'; // Розовый для перекоса
-    if (skewType === 'subsidence') return '#8b5cf6'; // Фиолетовый для просадки
-    if (skewType === 'planDeviation') return '#06b6d4'; // Голубой для откл. в плане
+
+    if (skewType === 'level') return '#f59e0b'; // откл. от уровня
+    if (skewType === 'skew') return '#ec4899'; // перекос
+    if (skewType === 'subsidence') return '#8b5cf6'; // просадка
+    if (skewType === 'planDeviation') return '#06b6d4'; // откл. в плане
     return '#cbd5e1';
   } else if (props.mode === 'width') {
     // Режим ширины колеи
-    if (paramsLimit < 1516) return '#3b82f6'; // Синий для сужения
-    if (paramsLimit > 1538) return '#a855f7'; // Фиолетовый для уширения
-    return '#cbd5e1'; // Нормальная ширина (серый)
+    if (paramsLimit < 1516) return '#3b82f6'; // сужение
+    if (paramsLimit > 1538) return '#a855f7'; // уширение
+    return '#cbd5e1'; // Нормальная ширина
   } else {
     // Режим оценки состояния
     if (paramsLimit <= 25) return '#10b981';
@@ -142,7 +142,7 @@ const getSegmentStatus = (paramsLimit, skewType = null) => {
 
 const getSegmentStatusType = (paramsLimit, skewType = null) => {
   if (props.mode === 'skew') {
-    // Для перекосов тип уже есть в skewType
+
     return skewType;
   } else if (props.mode === 'width') {
     if (paramsLimit < 1516) return 'narrowing';
@@ -172,7 +172,6 @@ const railwaySegments = computed(() => {
   const segments = [];
   const { startKm: viewStartKm, endKm: viewEndKm } = visibleRange.value;
 
-  // Группируем все сегменты по километрам (может быть несколько записей на один км)
   const statusMap = new Map();
   props.statusSegments.forEach(segment => {
     const startKm = Math.floor(segment.StartKm || 0);
@@ -204,7 +203,6 @@ const railwaySegments = computed(() => {
     let statusDataArray = statusMap.get(km) || [];
 
     if (statusDataArray.length === 0) {
-      // Нет данных для этого километра
       segments.push({
         km,
         startPercent,
@@ -217,44 +215,39 @@ const railwaySegments = computed(() => {
       continue;
     }
 
-    // Фильтруем данные по выбранным легендам
     if (selectedLegends.value.length > 0) {
       statusDataArray = statusDataArray.filter(segment => {
         const statusType = getSegmentStatusType(segment.ParamsLimit, segment.skewType);
         return statusType !== null && selectedLegends.value.includes(statusType);
       });
 
-      // Если после фильтрации не осталось подходящих сегментов, пропускаем этот километр
       if (statusDataArray.length === 0) {
         continue;
       }
     }
 
-    // Собираем все типы статусов для этого километра (уже отфильтрованные)
     const statusTypes = statusDataArray.map(s => getSegmentStatusType(s.ParamsLimit, s.skewType)).filter(t => t !== null);
     const uniqueStatusTypes = [...new Set(statusTypes)];
 
-    // Определяем цвет: если есть несколько типов, показываем приоритетный
     let color = '#cbd5e1';
     if (statusDataArray.length > 0) {
       if (props.mode === 'skew') {
-        // Для перекосов: если несколько типов, показываем градиент
         if (uniqueStatusTypes.length > 1) {
           const colors = uniqueStatusTypes.map(type => getSegmentColor(null, type));
           const step = 100 / colors.length;
           const gradientStops = colors.map((c, i) => `${c} ${i * step}%, ${c} ${(i + 1) * step}%`).join(', ');
           color = `linear-gradient(90deg, ${gradientStops})`;
         } else {
-          // Один тип перекоса
+
           color = getSegmentColor(null, statusDataArray[0].skewType);
         }
       } else if (props.mode === 'width') {
-        // Для ширины: если есть и сужение и уширение, показываем градиент или полоски
+    
         const hasNarrowing = statusDataArray.some(s => s.ParamsLimit < 1516);
         const hasWidening = statusDataArray.some(s => s.ParamsLimit > 1538);
 
         if (hasNarrowing && hasWidening) {
-          // Смешанный случай - используем градиент синего и фиолетового
+      
           color = 'linear-gradient(90deg, #3b82f6 50%, #a855f7 50%)';
         } else if (hasNarrowing) {
           color = getSegmentColor(statusDataArray.find(s => s.ParamsLimit < 1516).ParamsLimit);
@@ -262,7 +255,7 @@ const railwaySegments = computed(() => {
           color = getSegmentColor(statusDataArray.find(s => s.ParamsLimit > 1538).ParamsLimit);
         }
       } else {
-        // Для оценки состояния: берём худший балл
+
         const worstSegment = statusDataArray.reduce((worst, current) =>
           current.ParamsLimit > worst.ParamsLimit ? current : worst
         );
@@ -270,11 +263,10 @@ const railwaySegments = computed(() => {
       }
     }
 
-    // Собираем данные для тултипа
     let paramsLimits, statuses, hasMultiple;
 
     if (props.mode === 'skew') {
-      // В режиме перекосов показываем все уникальные значения по типам
+
       const allParamsLimits = statusDataArray.map(s => s.ParamsLimit);
       const uniqueParamsLimits = [...new Set(allParamsLimits)];
 
@@ -285,7 +277,7 @@ const railwaySegments = computed(() => {
       statuses = uniqueStatuses;
       hasMultiple = uniqueParamsLimits.length > 1 || uniqueStatuses.length > 1;
     } else if (props.mode === 'width') {
-      // В режиме ширины показываем все уникальные значения
+   
       const allParamsLimits = statusDataArray.map(s => s.ParamsLimit);
       const uniqueParamsLimits = [...new Set(allParamsLimits)];
 
@@ -296,7 +288,7 @@ const railwaySegments = computed(() => {
       statuses = uniqueStatuses;
       hasMultiple = uniqueParamsLimits.length > 1 || uniqueStatuses.length > 1;
     } else {
-      // В режиме оценки показываем только худшее значение
+   
       const worstSegment = statusDataArray.reduce((worst, current) =>
         current.ParamsLimit > worst.ParamsLimit ? current : worst
       );
@@ -323,7 +315,7 @@ const railwaySegments = computed(() => {
 
 const statusStats = computed(() => {
   if (props.mode === 'skew') {
-    // Статистика для режима перекосов
+   
     const stats = {
       level: 0,
       skew: 0,
@@ -358,7 +350,7 @@ const statusStats = computed(() => {
 
     return stats;
   } else if (props.mode === 'width') {
-    // Статистика для режима ширины колеи
+ 
     const stats = {
       narrowing: 0,
       widening: 0,
@@ -387,7 +379,7 @@ const statusStats = computed(() => {
 
     return stats;
   } else {
-    // Статистика для режима оценки состояния
+   
     const stats = {
       excellent: 0,
       good: 0,
@@ -517,8 +509,8 @@ const distanceLabels = computed(() => {
     });
   }
 
-  // Добавляем метку конца только если она достаточно далеко от последней метки
-  const minDistance = step * 0.7; // Минимальное расстояние между метками
+
+  const minDistance = step * 0.7; 
   if (labels.length === 0 || labels[labels.length - 1].km < endKm - minDistance) {
     labels.push({
       km: endKm,
@@ -662,7 +654,6 @@ onUnmounted(() => {
   }
 }
 
-/* Скрываем компонент на мобильных устройствах */
 @media (max-width: 768px) {
   .railway-section-wrapper {
     display: none;

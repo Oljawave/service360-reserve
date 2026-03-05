@@ -126,7 +126,7 @@ const props = defineProps({
   },
   resourceType: {
     type: String,
-    default: 'materials' // materials, services, tools, equipment, personnel
+    default: 'materials'  
   },
   canInsert: {
     type: Boolean,
@@ -142,7 +142,7 @@ const emit = defineEmits(['add-row']);
 
 const newRow = ref(null);
 
-// Вычисляемые свойства для отображения колонок
+
 const showUnit = computed(() => props.resourceType === 'materials');
 const showQuantity = computed(() => ['tools', 'equipment', 'personnel'].includes(props.resourceType));
 const showHours = computed(() => ['equipment', 'personnel'].includes(props.resourceType));
@@ -150,7 +150,6 @@ const showVolume = computed(() => ['materials', 'services'].includes(props.resou
 
 const existingRows = computed(() => props.rows || []);
 
-// Показывать ли колонку единиц измерения
 const showUnitColumn = computed(() => {
   return showUnit.value && props.unitOptions && props.unitOptions.length > 0;
 });
@@ -167,7 +166,7 @@ const getColumnLabel = () => {
 };
 
 const getColspan = () => {
-  let count = 1; // Наименование
+  let count = 1; 
   if (showUnit.value) count++;
   if (showQuantity.value) count++;
   if (showHours.value) count++;
@@ -190,7 +189,7 @@ const createNewRow = () => {
   const row = {
     name: null,
   };
-  // Добавляем unit только если нужна колонка единиц измерения
+
   if (showUnitColumn.value) {
     row.unit = null;
   }
@@ -220,7 +219,7 @@ const isNewRowValid = computed(() => {
   if (!newRow.value || !newRow.value.name) {
     return false;
   }
-  // Если нужна колонка единиц измерения, проверяем что unit заполнен
+ 
   if (showUnitColumn.value && !newRow.value.unit) {
     return false;
   }
@@ -232,7 +231,6 @@ const saveNewRow = () => {
 
   const row = newRow.value;
 
-  // Формируем данные для сохранения в зависимости от типа ресурса
   const rowData = {
     name: row.name,
   };

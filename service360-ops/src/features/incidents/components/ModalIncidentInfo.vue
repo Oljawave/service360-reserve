@@ -140,7 +140,7 @@ const form = ref({
 const formattedRegistrationDateTime = computed(() => {
   if (form.value.date && form.value.time) {
     const [year, month, day] = form.value.date.split('-');
-    const timePart = form.value.time.substring(0, 5); // HH:mm
+    const timePart = form.value.time.substring(0, 5); 
     return `${timePart}, ${day}.${month}.${year}`;
   }
   return 'Дата и время не указаны';
@@ -165,7 +165,6 @@ const fillFormWithData = () => {
   form.value.place = rawData.nameLocationClsSection || 'Не указано'
   form.value.applicantName = rawData.InfoApplicant || 'Неизвестно'
 
-  // Устанавливаем критичность
   const foundCriticality = criticalityOptions.value.find(
     c => c.value === rawData.fvCriticality
   );
@@ -211,9 +210,9 @@ const saveChanges = async () => {
   }
 
   const payload = {
-    id: rawData.id, // id инцидента
+    id: rawData.id, 
 
-    // Передаем ID свойств из rawData, чтобы сервер знал, какие свойства обновлять
+    
     idCriticality: rawData.idCriticality,
     idInfoApplicant: rawData.idInfoApplicant,
     idDescription: rawData.idDescription,
@@ -229,7 +228,7 @@ const saveChanges = async () => {
   try {
     await updateIncident(payload);
     notificationStore.showNotification('Инцидент успешно обновлен!', 'success');
-    emit('deleted'); // Используем событие 'deleted' для обновления таблицы, как при удалении
+    emit('deleted');
   } catch (error) {
     notificationStore.showNotification(error.message || 'Ошибка при обновлении инцидента.', 'error');
   } finally {
@@ -271,14 +270,14 @@ const onConfirmDelete = async () => {
 .form-section {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem; /* 16px */
-  padding: 2rem 1rem; /* 32px 16px */
+  gap: 1rem;
+  padding: 2rem 1rem;
   background-color: #f9fafb;
 }
 
 @media (min-width: 768px) {
   .form-section {
-    padding: 2rem; /* 32px */
+    padding: 2rem;
   }
 }
 
@@ -298,11 +297,11 @@ const onConfirmDelete = async () => {
   grid-column: span 2;
 }
 
-/* Tablet and Mobile styles */
+
 @media (max-width: 1024px) {
   .form-section {
     grid-template-columns: 1fr !important;
-    padding: 1.5rem 1rem; /* 24px 16px */
+    padding: 1.5rem 1rem; 
   }
 
   .full-width-item {
@@ -314,7 +313,6 @@ const onConfirmDelete = async () => {
   }
 }
 
-/* Стили для анимации вложенного модального окна */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
   transition: opacity 0.3s ease;

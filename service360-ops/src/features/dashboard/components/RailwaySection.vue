@@ -104,13 +104,10 @@
 <script setup>
 import { ref, computed } from 'vue';
 
-// Общая длина линии для расчета процентов
 const TOTAL_RAIL_LENGTH_KM = 151;
-// Порог кластеризации в процентах (0.01 = 1% от общей длины линии)
-// 1% от 151 км = 1.51 км. Это 15 пикетов.
+
 const CLUSTER_THRESHOLD_PERCENT = 1.5; 
 
-// Принимаем данные от родительского компонента
 const props = defineProps({
   intermediateStations: {
     type: Array,
@@ -130,7 +127,6 @@ const props = defineProps({
   },
 });
 
-// Определяем события, которые может излучать компонент
 const emit = defineEmits(['incident-click']);
 
 const hoveredStationId = ref(null);
@@ -150,14 +146,11 @@ const activeKpiTitle = computed(() => {
 
 const incidentList = computed(() => {
   if (!selectedIncident.value) return [];
-  // Если rawData - не массив, оборачиваем его в массив
   return Array.isArray(selectedIncident.value.rawData) 
     ? selectedIncident.value.rawData 
     : [selectedIncident.value.rawData];
 });
-/**
- * Обрезает текст до указанной длины и добавляет многоточие.
- */
+
 const truncateText = (text, maxLength) => {
   if (!text) return 'Описание отсутствует';
   if (text.length <= maxLength) {
@@ -166,21 +159,15 @@ const truncateText = (text, maxLength) => {
   return text.substring(0, maxLength) + '...';
 };
 
-/**
- * Преобразует координаты КМ и ПК в общую длину в километрах.
- * (1 пикет = 0.1 км)
- */
 const convertKmPkToTotalKm = (km, pk) => {
   return (km || 0) + (pk || 0) / 10;
 };
 
-// **ЛОГИКА КЛАСТЕРИЗАЦИИ**
 const clusteredIncidents = computed(() => {
   if (!props.railwayIncidents || props.railwayIncidents.length === 0) {
     return [];
   }
 
-  // 1. Сортируем инциденты по позиции
   const sortedIncidents = [...props.railwayIncidents].sort((a, b) => a.position - b.position);
   
   const clusters = [];
@@ -188,36 +175,31 @@ const clusteredIncidents = computed(() => {
 
   sortedIncidents.forEach(incident => {
     if (!currentCluster) {
-      // Инициализируем новый кластер первым инцидентом
+  
       currentCluster = {
         id: incident.id,
         position: incident.position,
         color: incident.color,
         title: incident.title,
         count: 1,
-        // Сохраняем все данные, чтобы показать их в тултипе
         rawData: [incident.rawData], 
       };
       clusters.push(currentCluster);
       return;
     }
 
-    // Проверяем расстояние между текущим инцидентом и центром текущего кластера
     const distance = incident.position - currentCluster.position;
 
     if (distance <= CLUSTER_THRESHOLD_PERCENT) {
-      // 2. Инцидент находится близко, добавляем его в текущий кластер
       currentCluster.count++;
       currentCluster.rawData.push(incident.rawData);
       
-      // Обновляем позицию кластера (используем среднее для центрирования)
       const totalPosition = currentCluster.rawData.reduce((sum, item) => 
         sum + ((item.StartKm || 0) + (item.StartPicket / 10 || 0)), 0);
       
       const avgKm = totalPosition / currentCluster.count;
       currentCluster.position = (avgKm / TOTAL_RAIL_LENGTH_KM) * 100;
 
-      // Обновляем цвет кластера (приоритет: Красный > Желтый > Зеленый)
       if (incident.color === 'red-marker') {
         currentCluster.color = 'red-marker';
       } else if (incident.color === 'yellow-marker' && currentCluster.color !== 'red-marker') {
@@ -226,7 +208,7 @@ const clusteredIncidents = computed(() => {
       
       currentCluster.title = `Всего запросов: ${currentCluster.count}`;
     } else {
-      // 3. Инцидент слишком далек, начинаем новый кластер
+
       currentCluster = {
         id: incident.id,
         position: incident.position,
@@ -242,10 +224,6 @@ const clusteredIncidents = computed(() => {
   return clusters;
 });
 
-/**
- * Возвращает класс CSS для маркера инцидента/кластера.
- * Для кластера добавляет специальный класс 'cluster-marker'.
- */
 const getClusterClass = (cluster) => {
   return {
     [cluster.color]: true,
@@ -253,10 +231,6 @@ const getClusterClass = (cluster) => {
   };
 };
 
-
-/**
- * Рассчитывает позиционирование для тултипа.
- */
 const getTooltipStyle = (incident) => {
   if (!incident) return {};
 
@@ -281,9 +255,6 @@ const formatStationCoords = (kmValue) => {
   return `${km}км ${pk}пк`;
 };
 
-/**
- * Форматирует координаты для одного инцидента (начало - конец)
- */
 const formatSingleIncidentCoords = (incidentData) => {
   const startKm = incidentData.StartKm || 0;
   const startPk = incidentData.StartPicket || 0;
@@ -293,24 +264,15 @@ const formatSingleIncidentCoords = (incidentData) => {
   return `${startKm}км ${startPk}пк - ${finishKm}км ${finishPk}пк`;
 };
 
-/**
- * Определяет, нужно ли показывать кнопку "Ещё" для описания
- */
 const isDescriptionLong = (description) => {
   if (!description) return false;
   return description.length > 100;
 };
 
-/**
- * Переключает развёрнутое/свёрнутое состояние описания
- */
 const toggleDescription = () => {
   isDescriptionExpanded.value = !isDescriptionExpanded.value;
 };
 
-/**
- * Определяет позицию тултипа в зависимости от положения инцидента
- */
 const getTooltipPositionClass = (incident) => {
   const position = incident.position;
   
@@ -325,10 +287,10 @@ const getTooltipPositionClass = (incident) => {
 
 const handleIncidentClick = (cluster, event) => {
   if (selectedIncident.value && selectedIncident.value.id === cluster.id) {
-    selectedIncident.value = null; // Закрыть тултип при повторном клике
+    selectedIncident.value = null;
     isDescriptionExpanded.value = false;
   } else {
-    // В selectedIncident.value мы сохраняем объект кластера
+ 
     selectedIncident.value = cluster;
     isDescriptionExpanded.value = false; 
   }

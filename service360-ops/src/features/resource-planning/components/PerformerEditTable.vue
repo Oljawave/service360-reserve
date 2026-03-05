@@ -135,16 +135,15 @@
 import { ref, watch, computed } from 'vue';
 import { Check, ChevronRight, Plus, Trash2 } from 'lucide-vue-next';
 import AppNumberInput from '@/shared/ui/FormControls/AppNumberInput.vue'; 
-import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'; // Раскомментировано
+import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
 import AddPerformerModal from '@/features/work-log/components/AddPerformerModal.vue';
 import { useNotificationStore } from '@/app/stores/notificationStore';
 
 const props = defineProps({
   title: { type: String, required: true },
   rows: { type: Array, default: () => [] },
-  nameOptions: { type: Array, default: () => [] }, // nameOptions для позиций (Бригадир, Рабочий)
-  // Переименовано для соответствия oldCode.txt и сниппету
-  performerNameOptions: { type: Array, default: () => [] }, // ФИО конкретных людей
+  nameOptions: { type: Array, default: () => [] },
+  performerNameOptions: { type: Array, default: () => [] }, 
 });
 
 const emit = defineEmits(['update:rows', 'save-performer', 'delete-performer', 'add-performer']);
@@ -156,9 +155,6 @@ const currentPositionPv = ref(null);
 
 const notificationStore = useNotificationStore();
 
-/**
- * Данные для демонстрации одной раскрытой строки (по запросу пользователя)
- */
 const DUMMY_ROWS = [
     {
       id: 'dummy-row-1',
@@ -167,12 +163,12 @@ const DUMMY_ROWS = [
       planHours: 64,
       factCount: 1,
       factHours: 8,
-      expanded: true, // Раскрыта по умолчанию для примера
+      expanded: true,
       performers: [
         {
           id: 'performer-1',
-          name: '1', // PV/Value для AppDropdown
-          fullName: 'Иванов И.И.', // Отображаемое имя (не используется в редактируемом режиме, но для структуры)
+          name: '1',
+          fullName: 'Иванов И.И.', 
           time: 8,
         },
       ],
@@ -180,13 +176,9 @@ const DUMMY_ROWS = [
     }
 ];
 
-/**
- * Рассчитывает фактические значения по количеству и часам
- * на основе детального списка исполнителей.
- */
 const calculatePerformerFacts = (performers = []) => {
   const factCount = performers.length;
-  // Суммируем только, если time не null/undefined
+
   const factHours = performers.reduce((sum, p) => sum + (p.time !== null && p.time !== undefined ? p.time : 0), 0);
   return { factCount, factHours };
 };
@@ -197,28 +189,26 @@ const initializeExistingRows = (rows) => {
         ? row.performerDetails
         : []; 
 
-      // Пересчитываем факт, если нет данных factCount/factHours из API
+    
       const { factCount, factHours } = calculatePerformerFacts(performers);
 
       return {
         id: row.id,
-        name: row.name, // Имя позиции (Бригадир, Рабочий)
+        name: row.name, 
         planCount: row.plan || 0, 
         planHours: row.hours || 0, 
-        // Используем fact из API, если есть, иначе пересчитываем
         factCount: row.factCount || factCount, 
         factHours: row.factHours || factHours,
         expanded: false,
         performers: performers.map(p => ({
           ...p,
-          time: p.time !== null && p.time !== undefined ? p.time : 0, // Убедимся, что time - число
+          time: p.time !== null && p.time !== undefined ? p.time : 0,
         })),
-        positionPv: row.positionPv || null, // PV позиции
+        positionPv: row.positionPv || null,
       }
     });
 };
 
-// Инициализация: если пропсы пустые, используем демонстрационные данные
 existingRowsInternal.value = props.rows.length > 0 ? initializeExistingRows(props.rows) : DUMMY_ROWS;
 
 watch(
@@ -239,17 +229,12 @@ const toggleRow = (index) => {
   row.expanded = !row.expanded;
 };
 
-/**
- * Обновляет поля factCount и factHours в основной строке
- */
 const updatePerformerFacts = (rowIndex) => {
   const row = existingRowsInternal.value[rowIndex];
   const { factCount, factHours } = calculatePerformerFacts(row.performers);
   row.factCount = factCount;
   row.factHours = factHours;
 };
-
-// --- Логика для существующих исполнителей ---
 
 const updateExistingPerformer = (rowIndex, performerIndex, field, value) => {
   const row = existingRowsInternal.value[rowIndex];
@@ -288,8 +273,6 @@ const deletePerformer = (rowIndex, performerIndex) => {
   emit('update:rows', existingRowsInternal.value);
 };
 
-// --- Логика модального окна ---
-
 const openAddPerformerModal = (rowIndex) => {
   const row = existingRowsInternal.value[rowIndex];
   
@@ -309,21 +292,18 @@ const handleAddPerformers = (data) => {
 
   const row = existingRowsInternal.value[currentRowIndex.value];
   
-  // Создаем новых исполнителей с нулевым временем
   const newPerformers = data.performers.map(performer => ({
-    id: performer.id, // ID конкретного исполнителя (ФИО)
+    id: performer.id, 
     cls: performer.cls,
     pv: performer.pv,
     name: performer.name,
     fullName: performer.fullName,
     time: 0,
-    // Дополнительные поля, если нужны
     location: data.location,
     objLocation: performer.objLocation,
     nameLocation: performer.nameLocation
   })); 
   
-  // Добавляем только тех, кого еще нет в списке
   const performersToAdd = newPerformers.filter(newP => !row.performers.some(existingP => existingP.id === newP.id) );
 
   if (performersToAdd.length === 0) {
@@ -335,9 +315,8 @@ const handleAddPerformers = (data) => {
   updatePerformerFacts(currentRowIndex.value);
   emit('update:rows', existingRowsInternal.value);
 
-  // Эмитим событие для сохранения на сервере
   emit('add-performer', {
-    rowId: row.id, // ID строки позиции (Бригадир, Рабочий)
+    rowId: row.id,
     rowIndex: currentRowIndex.value,
     performers: performersToAdd,
   });
@@ -348,7 +327,7 @@ const handleAddPerformers = (data) => {
 </script>
 
 <style scoped>
-/* Стили ниже взяты из 'oldCode.txt' и 'PerformerEditTable.vue' для обеспечения дизайна */
+
 .resource-edit-section {
   background: white;
   border-radius: 12px;
@@ -391,7 +370,6 @@ const handleAddPerformers = (data) => {
   font-size: 13px;
 }
 
-/* Таблица */
 .table-wrapper {
   overflow-x: auto;
 }
@@ -429,7 +407,6 @@ const handleAddPerformers = (data) => {
   background: #f9fafb;
 }
 
-/* Колонки */
 .resource-table .expand-column {
   width: 5%;
   text-align: center;
@@ -444,7 +421,6 @@ const handleAddPerformers = (data) => {
   width: 20%;
 }
 
-/* Ячейки для исполнителей с план/факт */
 .plan-fact-cell {
   vertical-align: top;
   padding-top: 8px !important;
@@ -467,7 +443,6 @@ const handleAddPerformers = (data) => {
   color: #1e293b;
 }
 
-/* Кнопка раскрытия */
 .expand-button {
   display: inline-flex;
   align-items: center;
@@ -490,7 +465,6 @@ const handleAddPerformers = (data) => {
   transform: rotate(90deg);
 }
 
-/* Раскрывающаяся секция */
 .expanded-row {
   background: #f8fafc;
 }
@@ -563,7 +537,7 @@ const handleAddPerformers = (data) => {
 
 .performer-fields {
   display: grid;
-  grid-template-columns: 2fr 1fr 100px; /* ФИО, Часы, Действия */
+  grid-template-columns: 2fr 1fr 100px;
   gap: 20px;
   flex-grow: 1;
 }
@@ -588,7 +562,6 @@ const handleAddPerformers = (data) => {
   padding-bottom: 2px;
 }
 
-/* Кнопки действий */
 .icon-button {
   display: inline-flex;
   align-items: center;
@@ -639,7 +612,6 @@ const handleAddPerformers = (data) => {
   font-size: 14px;
 }
 
-/* Адаптивные стили */
 @media (max-width: 1024px) {
   .performer-fields {
     grid-template-columns: 1fr 1fr;

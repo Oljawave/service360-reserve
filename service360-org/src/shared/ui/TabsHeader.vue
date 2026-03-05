@@ -37,11 +37,11 @@ const selectTab = (tabName) => {
 
 <style scoped>
 .tabs-header {
-  display: flex; /* Изменено: Используем flex для горизонтального расположения */
-  flex-wrap: nowrap; /* Изменено: Предотвращаем перенос на мобильных */
-  gap: 8px; /* Добавляем небольшой отступ между вкладками */
-  border-bottom: 1px solid #e0e6ed; /* Оставлено для первого ряда (будет переопределено в ResourcePlanningModal) */
-  margin-bottom: 16px; /* Оставлено для первого ряда (будет переопределено в ResourcePlanningModal) */
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  border-bottom: 1px solid #e0e6ed;
+  margin-bottom: 16px;
 }
 
 .tab {
@@ -57,8 +57,8 @@ const selectTab = (tabName) => {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-shrink: 0; /* Добавлено, чтобы предотвратить сжатие */
-  justify-content: center; /* Центрируем содержимое таба */
+  flex-shrink: 0;
+  justify-content: center;
 }
 
 .tab:hover {
@@ -70,7 +70,6 @@ const selectTab = (tabName) => {
   border-bottom-color: #3182ce;
 }
 
-/* Стиль для иконки внутри таба (если он определен в UiIcon.vue) */
 .tab .icon {
   margin-right: 8px;
 }

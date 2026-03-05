@@ -191,7 +191,6 @@ onMounted(async () => {
     console.error('Ошибка загрузки типов периода:', error);
   }
 
-  // Устанавливаем начальную дату из props и запускаем загрузку
   selectedDate.value = new Date(props.date);
 });
 </script>

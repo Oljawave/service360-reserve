@@ -86,7 +86,6 @@ const selectedLocation = ref(null);
 const selectedEquipments = ref([]);
 const allEquipments = ref([]);
 
-// Уникальные участки из загруженной техники
 const locationOptions = computed(() => {
   const uniqueLocations = new Map();
 
@@ -102,7 +101,6 @@ const locationOptions = computed(() => {
   return Array.from(uniqueLocations.values());
 });
 
-// Отфильтрованная техника по выбранному участку
 const filteredEquipments = computed(() => {
   const locationValue = selectedLocation.value?.value;
   if (!locationValue) {
@@ -114,7 +112,6 @@ const filteredEquipments = computed(() => {
   );
 });
 
-// Опции для выпадающего списка техники
 const equipmentOptions = computed(() => {
   return filteredEquipments.value.map(equipment => ({
     label: equipment.name,
@@ -122,12 +119,10 @@ const equipmentOptions = computed(() => {
   }));
 });
 
-// Проверка валидности формы
 const isFormValid = computed(() => {
   return selectedLocation.value?.value && selectedEquipments.value.length > 0;
 });
 
-// Загрузка техники при открытии модалки
 watch(() => props.isOpen, async (newValue) => {
   if (newValue) {
     await loadEquipments();

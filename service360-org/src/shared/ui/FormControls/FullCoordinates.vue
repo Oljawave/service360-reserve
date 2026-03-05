@@ -94,12 +94,10 @@ const props = defineProps({
     type: Object,
     default: null
   },
-  // Добавляем пропс required с default: false
   required: {
     type: Boolean,
     default: false
   },
-  // Добавляем пропс disabled с default: false
   disabled: {
     type: Boolean,
     default: false
@@ -121,7 +119,6 @@ const currentEndKm = computed(() => props.modelValue.coordEndKm ?? null)
 const currentEndPk = computed(() => props.modelValue.coordEndPk ?? null)
 const currentEndZv = computed(() => props.modelValue.coordEndZv ?? null)
 
-// Расчет абсолютной координаты
 const startAbs = computed(() => {
   const km = currentStartKm.value ?? 0
   const pk = currentStartPk.value ?? 0
@@ -136,7 +133,6 @@ const endAbs = computed(() => {
   return km * 1000 + pk * 100 + zv * 25
 })
 
-// Проверка на пустые обязательные поля
 const hasEmptyRequiredFields = computed(() => {
   if (!props.required) return false
   return currentStartKm.value === null || currentStartKm.value === 0 ||
@@ -148,7 +144,6 @@ const hasEmptyRequiredFields = computed(() => {
 })
 
 const isInvalid = computed(() => {
-  // Не проверяем диапазон если есть пустые поля
   if (hasEmptyRequiredFields.value) return false
   return startAbs.value > endAbs.value
 })
@@ -169,11 +164,9 @@ const isOutOfBounds = computed(() => {
   return startAbs.value < objStartAbs || endAbs.value > objEndAbs
 })
 
-// Computed для определения статуса каждого поля
 const getFieldStatus = (field) => {
   if (!shouldShowError.value) return null
 
-  // Проверка на пустое обязательное поле
   if (props.required) {
     const value = props.modelValue[field]
     if (value === null || value === 0 || value === '') {
@@ -186,7 +179,6 @@ const getFieldStatus = (field) => {
   return null
 }
 
-// Валидация отдельных полей
 const fieldErrors = ref({
   coordStartKm: null,
   coordStartPk: null,
@@ -304,21 +296,17 @@ const handleEndZv = (value) => {
 }
 
 const performValidation = () => {
-  // Всегда эмитим текущее состояние валидности
   emit('invalidRange', isInvalid.value)
 
-  // Не показываем уведомления при начальной загрузке
   if (isInitialMount.value) {
     return
   }
 
-  // Проверка на пустые обязательные поля
   if (hasEmptyRequiredFields.value) {
     notificationStore.showNotification('Необходимо заполнить все координаты', 'error')
     return
   }
 
-  // Проверка ошибок полей
   const hasFieldErrors = Object.values(fieldErrors.value).some(err => err !== null)
   if (hasFieldErrors) {
     const firstError = Object.values(fieldErrors.value).find(err => err !== null)
@@ -334,7 +322,6 @@ const performValidation = () => {
     emit('out-of-bounds')
     notificationStore.showNotification('Координаты выходят за пределы допустимого диапазона!', 'error')
   } else {
-    // Сбрасываем флаг если координаты в пределах
     emit('out-of-bounds', false)
   }
 }
@@ -342,7 +329,6 @@ const performValidation = () => {
 const handleFocus = () => {
   isUserTyping.value = true
   shouldShowError.value = false
-  // Когда пользователь начинает взаимодействовать, снимаем флаг начальной загрузки
   isInitialMount.value = false
 }
 
@@ -367,8 +353,6 @@ watch(() => props.objectBounds, () => {
   }
 })
 
-// После монтирования компонента даём время для начальной загрузки,
-// затем разрешаем показ уведомлений о валидации
 onMounted(() => {
   setTimeout(() => {
     isInitialMount.value = false
@@ -377,30 +361,26 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Стили для внешнего контейнера */
 .coordinate-wrapper {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-/* Стили для заголовка "Координаты" */
 .coordinate-label {
   font-size: 14px;
   font-weight: 500;
   color: #4a5568;
 }
 
-/* Стили для обязательной звездочки */
 .required-asterisk {
-  color: #e53e3e; 
-  font-size: 14px; 
+  color: #e53e3e;
+  font-size: 14px;
   margin-left: 2px;
-  vertical-align: top; 
-  line-height: 1.2; 
+  vertical-align: top;
+  line-height: 1.2;
 }
 
-/* Стили для группы инпутов */
 .coordinate-group {
   display: flex;
   flex-wrap: nowrap;
@@ -409,14 +389,12 @@ onMounted(() => {
 }
 
 .coordinate-group > * {
-  /* Уменьшаем min-width для размещения 6 полей */
   flex: 1;
   min-width: 90px;
 }
 
 @media (max-width: 768px) {
   .coordinate-group {
-    /* На мобильных устройствах делаем сетку 2x3 */
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;

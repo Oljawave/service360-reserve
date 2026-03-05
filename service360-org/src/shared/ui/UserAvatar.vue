@@ -1,4 +1,3 @@
-<!-- components/ui/UserAvatar.vue -->
 <template>
   <div class="avatar-wrapper" ref="avatarRef">
     <div class="avatar" @click="toggleMenu">

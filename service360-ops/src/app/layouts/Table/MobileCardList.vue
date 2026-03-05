@@ -75,7 +75,7 @@ watch(() => props.selectedRows, (newVal) => {
 }, { deep: true })
 
 watch(() => props.rows, () => {
-  // Очищаем выбранные строки, которых больше нет в списке
+
   internalSelectedRows.value = internalSelectedRows.value.filter(selectedId =>
     props.rows.some(row => (row.id || row.index) === selectedId)
   )
@@ -100,7 +100,7 @@ const toggleRowSelection = (row) => {
 }
 
 const handleCardClick = (row) => {
-  // Simulating the double-click behavior on a single tap for mobile
+
   emit('row-dblclick', row) 
 }
 
@@ -110,7 +110,7 @@ const formatDate = (dateString) => {
   if (isNaN(date.getTime())) return dateString
 
   const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0') // Месяцы начинаются с 0
+  const month = String(date.getMonth() + 1).padStart(2, '0')
   const year = date.getFullYear()
   return `${day}.${month}.${year}`
 }
@@ -121,7 +121,7 @@ const formatDate = (dateString) => {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 0 2px; /* Slight padding to avoid edge-to-edge on some devices */
+  padding: 0 2px; 
 }
 
 .card {
@@ -168,17 +168,16 @@ const formatDate = (dateString) => {
 }
 
 .card-section {
-  background-color: #e6f6ff; /* Light blue background for section name */
+  background-color: #e6f6ff; 
   color: #3182ce;
   padding: 2px 8px;
   border-radius: 10px;
   font-size: 12px;
   font-weight: 500;
-  /* Стили для обрезки длинного текста */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px; /* Ограничиваем максимальную ширину, чтобы не вытеснять дату */
+  max-width: 120px;
 }
 
 .card-date {
