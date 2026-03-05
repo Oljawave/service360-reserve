@@ -177,11 +177,6 @@ const filteredItems = computed(() => filterItems(JSON.parse(JSON.stringify(allIt
   }
 }
 
-@media (max-width: 1024px) {
-  .desktop-only {
-    display: none !important;
-  }
-}
 
 .logo-section {
   display: flex;

@@ -81,7 +81,7 @@ watch(
 <style scoped>
 .app-layout {
   display: flex;
-  height: 108vh;
+  height: calc(100vh / 0.90);
   overflow: hidden;
 }
 

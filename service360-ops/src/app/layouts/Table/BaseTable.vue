@@ -167,8 +167,6 @@ const tableWidthClass = computed(() => {
 
 <style scoped>
 .table-container {
-  flex: 1;
-  min-height: 0;
   overflow-x: auto;
   overflow-y: auto;
   background: #fff;
