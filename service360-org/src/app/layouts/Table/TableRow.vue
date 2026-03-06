@@ -158,7 +158,7 @@ const isFactDateOnTime = (key) => {
   background-color: #f9fafb;
 }
 .cell {
-  padding: 14px 16px;
+  padding: 8px 10px;
   font-size: 14px;
   color: #1a202c;
   vertical-align: top;
