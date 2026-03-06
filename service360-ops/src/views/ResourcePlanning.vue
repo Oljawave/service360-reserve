@@ -33,22 +33,19 @@ const router = useRouter();
 const tableRef = ref(null);
 const limit = 10;
 
-// Проверяем флаг навигации - если пришли не со связанных страниц, очищаем фильтры
 const checkAndClearFilters = () => {
   const navigationFlag = localStorage.getItem('resourcePlanningNavigation');
 
   if (navigationFlag !== 'fromRelatedPage') {
-    // Пришли с другой страницы (sidebar) - очищаем все фильтры
+    
     localStorage.removeItem('resourcePlanningDate');
     localStorage.removeItem('resourcePlanningPeriodType');
     localStorage.removeItem('resourcePlanning_columnFilters');
   }
 
-  // Удаляем флаг после проверки
   localStorage.removeItem('resourcePlanningNavigation');
 };
 
-// Синхронно восстанавливаем дату из localStorage при инициализации
 const getSavedDate = () => {
   checkAndClearFilters();
 
@@ -75,11 +72,9 @@ const dropdownConfig = ref({
   placeholder: 'Выберите тип периода',
 });
 
-// Обработчик изменения фильтров - сохраняем в localStorage
 const onFiltersUpdate = (newFilters) => {
   filters.value = newFilters;
 
-  // Сохраняем фильтры в localStorage
   if (newFilters.date) {
     localStorage.setItem('resourcePlanningDate', formatDateToString(newFilters.date));
   }
@@ -94,7 +89,6 @@ onMounted(async () => {
 
     dropdownConfig.value.options = types;
 
-    // Восстанавливаем тип периода из localStorage
     const savedPeriodType = localStorage.getItem('resourcePlanningPeriodType');
 
     if (savedPeriodType) {
@@ -114,7 +108,6 @@ onMounted(async () => {
       }
     }
 
-    // Перезагружаем таблицу с восстановленными фильтрами
     if (tableRef.value) {
       tableRef.value.refreshTable();
     }
@@ -126,25 +119,21 @@ onMounted(async () => {
 });
 
 const onRowDoubleClick = (row) => {
-  // `row` - это объект, который мы создаем в `loadInspectionsWrapper`
-  // `row.rawData` содержит исходный объект с бэкенда
+  
   const rawData = row.rawData;
 
   if (rawData) {
-    // Сохраняем данные фильтров в localStorage для использования на странице редактирования
+    
     localStorage.setItem('resourcePlanningDate', formatDateToString(filters.value.date));
     localStorage.setItem('resourcePlanningPeriodType', filters.value.periodType?.value || '71');
 
-    // Устанавливаем флаг что переходим на связанную страницу
     localStorage.setItem('resourcePlanningNavigation', 'fromRelatedPage');
 
-    // Переходим на страницу редактирования
     router.push({ name: 'ResourcePlanningEdit', params: { id: rawData.id } });
   } else {
     console.error("rawData отсутствует в выбранной строке. Невозможно открыть страницу редактирования.", row);
   }
 };
-
 
 const formatDateToString = (date) => {
   if (!date) return null;
@@ -158,7 +147,7 @@ const formatDateToString = (date) => {
 const formatDateRange = (startDate, endDate) => {
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
-    // Если дата в формате YYYY-MM-DD
+    
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
       const [year, month, day] = dateStr.split('-');
       return `${day}.${month}.${year}`;
@@ -380,22 +369,16 @@ const tableActions = computed(() => [
     label: 'Добавить запись',
     icon: 'Plus',
     onClick: () => {
-      // Сохраняем данные фильтров в localStorage для использования на странице добавления
+      
       localStorage.setItem('resourcePlanningDate', formatDateToString(filters.value.date));
       localStorage.setItem('resourcePlanningPeriodType', filters.value.periodType?.value || '71');
 
-      // Устанавливаем флаг что переходим на связанную страницу
       localStorage.setItem('resourcePlanningNavigation', 'fromRelatedPage');
 
       router.push({ name: 'ResourcePlanningRecord' });
     },
     show: canInsert.value,
   },
-  // {
-  //   label: 'Экспорт',
-  //   icon: 'Download',
-  //   onClick: () => console.log('Экспортирование инспекций...'),
-  //   show: true,
-  // },
+  
 ].filter(action => action.show));
 </script>

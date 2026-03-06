@@ -24,7 +24,7 @@
           </div>
 
           <transition name="fade" mode="out-in">
-            <!-- Форма входа -->
+            
             <form v-if="!showForgot" key="login" @submit.prevent="handleLogin">
               <div class="form-fields">
                 <AppInput label="Логин" v-model="username" placeholder="Введите логин" />
@@ -40,7 +40,6 @@
               </div>
             </form>
 
-            <!-- Форма восстановления -->
             <form v-else key="forgot" @submit.prevent="handleForgotPassword">
               <div class="form-fields">
                 <AppInput label="Логин" v-model="forgotLogin" placeholder="Введите ваш логин" />
@@ -118,7 +117,7 @@ export default {
       }
     },
     async handleLogin() {
-      if (this.loading) return; // Предотвращаем повторные вызовы
+      if (this.loading) return; 
 
       const notify = useNotificationStore()
       this.loading = true
@@ -126,7 +125,6 @@ export default {
       try {
         const loginResponse = await login(this.username, this.password)
         
-        // This is the correct way to get the user ID
         const curUser = await getCurrentUser()
         console.log('User target:', curUser?.result?.target)
 
@@ -182,9 +180,6 @@ export default {
   },
 }
 </script>
-
-
-
 
 <style scoped>
 .login-page {
@@ -545,7 +540,6 @@ form {
     margin: 0;
   }
    
-
   .form-fields {
     gap: 16px;
     margin-bottom: 32px;

@@ -161,7 +161,6 @@ const taskLogId = ref(route.params.id);
 const activeTab = ref('materials');
 const notificationStore = useNotificationStore();
 
-// Проверка прав доступа
 const canInsert = computed(() => hasPermission('res:ins'));
 const canUpdate = computed(() => hasPermission('res:upd'));
 
@@ -211,8 +210,6 @@ const formatCoordinates = (startKm, startPk, startZv, finishKm, finishPk, finish
   }
   return 'Координаты отсутствуют';
 };
-
-// --- Обработчики для добавления ресурсов ---
 
 const handleAddMaterialRow = async (newRowData) => {
   try {
@@ -417,7 +414,7 @@ const handleAddPerformerRow = async (newRowData) => {
 };
 
 const goBack = () => {
-  // Устанавливаем флаг что возвращаемся на ResourcePlanning
+  
   localStorage.setItem('resourcePlanningNavigation', 'fromRelatedPage');
   router.push({ name: 'ResourcePlanning' });
 };
@@ -432,7 +429,6 @@ const loadRecordData = async () => {
       throw new Error('ID записи не найден');
     }
 
-    // Получаем данные из localStorage (были сохранены при клике в таблице)
     const selectedDate = localStorage.getItem('resourcePlanningDate') || new Date().toISOString().split('T')[0];
     const periodTypeId = parseInt(localStorage.getItem('resourcePlanningPeriodType')) || 71;
 
@@ -440,14 +436,12 @@ const loadRecordData = async () => {
     const storeRecords = result?.store?.records || [];
     const resourceRecords = result?.resource?.records || [];
 
-    // Находим нужную запись по ID
     const rawData = storeRecords.find(r => r.id === parseInt(recordId));
 
     if (!rawData) {
       throw new Error('Запись не найдена');
     }
 
-    // Формируем данные для ResourceInfoSection (без кнопок управления задачей)
     recordData.value = {
       taskLogPv: rawData.pv,
       taskLogCls: rawData.cls,
@@ -464,7 +458,6 @@ const loadRecordData = async () => {
       startDateFact: '-',
       endDateFact: '-',
 
-      // Загружаем ресурсы для этой задачи
       materials: [],
       services: [],
       tools: [],
@@ -472,7 +465,6 @@ const loadRecordData = async () => {
       performers: [],
     };
 
-    // Загружаем ресурсы
     await Promise.all([
       loadMaterialsForTask(rawData.id),
       loadServicesForTask(rawData.id),
@@ -584,7 +576,6 @@ const loadPersonnelForTask = async (taskLogId) => {
   }
 };
 
-// Загрузка справочников
 const loadDropdownOptions = async () => {
   try {
     const [materials, units, services, positions, equipmentTypes, toolTypes] = await Promise.all([

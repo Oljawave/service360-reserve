@@ -368,7 +368,7 @@ export async function addResourcePersonnel(personnelData, taskLogId, taskLogCls)
       pvPosition: personnelData.pvPosition,
       objPersonnel: personnelData.id,
       pvPersonnel: personnelData.pv,
-      Value: personnelData.time || 0, // Часы работы
+      Value: personnelData.time || 0, 
       objTaskLog: taskLogId,
       linkCls: taskLogCls,
       CreatedAt: today,
@@ -487,11 +487,6 @@ export async function completeThePlanWork(id, date) {
     throw new Error(error.response?.data?.message || error.message || 'Не удалось завершить работу');
   }
 }
-
-// ============================================
-// DELETE методы (удаление)
-// ============================================
-
 
 export async function deleteComplexPersonnel(complexId) {
   if (!complexId) {

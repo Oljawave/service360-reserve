@@ -128,7 +128,6 @@ import {
 const emit = defineEmits(['close', 'refresh'])
 const notificationStore = useNotificationStore()
 
-// Form data
 const form = ref({
   tabNumber: '',
   login: '',
@@ -144,18 +143,15 @@ const form = ref({
   dateEmployment: ''
 })
 
-// Dropdown options
 const positionOptions = ref([])
 const locationOptions = ref([])
 const sexOptions = ref([])
 
-// Loading states
 const loadingPositions = ref(false)
 const loadingLocations = ref(false)
 const loadingSex = ref(false)
 const isSaving = ref(false)
 
-// Load positions
 const loadPositionsData = async () => {
   loadingPositions.value = true
   try {
@@ -167,7 +163,6 @@ const loadPositionsData = async () => {
   }
 }
 
-// Load locations
 const loadLocationsData = async () => {
   loadingLocations.value = true
   try {
@@ -179,7 +174,6 @@ const loadLocationsData = async () => {
   }
 }
 
-// Load sex options
 const loadSexData = async () => {
   loadingSex.value = true
   try {
@@ -191,14 +185,12 @@ const loadSexData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.tabNumber || !form.value.secondName ||
         !form.value.firstName || !form.value.position ||
         !form.value.location || !form.value.sex || !form.value.email ||
@@ -218,7 +210,7 @@ const saveData = async () => {
     emit('refresh')
     closeModal()
   } catch (error) {
-    // Check if error is about existing login
+    
     if (error.response?.data?.error?.message === 'loginExists') {
       notificationStore.showNotification('Логин уже существует. Используйте другой логин', 'error')
     } else {
@@ -229,12 +221,10 @@ const saveData = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadPositionsData()
   loadLocationsData()

@@ -71,7 +71,6 @@ const props = defineProps({
   },
   sortKey: String,
   sortDirection: String,
-  // НОВЫЙ ПРОПС
   getRowClassFn: {
     type: Function,
     default: () => ({}),
@@ -80,7 +79,6 @@ const props = defineProps({
 
 const emit = defineEmits(['row-dblclick', 'toggle-filter', 'sort'])
 
-// Уменьшаем условие для wide-table и дефолтное значение
 const tableWidthClass = computed(() => {
   return props.columns && props.columns.length >= 5 ? 'wide-table' : 'default-table';
 });
@@ -90,7 +88,6 @@ const tableWidthClass = computed(() => {
 .table-container {
   overflow-x: auto;
   overflow-y: auto;
-  /* Reduced max-height slightly for better fit on various screens */
   max-height: 65vh; 
   background: #fff;
   border-radius: 12px;
@@ -104,12 +101,10 @@ const tableWidthClass = computed(() => {
   color: #2d3748;
 }
 
-/* ИЗМЕНЕНИЕ: Сильно уменьшена минимальная ширина */
 .styled-table.default-table {
   min-width: 900px; 
 }
 
-/* ИЗМЕНЕНИЕ: Сильно уменьшена минимальная ширина */
 .styled-table.wide-table {
   min-width: 1500px;
 }

@@ -95,12 +95,10 @@ const columns = [
   { key: 'coords', label: 'Координаты' },
   { key: 'feature', label: 'Характеристика' },
   { key: 'location', label: 'Сведения о месте' },
-  // { key: 'replacement', label: 'Периодичность замены (год)' },
+  
   { key: 'number', label: 'Номер объекта' },
   { key: 'installDate', label: 'Дата установки' },
-  // { key: 'createDate', label: 'Дата создания' },
-  // { key: 'updateDate', label: 'Дата обновления' },
-  // { key: 'description', label: 'Описание' }
+  
   { key: 'actions', label: 'Действия', component: RowActionButton },
 ]
 </script>

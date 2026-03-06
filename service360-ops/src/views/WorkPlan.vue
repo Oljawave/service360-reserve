@@ -99,7 +99,6 @@ const filters = ref({
   periodType: null,
 });
 
-// Отслеживаем изменения выбранных строк (для дебага или дальнейшего использования)
 watch(selectedRows, (newVal) => {
   console.log('Выбранные строки:', newVal);
 });
@@ -193,7 +192,6 @@ const handleConfirmComplete = async () => {
   try {
     const today = formatDateToISO(new Date());
 
-    // У записи в WorkPlan.vue должен быть cls из rawData
     const cls = recordToComplete.value.rawData?.cls;
 
     if (!cls) {
@@ -266,7 +264,7 @@ const loadWorkPlanWrapper = async ({ page, limit, filters: filterValues }) => {
     const start = (page - 1) * limit;
     const end = page * limit;
 
-    const sliced = records.map((r, index) => ({ // map all data for local processing in TableWrapper
+    const sliced = records.map((r, index) => ({ 
       index: null,
       id: r.id,
       name: r.nameLocationClsSection,
@@ -289,7 +287,6 @@ const loadWorkPlanWrapper = async ({ page, limit, filters: filterValues }) => {
       status: (r.FactDateEnd && r.FactDateEnd !== '0000-01-01') ? 'Да' : 'Нет',
     }));
 
-    // The loadFn no longer needs to slice the data since TableWrapper is now handling full data loading
     return {
       total: totalRecords,
       data: sliced,
@@ -301,13 +298,11 @@ const loadWorkPlanWrapper = async ({ page, limit, filters: filterValues }) => {
 };
 
 const onRowDoubleClick = (row) => {
-  // This function is still needed to receive the event, 
-  // though the main logic for modal opening is in TableWrapper
+  
 };
 
-// Example implementation for getRowClassFn, though not strictly required by the prompt
 const getRowClass = (row) => {
-  return {}; // No custom class for now
+  return {}; 
 };
 
 const columns = computed(() => {
@@ -322,7 +317,6 @@ const columns = computed(() => {
     { key: 'status', label: 'Завершен' },
   ];
 
-  // Добавляем столбец действий только если есть привилегия plan:finish
   if (hasPermission('plan:finish')) {
     baseColumns.push({
       key: 'actions',
@@ -332,7 +326,6 @@ const columns = computed(() => {
           return () => {
             const rowData = context.attrs.row;
 
-            // Не показываем кнопку если работа уже завершена
             if (rowData?.status === 'Да') return null;
 
             return h(UiButton, {
@@ -361,17 +354,17 @@ const handleCopyWorkPlan = () => {
 };
 
 const tableActions = computed(() => {
-  // Mapping icons to match the screenshot (Plus/Download)
+  
   const baseActions = [
     {
       label: 'Копировать план работ',
-      icon: 'Copy', // Copy icon
+      icon: 'Copy', 
       onClick: handleCopyWorkPlan,
       hidden: !hasPermission('plan:copy'),
     },
     {
       label: 'Запланировать новую работу',
-      icon: 'Plus', // Plus for add
+      icon: 'Plus', 
       onClick: () => {
         isPlanWorkModalOpen.value = true;
       },
@@ -379,7 +372,7 @@ const tableActions = computed(() => {
     },
     {
       label: 'Запланировать по объектам',
-      icon: 'Layers', // Layers icon for objects
+      icon: 'Layers', 
       onClick: () => {
         isPlanByObjectsModalOpen.value = true;
       },
@@ -387,20 +380,15 @@ const tableActions = computed(() => {
     },
     {
       label: 'Запланировать по участку',
-      icon: 'MapPin', // MapPin icon for section planning
+      icon: 'MapPin', 
       onClick: () => {
         isPlanBySectionModalOpen.value = true;
       },
       hidden: !hasPermission('plan:ins'),
     },
-    // {
-    //   label: 'Экспорт',
-    //   icon: 'Printer', // Printer for print/export (like the screenshot)
-    //   onClick: () => console.log('Экспортирование...'),
-    // }
+    
   ];
 
-  // Reordering for mobile view to match the screenshot
   const copyAction = baseActions.find(a => a.icon === 'Copy');
   const plusAction = baseActions.find(a => a.icon === 'Plus');
   const objectsAction = baseActions.find(a => a.icon === 'Layers');

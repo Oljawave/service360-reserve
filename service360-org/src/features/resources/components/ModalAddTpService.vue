@@ -49,21 +49,17 @@ import { loadMeasures, saveTpService } from '@/shared/api/resources/resourceServ
 const emit = defineEmits(['close', 'refresh'])
 const notificationStore = useNotificationStore()
 
-// Form data
 const form = ref({
   name: '',
   measure: null,
   description: ''
 })
 
-// Dropdown options
 const measureOptions = ref([])
 
-// Loading states
 const loadingMeasures = ref(false)
 const isSaving = ref(false)
 
-// Load measures
 const loadMeasuresData = async () => {
   loadingMeasures.value = true
   try {
@@ -75,14 +71,12 @@ const loadMeasuresData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.name || !form.value.measure) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
@@ -101,12 +95,10 @@ const saveData = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadMeasuresData()
 })

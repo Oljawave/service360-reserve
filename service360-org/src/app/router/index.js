@@ -120,25 +120,20 @@ const routes = [
   }
 ];
 
-
 const router = createRouter({
   history: createWebHistory('/dtj/org/'),
   routes
 })
 
-// Navigation Guard - защита роутов
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const authenticated = isAuthenticated()
 
   if (requiresAuth && !authenticated) {
-    // Пытается зайти на защищенную страницу без авторизации
     next('/login')
   } else if (to.path === '/login' && authenticated) {
-    // Уже авторизован, пытается зайти на логин - редирект на welcome
     next('/main')
   } else {
-    // Всё ок, пропускаем
     next()
   }
 })

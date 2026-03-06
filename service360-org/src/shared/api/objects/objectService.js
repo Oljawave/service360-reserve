@@ -113,7 +113,6 @@ export async function loadObjectServed({ page = 1, limit = 10 }) {
       idInstallationDate: item.idInstallationDate,
       idDescription: item.idDescription,
 
-      // Для мобильной версии
       nameObjectType: item.nameObjectType || typeMap[item.objObjectType] || '',
       fullName: item.fullName || '',
       coordinates: formatCoordinates(item.StartKm, item.StartPicket, item.StartLink, item.FinishKm, item.FinishPicket, item.FinishLink),
@@ -272,7 +271,7 @@ export async function loadComplexObjectPassport(objectId) {
       method: 'data/loadComplexObjectPassport',
       params: [objectId],
     })
-    // API возвращает result как массив напрямую, а не result.records
+    
     return response.data.result || []
   } catch (error) {
     console.error('Ошибка при загрузке паспортных данных:', error)

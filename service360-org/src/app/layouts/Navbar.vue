@@ -15,25 +15,7 @@
     />
 
     <div class="navbar-right">
-      <!-- <div class="lang-select" @click="toggleLangMenu">
-        {{ currentLang }}
-        <UiIcon name="ChevronDown" class="icon" />
-        <div v-if="langMenuOpen" class="lang-dropdown">
-          <div
-            v-for="lang in languages"
-            :key="lang"
-            class="lang-item"
-            @click.stop="setLanguage(lang)"
-          >
-            {{ lang }}
-          </div>
-        </div>
-      </div>
-
-      <button class="notif-btn">
-        <UiIcon name="Bell" class="icon" />
-      </button> -->
-
+      
       <UserAvatar :initials="'ОГ'" />
     </div>
   </header>
@@ -47,7 +29,6 @@ import UserAvatar from '@/shared/ui/UserAvatar.vue'
 import WeatherAndDate from '@/shared/ui/WeatherAndDate.vue'
 import { useSidebarStore } from '@/app/stores/sidebar'
 
-
 const collapsedSearch = ref(false)
 const isMobile = ref(false)
 const currentLang = ref(localStorage.getItem('lang') || 'РУС')
@@ -55,7 +36,6 @@ const languages = ['РУС', 'ҚАЗ', 'ENG']
 const langMenuOpen = ref(false)
 const sidebar = useSidebarStore()
 
-// Погода
 const API_KEY = 'b68cfdf8a6b6640730e7fec49b793661'
 const ALMATY_TIMEZONE = 'Asia/Almaty'
 const UST_KAMENOGORSK_CITY_ID = '1520316'
@@ -147,7 +127,7 @@ const setLanguage = (lang) => {
 
 const handleResize = () => {
   isMobile.value = window.innerWidth < 768
-  collapsedSearch.value = window.innerWidth < 992 && !isMobile.value // Пример логики для десктопа
+  collapsedSearch.value = window.innerWidth < 992 && !isMobile.value 
 }
 
 onMounted(() => {
@@ -159,18 +139,15 @@ onMounted(() => {
     }
   })
 
-  // Загружаем погоду и дату
   fetchWeather()
   fetchAlmatyDate()
 })
-
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
   document.removeEventListener('click', () => (langMenuOpen.value = false))
 })
 </script>
-
 
 <style scoped>
 .navbar {
@@ -186,7 +163,6 @@ onBeforeUnmount(() => {
   box-sizing: border-box;
   flex-shrink: 0;
 }
-
 
 .navbar-left {
   flex: 1;

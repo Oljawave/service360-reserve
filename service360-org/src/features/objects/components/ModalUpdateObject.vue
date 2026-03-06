@@ -151,7 +151,6 @@ const { hasPermission } = usePermissions();
 const canUpdate = computed(() => hasPermission('obj:upd'));
 const canDelete = computed(() => hasPermission('obj:del'));
 
-
 const form = ref({
   name: '',
   type: null,
@@ -279,9 +278,9 @@ const saveData = async () => {
       .filter(Boolean).join(' ').trim()
 
     const payload = {
-      ...props.rowData.rawData, // Используем rawData для сохранения всех id/cls и прочих полей
-      id: props.rowData.id, // Явно указываем id для обновления
-      cls: props.rowData.cls, // Явно указываем cls для обновления
+      ...props.rowData.rawData, 
+      id: props.rowData.id, 
+      cls: props.rowData.cls, 
       Description: form.value.description || '',
       FinishKm: coordinates.value.coordEndKm,
       FinishPicket: coordinates.value.coordEndPk,
@@ -304,17 +303,15 @@ const saveData = async () => {
       pvSide: selectedSide.value?.pv ?? (form.value.side === null ? null : props.rowData.rawData?.pvSide),
       objUser: user.id,
       pvUser: user.pv,
-      // idSection остается из базы (rawData), а objSection и pvSection обновляются если координаты изменились
+      
       objSection: stationData.value?.id ?? props.rowData.rawData?.objSection,
       pvSection: stationData.value?.pv ?? props.rowData.rawData?.pvSection,
     }
 
-    // Удаляем поля, которые не должны отправляться или отправляются автоматом
     delete payload.nameObjectType
     delete payload.nameSection
     delete payload.nameSide
 
-    // Используем новый метод для обновления
     await updateObjectServed(payload)
 
     notificationStore.showNotification('Объект успешно обновлён!', 'success')

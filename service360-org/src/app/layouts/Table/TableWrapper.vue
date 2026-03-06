@@ -103,9 +103,8 @@ import Pagination from './Pagination.vue';
 import ColumnFilter from './ColumnFilter.vue';
 import AppDatePicker from '@/shared/ui/FormControls/AppDatePicker.vue';
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue';
-import MobileCardList from './MobileCardList.vue'; // New import
+import MobileCardList from './MobileCardList.vue';
 
-// Simple useIsMobile helper (replace with actual global logic if available)
 const isMobile = ref(window.innerWidth <= 768);
 const updateIsMobile = () => {
   isMobile.value = window.innerWidth <= 768;
@@ -170,7 +169,7 @@ const hasActiveFilters = computed(() => {
 const sortedAndFilteredRows = computed(() => {
   let processedRows = [...rows.value];
 
-  if (sortKey.value && !isMobile.value) { // Only sort in desktop view
+  if (sortKey.value && !isMobile.value) {
     processedRows.sort((a, b) => {
       const aValue = a[sortKey.value];
       const bValue = b[sortKey.value];
@@ -186,7 +185,6 @@ const sortedAndFilteredRows = computed(() => {
     });
   }
 
-  // Column filters only apply in desktop view (as they are not rendered in mobile)
   if (!isMobile.value) { 
     Object.keys(columnFilters.value).forEach(columnKey => {
       const filterValue = columnFilters.value[columnKey];
@@ -335,7 +333,6 @@ onMounted(() => {
 
 onActivated(() => {
   console.log('TableWrapper: onActivated');
-  // Не загружаем данные при активации, чтобы сохранить состояние
 });
 
 onDeactivated(() => {

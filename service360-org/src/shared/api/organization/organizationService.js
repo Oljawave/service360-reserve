@@ -3,7 +3,6 @@ import axios from 'axios'
 const DEFAULT_API_URL = import.meta.env.VITE_OBJECT_URL;
 const LOCATION_API_URL = import.meta.env.VITE_LOCATION_URL;
 
-
 async function postRequest(method, params, apiUrl = DEFAULT_API_URL) {
   try {
     const response = await axios.post(apiUrl, {

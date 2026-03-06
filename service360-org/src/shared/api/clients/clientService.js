@@ -21,7 +21,6 @@ export async function loadClients({ page = 1, limit = 10 }) {
       contactDetails: item.ContactDetails || '',
       description: item.Description || '',
 
-      // ID полей для возможного редактирования
       idBIN: item.idBIN,
       idContactPerson: item.idContactPerson,
       idContactDetails: item.idContactDetails,

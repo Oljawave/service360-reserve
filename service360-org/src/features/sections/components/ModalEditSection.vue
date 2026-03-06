@@ -139,7 +139,7 @@ const saveData = async () => {
       id: props.sectionData.id,
       cls: raw.cls,
       name: form.value.name,
-      // id полей для StartKm, FinishKm, StageLength, Client, User, UpdatedAt
+      
       idStartKm: raw.idStartKm,
       StartKm: form.value.coordinates.coordStartKm,
       idFinishKm: raw.idFinishKm,

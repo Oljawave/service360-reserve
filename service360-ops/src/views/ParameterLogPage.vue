@@ -192,7 +192,7 @@ const columns = [
   { key: 'objInspection', label: 'ссылка на работу' },
   { key: 'FactDateEnd', label: 'Дата проверки' },
   { key: 'nameLocationClsSection', label: 'Участок' },
-  // { key: 'nameSection', label: 'Место' },
+  
   { key: 'nameObject', label: 'Объект', minWidth: 250 },
   { key: 'coordinates', label: 'Координаты', width: 220 },
   { key: 'nameComponent', label: 'Компонент', minWidth: 200 },
@@ -201,16 +201,10 @@ const columns = [
   { key: 'ParamsLimitMax', label: 'MAX Значение' },
   { key: 'ParamsLimit', label: 'Значение' },
   { key: 'nameOutOfNorm', label: 'Отклонение' },
-  // { key: 'Description', label: 'Примечание', minWidth: 200 },
-  // { key: 'CreationDate', label: 'Дата записи', width: 120 },
-  // { key: 'CreationTime', label: 'Время записи', width: 120 },
+  
 ];
 
 const tableActions = [
-  // {
-  //   label: 'Экспорт',
-  //   icon: 'Download',
-  //   onClick: () => console.log('Экспортирование...'),
-  // }
+  
 ];
 </script>

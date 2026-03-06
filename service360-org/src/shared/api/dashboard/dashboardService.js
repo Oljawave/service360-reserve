@@ -5,7 +5,6 @@ const API_PLAN_URL = import.meta.env.VITE_PLAN_URL;
 const API_INCIDENTS_URL = import.meta.env.VITE_INCIDENTS_URL;
 const API_INSPECTIONS_URL = import.meta.env.VITE_INSPECTIONS_URL;
 
-
 export async function loadDepartments() {
   try {
     const response = await axios.post(
@@ -204,7 +203,6 @@ export async function loadRailwaySkewData(customDate = null) {
       { withCredentials: true }
     )
   ]);
-
 
   const allData = [
     ...(levelData.data.result?.records || []).map(item => ({ ...item, skewType: 'level' })),

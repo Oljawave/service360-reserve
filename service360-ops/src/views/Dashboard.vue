@@ -130,11 +130,11 @@ const isEditPlanModalOpen = ref(false);
 const isLoading = ref(true);
 const isMapLoading = ref(false);
 const isRailwayModeChanging = ref(false);
-const selectedDate = ref(null); // Добавим ref для хранения выбранной даты
+const selectedDate = ref(null); 
 const activeKpiFilter = ref('newIncidents');
 const selectedEvent = ref(null);
 const isRailwayStatusOpen = ref(false);
-const railwayViewMode = ref('status'); // 'status', 'width' или 'skew'
+const railwayViewMode = ref('status'); 
 
 const selectedFarm = ref('Все хозяйства');
 const selectedFarmId = ref(null);
@@ -142,8 +142,6 @@ const farms = ref(['Все хозяйства']);
 const departmentsMap = ref({});
 
 const RAILWAY_TOTAL_KM = 151;
-
- 
 
 const kpi = ref({
   newIncidents: 0,
@@ -186,25 +184,23 @@ const selectFarm = async (farm) => {
     selectedFarmId.value = departmentsMap.value[farm];
   }
 
-  // Загружаем KPI и обновляем карту
   await Promise.all([
     loadKpiData(),
     loadRailwayIncidents(activeKpiFilter.value, selectedFarmId.value),
   ]);
 
-  // Обновляем план работ для новой фермы, используя текущую выбранную дату
   const dateToRefresh = selectedDate.value ? formatDateToString(selectedDate.value) : formatDateToString(new Date());
   await handleDateSelected(dateToRefresh);
 };
 
 const setActiveKpi = async (filter) => {
-  // Если кликнули на уже активный фильтр, ничего не делаем
+  
   if (activeKpiFilter.value === filter) {
     return;
   }
   
   activeKpiFilter.value = filter;
-  // Обновляем только данные на карте
+  
   await loadRailwayIncidents(filter, selectedFarmId.value);
 };
 
@@ -241,19 +237,14 @@ const loadKpiData = async () => {
 
     const objLocationParam = selectedFarmId.value;
 
-    // Новые инциденты сегодня: periodType=71, без status и event
     const newIncidentsPromise = loadIncidentsForKpi(todayStr, 71, objLocationParam, null, null);
 
-    // Ограничение скорости: periodType=11, event=1157
     const speedRestrictionsPromise = loadIncidentsForKpi(todayStr, 11, objLocationParam, null, 1157);
 
-    // Всего открытых инцидентов: periodType=11, status=1
     const openIncidentsPromise = loadIncidentsForKpi(todayStr, 11, objLocationParam, 1, null);
 
-    // Просроченные работы
     const allWorksPromise = loadWorkPlanForKpi(todayStr, null, objLocationParam);
 
-    // Месячные данные
     const newIncidentsMonthlyPromise = loadSizeIncidentOfMonth(objLocationParam, null, null);
     const speedRestrictionsMonthlyPromise = loadSizeIncidentOfMonth(objLocationParam, 1157, null);
     const openIncidentsMonthlyPromise = loadSizeIncidentOfMonth(objLocationParam, null, 1);
@@ -290,15 +281,14 @@ const processIncidents = (rawIncidents, forcedColor = null) => {
     if (forcedColor) {
       color = forcedColor;
     } else {
-      // Логика по умолчанию, если цвет не задан принудительно
+      
       const statusName = incident.nameStatus ? incident.nameStatus.toLowerCase() : '';
       if (statusName.includes('зарегистрирован')) color = 'red-marker'; 
       else if (statusName.includes('в работе')) color = 'yellow-marker'; 
       else if (statusName.includes('завершен') || statusName.includes('закрыт')) color = 'green-marker';
-      else color = 'red-marker'; // Цвет по умолчанию
+      else color = 'red-marker'; 
     }
     
-
     const description = incident.Description || incident.fullNameWork;
 
     const rawData = { ...incident, Description: description };
@@ -343,7 +333,7 @@ const loadRailwayIncidents = async (filter, farmId) => {
         color = 'red-marker';
         break;
       default:
-        // По умолчанию загружаем новые инциденты
+        
         rawIncidents = await loadIncidentsForKpi(todayStr, 71, farmId, null, null);
         color = 'red-marker';
     }
@@ -358,7 +348,7 @@ const loadRailwayIncidents = async (filter, farmId) => {
 };
 
 const handleDateSelected = async (dateStr) => {
-  selectedDate.value = new Date(dateStr); // Сохраняем выбранную дату
+  selectedDate.value = new Date(dateStr); 
   const date = new Date(dateStr);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -370,7 +360,7 @@ const handleDateSelected = async (dateStr) => {
   }
 
   try {
-    // Используем periodType 71 для выбранной даты
+    
     const works = await loadWorkPlanForKpi(dateStr, 71, selectedFarmId.value);
     dayEvents.value = works;
   } catch (error) {
@@ -382,11 +372,11 @@ const handleDateSelected = async (dateStr) => {
 const loadRailwayStatusData = async (mode = 'status') => {
   try {
     if (mode === 'skew') {
-      // Для режима перекосов загружаем все 4 типа отклонений
+      
       const skewData = await loadRailwaySkewData(null);
       railwayStatusSegments.value = skewData;
     } else {
-      // Для режимов оценки и ширины используем старый метод
+      
       const relobj = mode === 'width' ? 1700 : 2525;
       const statusData = await loadRailwayStatus(null, relobj);
       railwayStatusSegments.value = statusData;
@@ -439,7 +429,7 @@ const toggleRailwayStatus = () => {
 };
 
 const switchToWidthMode = async () => {
-  // Если уже в режиме ширины и открыт, то закрываем
+  
   if (railwayViewMode.value === 'width' && isRailwayStatusOpen.value) {
     isRailwayStatusOpen.value = false;
     return;
@@ -453,7 +443,7 @@ const switchToWidthMode = async () => {
 };
 
 const switchToStatusMode = async () => {
-  // Если уже в режиме оценки и открыт, то закрываем
+  
   if (railwayViewMode.value === 'status' && isRailwayStatusOpen.value) {
     isRailwayStatusOpen.value = false;
     return;
@@ -467,7 +457,7 @@ const switchToStatusMode = async () => {
 };
 
 const switchToSkewMode = async () => {
-  // Если уже в режиме перекосов и открыт, то закрываем
+  
   if (railwayViewMode.value === 'skew' && isRailwayStatusOpen.value) {
     isRailwayStatusOpen.value = false;
     return;

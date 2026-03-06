@@ -48,7 +48,6 @@ const emit = defineEmits(['close', 'save', 'delete'])
 
 const showFooter = props.showSave || props.showDelete || props.showCancel;
 
-
 const closeModal = () => emit('close')
 const onSave = () => emit('save')
 const onDelete = () => emit('delete')

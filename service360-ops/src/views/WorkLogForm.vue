@@ -181,27 +181,24 @@ const workLogId = ref(route.params.id);
 const activeTab = ref('materials');
 const notificationStore = useNotificationStore();
 
-// Проверка прав доступа
 const canInsert = computed(() => hasPermission('ftl:ins'));
 const canUpdate = computed(() => hasPermission('ftl:upd'));
 const canDelete = computed(() => hasPermission('ftl:del'));
 
-// Определяем, доступна ли страница только для чтения
 const isReadOnly = computed(() => {
   if (!recordData.value) return true;
 
   const hasFactStart = recordData.value.startDateFact && recordData.value.startDateFact !== '-';
   const hasFactEnd = recordData.value.endDateFact && recordData.value.endDateFact !== '-';
 
-  // Если FactDateStart отсутствует -> только просмотр
   if (!hasFactStart) {
     return true;
   }
-  // Если есть оба (задача завершена) -> только просмотр
+  
   if (hasFactEnd) {
     return true;
   }
-  // Если FactDateStart есть, а FactDateEnd нет -> разрешены действия
+  
   return false;
 });
 
@@ -257,8 +254,6 @@ const handleSaveRow = async ({ row }) => {
   }
 };
 
-// --- Обработчики для исполнителей ---
-
 const handleSavePerformer = async ({ rowId, performer, performerIndex }) => {
   try {
     const performerData = {
@@ -268,7 +263,6 @@ const handleSavePerformer = async ({ rowId, performer, performerIndex }) => {
       isNew: performer.isNew,
     };
 
-    // Для существующих исполнителей добавляем дополнительные поля
     if (!performer.isNew) {
       performerData.idPerformer = performer.idPerformer;
       performerData.idPerformerValue = performer.idPerformerValue;
@@ -278,8 +272,6 @@ const handleSavePerformer = async ({ rowId, performer, performerIndex }) => {
 
     notificationStore.showNotification('Данные исполнителя успешно сохранены!', 'success');
 
-    // Перезагружаем данные с сервера
-    // Watcher в ResourceEditTable автоматически сохранит несохраненных исполнителей
     await loadWorkLogData(workLogId.value);
   } catch (error) {
     notificationStore.showNotification('Ошибка при сохранении данных исполнителя.', 'error');
@@ -299,7 +291,6 @@ const handleDeletePerformer = async ({ performer }) => {
 
     notificationStore.showNotification('Исполнитель успешно удален!', 'success');
 
-    // Перезагружаем данные для обновления списка
     await loadWorkLogData(workLogId.value);
   } catch (error) {
     notificationStore.showNotification('Ошибка при удалении исполнителя.', 'error');
@@ -309,7 +300,7 @@ const handleDeletePerformer = async ({ performer }) => {
 
 const handleAddPerformer = async () => {
   try {
-    // TODO: Реализовать API для массового добавления исполнителей
+    
     notificationStore.showNotification('Исполнители успешно добавлены!', 'success');
     await loadWorkLogData(workLogId.value);
   } catch (error) {
@@ -317,8 +308,6 @@ const handleAddPerformer = async () => {
     console.error('Ошибка добавления исполнителей:', error);
   }
 };
-
-// --- Обработчики для инструментов и техники ---
 
 const handleSaveResource = async ({ rowId, detail, detailIndex, resourceType }) => {
   try {
@@ -356,7 +345,6 @@ const handleSaveResource = async ({ rowId, detail, detailIndex, resourceType }) 
 
     notificationStore.showNotification(`Данные ${resourceName} успешно сохранены!`, 'success');
 
-    // Перезагружаем данные с сервера
     await loadWorkLogData(workLogId.value);
   } catch (error) {
     const resourceName = resourceType === 'tool' ? 'инструмента' : 'техники';
@@ -379,7 +367,6 @@ const handleDeleteResource = async ({ detail, resourceType }) => {
 
     notificationStore.showNotification(`${resourceName} успешно удален!`, 'success');
 
-    // Перезагружаем данные для обновления списка
     await loadWorkLogData(workLogId.value);
   } catch (error) {
     const resourceName = resourceType === 'tool' ? 'инструмента' : 'техники';
@@ -387,8 +374,6 @@ const handleDeleteResource = async ({ detail, resourceType }) => {
     console.error(`Ошибка удаления ${resourceName}:`, error);
   }
 };
-
-// --- Обработчики для добавления ресурсов ---
 
 const handleAddMaterialRow = async (newRowData) => {
   try {
@@ -436,7 +421,7 @@ const handleAddMaterialRow = async (newRowData) => {
 
 const handleAddToolRow = async (newRowData) => {
   try {
-    // TODO: Здесь должен быть вызов API для добавления нового инструмента
+    
     console.log('Добавление инструмента:', newRowData);
     notificationStore.showNotification('Инструмент успешно добавлен!', 'success');
     await loadWorkLogData(workLogId.value);
@@ -448,7 +433,7 @@ const handleAddToolRow = async (newRowData) => {
 
 const handleAddEquipmentRow = async (newRowData) => {
   try {
-    // TODO: Здесь должен быть вызов API для добавления новой техники
+    
     console.log('Добавление техники:', newRowData);
     notificationStore.showNotification('Техника успешно добавлена!', 'success');
     await loadWorkLogData(workLogId.value);
@@ -552,17 +537,17 @@ const loadWorkLogData = async (id) => {
       startDate: formatDate(data.PlanDateStart),
       endDate: formatDate(data.PlanDateEnd),
       workName: data.fullNameWork || '-',
-      fullNameWork: data.fullNameWork || '',  // для API
+      fullNameWork: data.fullNameWork || '',  
       section: data.nameLocationClsSection || '-',
       place: data.nameSection || '-',
       objectName: data.fullNameObject || '-',
-      objObject: data.objObject,              // для API
+      objObject: data.objObject,              
       coordinates: formatCoordinates(data.StartKm, data.StartPicket, data.StartLink, data.FinishKm, data.FinishPicket, data.FinishLink),
       volumeFact: data.ValueFact !== null ? data.ValueFact : '-',
       startDateFact: formatDate(data.FactDateStart),
       endDateFact: formatDate(data.FactDateEnd),
-      idUser: data.idUser,                    // для API
-      idUpdatedAt: data.idUpdatedAt,          // для API
+      idUser: data.idUser,                    
+      idUpdatedAt: data.idUpdatedAt,          
       
       materials: (data.material || []).map(item => ({
         id: item.id,
@@ -577,7 +562,7 @@ const loadWorkLogData = async (id) => {
         idUpdatedAt: item.idUpdatedAt,
       })),
       services: (data.tpService || []).map(item => {
-        // Извлекаем единицу измерения из fullNameTpService (часть после запятой)
+        
         const fullName = item.fullNameTpService || item.nameTpService || '';
         const parts = fullName.split(',');
         const unit = parts.length > 1 ? parts[1].trim() : 'ед.';
@@ -645,16 +630,16 @@ const loadWorkLogData = async (id) => {
         plan: item.Quantity,
         hours: item.Value,
         performerDetails: (item.complex || []).map(complexItem => ({
-          complexId: complexItem.idPerformerComplex, // ID комплекса для удаления
+          complexId: complexItem.idPerformerComplex, 
           id: complexItem.objPerformer,
           pv: complexItem.pvPerformer,
           fullName: complexItem.fullNamePerformer,
           time: complexItem.PerformerValue || 0,
           idPerformer: complexItem.idPerformer,
           idPerformerValue: complexItem.idPerformerValue,
-          isNew: false, // Это существующий исполнитель
+          isNew: false, 
         })),
-        positionPv: item.pvPosition || item.pv, // PV позиции для загрузки исполнителей
+        positionPv: item.pvPosition || item.pv, 
       })),
     };
   } catch (error) {
@@ -665,7 +650,6 @@ const loadWorkLogData = async (id) => {
   }
 };
 
-// Загрузка справочников
 const loadDropdownOptions = async () => {
   try {
     const [materials, units, services, positions, equipmentTypes, toolTypes] = await Promise.all([
@@ -689,7 +673,6 @@ const loadDropdownOptions = async () => {
   }
 };
 
-// Справочники для дропдаунов
 const toolNameOptions = ref([]);
 const equipmentNameOptions = ref([]);
 const serviceNameOptions = ref([]);

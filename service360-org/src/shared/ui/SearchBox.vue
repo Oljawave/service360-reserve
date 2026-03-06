@@ -10,7 +10,6 @@
   </div>
 </template>
 
-
 <script setup>
 import UiIcon from '../ui/UiIcon.vue'
 import { ref } from 'vue'

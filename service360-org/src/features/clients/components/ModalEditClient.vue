@@ -92,7 +92,6 @@ const showConfirmModal = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
-// Form data
 const form = ref({
   name: props.clientData.name || '',
   bin: props.clientData.bin || '',
@@ -102,14 +101,12 @@ const form = ref({
   rawData: props.clientData.rawData
 })
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.name || !form.value.bin || !form.value.contactPerson || !form.value.contactDetails) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
@@ -128,7 +125,6 @@ const saveData = async () => {
   }
 }
 
-// Delete handlers
 const handleDelete = () => {
   if (!props.clientData?.id) {
     notificationStore.showNotification('Не удалось получить ID клиента для удаления.', 'error')
@@ -155,7 +151,6 @@ const confirmDelete = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }

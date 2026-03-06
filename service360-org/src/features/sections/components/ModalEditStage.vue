@@ -83,7 +83,6 @@ const { hasPermission } = usePermissions();
 const canUpdate = computed(() => hasPermission('stag:upd'));
 const canDelete = computed(() => hasPermission('stag:del'));
 
-// Form data
 const form = ref({
   name: props.stageData.name || '',
   section: null,
@@ -99,18 +98,14 @@ const form = ref({
   rawData: props.stageData.rawData
 })
 
-// Dropdown options
 const sectionOptions = ref([])
 
-// Loading states
 const loadingSections = ref(false)
 
-// Confirmation modal
 const showConfirmModal = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
-// Load sections
 const loadSectionsData = async () => {
   loadingSections.value = true
   try {
@@ -121,7 +116,6 @@ const loadSectionsData = async () => {
       pv: section.rawData?.pv || null
     }))
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.stageData.rawData?.parent) {
       const selectedSection = sectionOptions.value.find(
         option => option.value === props.stageData.rawData.parent
@@ -137,29 +131,23 @@ const loadSectionsData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.name || !form.value.section || !form.value.coordinates.coordStartKm || !form.value.coordinates.coordStartPk || !form.value.coordinates.coordStartZv || !form.value.coordinates.coordEndKm || !form.value.coordinates.coordEndPk || !form.value.coordinates.coordEndZv || !form.value.stageLength) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
     }
 
-    // Получаем текущую дату
     const currentDate = new Date().toISOString().split('T')[0]
 
-    // Get user data for objUser and pvUser
     const userData = await getUserData()
 
-    // Используем rawData из props
     const raw = form.value.rawData
 
-    // Формируем данные для сохранения
     const stageData = {
       id: props.stageData.id,
       parent: form.value.section.value,
@@ -188,7 +176,6 @@ const saveData = async () => {
 
     console.log('Обновление перегона:', stageData)
 
-    // Вызываем API для обновления (операция "upd")
     await saveStage('upd', stageData)
 
     notificationStore.showNotification('Перегон успешно обновлен', 'success')
@@ -202,7 +189,6 @@ const saveData = async () => {
   }
 }
 
-// Delete handlers
 const handleDelete = () => {
   if (!props.stageData?.id) {
     notificationStore.showNotification('Не удалось получить ID перегона для удаления', 'error')
@@ -229,12 +215,10 @@ const confirmDelete = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadSectionsData()
 })

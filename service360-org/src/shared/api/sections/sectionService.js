@@ -33,7 +33,6 @@ export async function loadSection({ page = 1, limit = 10 }) {
     params: [0]
   })
 
-  // Данные находятся напрямую в result.records, а не в result.store.records
   const records = response.data.result?.records || []
 
   console.log('loadSection - raw response:', response.data)

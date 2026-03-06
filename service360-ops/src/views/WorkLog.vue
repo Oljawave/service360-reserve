@@ -24,7 +24,6 @@ import { loadTaskLog } from '@/shared/api/execution/executionApi';
 import { loadPeriodTypes } from '@/shared/api/periods/periodApi';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
 import WorkStatus from '@/features/work-log/components/WorkStatus.vue';
-// ResourceEditingModal больше не импортируется
 
 defineOptions({
   name: 'WorkLog'
@@ -37,8 +36,6 @@ const router = useRouter();
 
 const limit = 10;
 const tableWrapperRef = ref(null);
-// Состояния модального окна удалены: isModalOpen, selectedRecord, selectedRecordForModal
-
 
 const filters = ref({
   date: new Date(),
@@ -86,14 +83,11 @@ const onRowDoubleClick = (row) => {
   });
 };
 
-// Функция handleTableUpdate больше не нужна, так как модальное окно не вызывает событие 'saved'.
-// Но оставим ее на случай, если вы захотите вызывать refreshTable в другом месте:
 const handleTableUpdate = () => {
   if (tableWrapperRef.value && tableWrapperRef.value.refreshTable) {
     tableWrapperRef.value.refreshTable();
   }
 };
-
 
 const formatDateToString = (date) => {
   if (!date) return null;
@@ -106,7 +100,7 @@ const formatDateToString = (date) => {
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '-';
-  // Проверяем формат YYYY-MM-DD
+  
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
     const [year, month, day] = dateStr.split('-');
     return `${day}.${month}.${year}`;
@@ -127,7 +121,6 @@ const formatVolumeInfo = (row) => {
 
   return `<span class="label-strong">план:</span> ${plan}<br><span class="label-strong">факт:</span> ${fact}`;
 };
-
 
 const formatCoordinates = (startKm, startPk, startZv, finishKm, finishPk, finishZv) => {
   const isPresent = (val) => val !== null && val !== undefined && val !== '';
@@ -251,11 +244,6 @@ const columns = [
 ];
 
 const tableActions = computed(() => [
-  // {
-  //   label: 'Экспорт',
-  //   icon: 'Download',
-  //   onClick: () => console.log('Экспортирование журнала работ...'),
-  //   show: true,
-  // },
+  
 ].filter(action => action.show));
 </script>

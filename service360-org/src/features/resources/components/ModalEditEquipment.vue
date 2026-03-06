@@ -91,7 +91,6 @@ const { hasPermission } = usePermissions()
 const canDelete = computed(() => hasPermission('equ:del'))
 const showConfirmModal = ref(false)
 
-// Form data
 const form = ref({
   inventoryNumber: props.equipmentData.number || '',
   name: props.equipmentData.name || '',
@@ -101,23 +100,19 @@ const form = ref({
   rawData: props.equipmentData.rawData
 })
 
-// Dropdown options
 const equipmentTypeOptions = ref([])
 const sectionOptions = ref([])
 
-// Loading states
 const loadingEquipmentTypes = ref(false)
 const loadingSections = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
-// Load equipment types
 const loadEquipmentTypesData = async () => {
   loadingEquipmentTypes.value = true
   try {
     equipmentTypeOptions.value = await loadEquipmentTypes()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.equipmentData.rawData?.fvTypEquipment) {
       const selectedType = equipmentTypeOptions.value.find(
         option => option.value === props.equipmentData.rawData.fvTypEquipment
@@ -133,13 +128,11 @@ const loadEquipmentTypesData = async () => {
   }
 }
 
-// Load sections
 const loadSectionsData = async () => {
   loadingSections.value = true
   try {
     sectionOptions.value = await loadSections()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.equipmentData.rawData?.objLocationClsSection) {
       const selectedSection = sectionOptions.value.find(
         option => option.value === props.equipmentData.rawData.objLocationClsSection
@@ -155,14 +148,12 @@ const loadSectionsData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.inventoryNumber || !form.value.name || !form.value.equipmentType || !form.value.section) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
@@ -181,7 +172,6 @@ const saveData = async () => {
   }
 }
 
-// Delete handlers
 const handleDelete = () => {
   if (!props.equipmentData?.id) {
     notificationStore.showNotification('Не удалось получить ID техники для удаления.', 'error')
@@ -208,12 +198,10 @@ const confirmDelete = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadEquipmentTypesData()
   loadSectionsData()

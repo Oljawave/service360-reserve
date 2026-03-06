@@ -1,6 +1,6 @@
 <template>
   <div class="profile-page">
-    <!-- Header -->
+    
     <div class="profile-header">
       <div class="avatar-large">
         {{ initials }}
@@ -22,9 +22,8 @@
       </div>
     </div>
 
-    <!-- Content -->
     <div class="profile-content">
-      <!-- Личные данные -->
+      
       <div class="section">
         <h3 class="section-title">
           <UiIcon name="User" />
@@ -58,7 +57,6 @@
         </div>
       </div>
 
-      <!-- Контакты -->
       <div class="section">
         <h3 class="section-title">
           <UiIcon name="Phone" />
@@ -76,7 +74,6 @@
         </div>
       </div>
 
-      <!-- Рабочая информация -->
       <div class="section">
         <h3 class="section-title">
           <UiIcon name="Briefcase" />
@@ -107,7 +104,6 @@
       </div>
     </div>
 
-    <!-- Модалка смены пароля -->
     <ModalChangePassword v-model="showPasswordModal" :userId="curUserId" />
   </div>
 </template>

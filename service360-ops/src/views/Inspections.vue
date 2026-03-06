@@ -46,26 +46,22 @@ const router = useRouter();
 const limit = 10;
 const tableWrapperRef = ref(null);
 
-// Новые реактивные переменные для модального окна
 const showWorkCardInfoModal = ref(false);
 const selectedRecord = ref(null);
 
-// Проверяем флаг навигации - если пришли не со связанных страниц, очищаем фильтры
 const checkAndClearFilters = () => {
   const navigationFlag = localStorage.getItem('inspectionsNavigation');
 
   if (navigationFlag !== 'fromRelatedPage') {
-    // Пришли с другой страницы (sidebar) - очищаем все фильтры
+    
     localStorage.removeItem('inspectionsDate');
     localStorage.removeItem('inspectionsPeriodType');
     localStorage.removeItem('inspections_columnFilters');
   }
 
-  // Удаляем флаг после проверки
   localStorage.removeItem('inspectionsNavigation');
 };
 
-// Синхронно восстанавливаем дату из localStorage при инициализации
 const getSavedDate = () => {
   checkAndClearFilters();
 
@@ -92,11 +88,9 @@ const dropdownConfig = ref({
   placeholder: 'Выберите тип периода',
 });
 
-// Обработчик изменения фильтров - сохраняем в localStorage
 const onFiltersUpdate = (newFilters) => {
   filters.value = newFilters;
 
-  // Сохраняем фильтры в localStorage
   if (newFilters.date) {
     localStorage.setItem('inspectionsDate', formatDateToString(newFilters.date));
   }
@@ -111,7 +105,6 @@ onMounted(async () => {
 
     dropdownConfig.value.options = types;
 
-    // Восстанавливаем тип периода из localStorage
     const savedPeriodType = localStorage.getItem('inspectionsPeriodType');
 
     if (savedPeriodType) {
@@ -131,7 +124,6 @@ onMounted(async () => {
       }
     }
 
-    // Перезагружаем таблицу с восстановленными фильтрами
     if (tableWrapperRef.value) {
       tableWrapperRef.value.refreshTable();
     }
@@ -217,7 +209,7 @@ const loadInspectionsWrapper = async ({ page, limit, filters: filterValues }) =>
         showHammer: r.nameFlagDefect === 'да',
         showRuler: r.nameFlagParameter === 'да',
       },
-      // Добавляем флаг для стилизации строки
+      
       hasDefects: r.nameFlagDefect === 'да',
     }));
 
@@ -240,7 +232,6 @@ const onRowDoubleClick = (row) => {
     return;
   }
 
-  // Сохраняем фильтры перед открытием модального окна
   localStorage.setItem('inspectionsDate', formatDateToString(filters.value.date));
   localStorage.setItem('inspectionsPeriodType', filters.value.periodType?.value || '71');
 
@@ -253,7 +244,6 @@ const handleInspectionDeleted = () => {
   handleTableUpdate();
 };
 
-// Функция для условного форматирования строки
 const getRowClassFn = (row) => {
   return {
     'row-has-defects': row.hasDefects,
@@ -278,22 +268,16 @@ const tableActions = computed(() => [
     label: 'Добавить запись',
     icon: 'Plus',
     onClick: () => {
-      // Сохраняем данные фильтров в localStorage для использования на странице добавления
+      
       localStorage.setItem('inspectionsDate', formatDateToString(filters.value.date));
       localStorage.setItem('inspectionsPeriodType', filters.value.periodType?.value || '71');
 
-      // Устанавливаем флаг что переходим на связанную страницу
       localStorage.setItem('inspectionsNavigation', 'fromRelatedPage');
 
       router.push({ name: 'InspectionRecord' });
     },
     show: canInsert.value,
   },
-  // {
-  //   label: 'Экспорт',
-  //   icon: 'Download',
-  //   onClick: () => console.log('Экспортирование инспекций...'),
-  //   show: true,
-  // },
+  
 ].filter(action => action.show));
 </script>

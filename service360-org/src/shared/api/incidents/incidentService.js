@@ -6,11 +6,10 @@ const API_BASE_URL = import.meta.env.VITE_INCIDENTS_URL;
 const PLAN_URL = import.meta.env.VITE_PLAN_URL;
 const OBJECT_URL = import.meta.env.VITE_OBJECT_URL;
 
-
 function getAstanaISOString() {
   const now = new Date();
 
-  const ASTANA_OFFSET_MINUTES = 300; // UTC+5 = 300 минут
+  const ASTANA_OFFSET_MINUTES = 300; 
 
   const totalOffsetMinutes = now.getTimezoneOffset() + ASTANA_OFFSET_MINUTES;
   const correctedTime = now.getTime() - totalOffsetMinutes * 60000;
@@ -54,7 +53,6 @@ export async function loadIncidents(date = "2025-07-30", periodType = 71) {
 
   return response.data.result?.records || [];
 }
-
 
 export async function loadEvents() {
   try {
@@ -246,14 +244,13 @@ export async function updateIncident(payloadData) {
       params: ["upd", {
         id: payloadData.id,
 
-        // Обновление полей
         idInfoApplicant: payloadData.idInfoApplicant,
         InfoApplicant: payloadData.InfoApplicant,
         idDescription: payloadData.idDescription,
         Description: payloadData.Description,
         idUpdatedAt: payloadData.idUpdatedAt,
         UpdatedAt: datePart,
-        // Обновление критичности
+        
         idCriticality: payloadData.idCriticality,
         pvCriticality: payloadData.criticalityPv,
         fvCriticality: payloadData.criticalityFv,
@@ -278,10 +275,6 @@ export async function updateIncident(payloadData) {
     throw new Error(error.response?.data?.error?.message || error.message || 'Не удалось обновить инцидент');
   }
 }
-
-// ============================================
-// DELETE методы (удаление)
-// ============================================
 
 export async function deleteIncident(id) {
   if (!id) {

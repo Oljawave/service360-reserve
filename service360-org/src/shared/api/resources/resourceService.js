@@ -40,7 +40,6 @@ export async function loadTools({ page = 1, limit = 10 }) {
       pvUser: item.pvUser,
       objUser: item.objUser,
 
-      // Для мобильной версии
       date: item.CreatedAt,
       coordinates: item.nameLocationClsSection || '',
 
@@ -71,7 +70,6 @@ export async function loadEquipment({ page = 1, limit = 10 }) {
       updatedAt: formatDate(item.UpdatedAt),
       fullNameUser: item.fullNameUser || '',
 
-      // ID полей для возможного редактирования
       idNumber: item.idNumber,
       idTypEquipment: item.idTypEquipment,
       fvTypEquipment: item.fvTypEquipment,
@@ -85,7 +83,6 @@ export async function loadEquipment({ page = 1, limit = 10 }) {
       pvUser: item.pvUser,
       objUser: item.objUser,
 
-      // Для мобильной версии
       date: item.CreatedAt,
       coordinates: item.nameLocationClsSection || '',
 
@@ -321,7 +318,6 @@ export async function loadMaterials({ page = 1, limit = 10 }) {
       fullName: item.fullName || '',
       nameMeasure: item.nameMeasure || '',
 
-      // Дополнительные поля для возможного редактирования
       name: item.name || '',
       idMeasure: item.idMeasure,
       pvMeasure: item.pvMeasure,
@@ -523,4 +519,3 @@ export async function deleteResource(id) {
     throw error;
   }
 }
-

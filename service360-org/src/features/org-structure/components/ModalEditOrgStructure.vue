@@ -171,7 +171,6 @@ const showConfirmModal = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
-// Helper function to parse coordinates from km to km+pk
 const parseKmToPkFormat = (kmValue) => {
   if (!kmValue) return { km: null, pk: null }
   const km = Math.floor(kmValue)
@@ -179,7 +178,6 @@ const parseKmToPkFormat = (kmValue) => {
   return { km, pk }
 }
 
-// Initialize form with existing data
 const startCoords = parseKmToPkFormat(props.locationData.StartKm)
 const finishCoords = parseKmToPkFormat(props.locationData.FinishKm)
 
@@ -260,7 +258,6 @@ const handleActivityTypeChange = (selectedOption) => {
   }
 }
 
-// Delete handlers
 const handleDelete = () => {
   if (!props.locationData?.id) {
     notificationStore.showNotification('Не удалось получить ID организационной структуры для удаления.', 'error')
@@ -327,7 +324,6 @@ onMounted(async () => {
       value: item.id
     }))
 
-    // Set selected parent
     if (props.locationData.parent) {
       const selectedParent = parentOptions.value.find(opt => opt.value === props.locationData.parent)
       if (selectedParent) {
@@ -347,7 +343,6 @@ onMounted(async () => {
       value: item.id
     }))
 
-    // Set selected activity type (cls is the activity type ID)
     if (props.locationData.cls) {
       const selectedActivity = activityOptions.value.find(opt => opt.value === props.locationData.cls)
       if (selectedActivity) {
@@ -372,7 +367,6 @@ onMounted(async () => {
       factor: item.factor,
     }))
 
-    // Set selected region
     if (props.locationData.fvRegion) {
       const selectedRegion = regionOptions.value.find(opt => opt.id === props.locationData.fvRegion)
       if (selectedRegion) {
@@ -390,7 +384,6 @@ onMounted(async () => {
     trueOption.value = activeOptions.find(opt => opt.name.toLowerCase() === 'да')
     falseOption.value = activeOptions.find(opt => opt.name.toLowerCase() === 'нет')
 
-    // Set active status based on current data
     if (props.locationData.fvIsActive) {
       const matchingOption = activeOptions.find(opt => opt.id === props.locationData.fvIsActive)
       form.value.active = matchingOption || falseOption.value
@@ -404,7 +397,6 @@ onMounted(async () => {
   try {
     multiOptions.value = await loadTypes()
 
-    // Set selected multi options
     if (props.locationData.objObjectTypeMulti) {
       const selectedIds = props.locationData.objObjectTypeMulti.split(',').map(id => parseInt(id.trim()))
       form.value.multipleSelect = selectedIds

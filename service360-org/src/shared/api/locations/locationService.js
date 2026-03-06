@@ -142,4 +142,3 @@ export async function deleteLocation(id) {
     throw error
   }
 }
-

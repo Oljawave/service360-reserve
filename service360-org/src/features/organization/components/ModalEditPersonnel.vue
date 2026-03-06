@@ -174,7 +174,6 @@ const canDelete = computed(() => hasPermission('team:del'))
 
 const showConfirmModal = ref(false)
 
-// Helper function to format date from backend to input format
 const formatDateForInput = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
@@ -182,7 +181,6 @@ const formatDateForInput = (dateString) => {
   return date.toISOString().split('T')[0]
 }
 
-// Form data
 const form = ref({
   tabNumber: props.personnelData.tabNumber || '',
   login: props.personnelData.login || '',
@@ -200,25 +198,21 @@ const form = ref({
   rawData: props.personnelData.rawData
 })
 
-// Dropdown options
 const positionOptions = ref([])
 const locationOptions = ref([])
 const sexOptions = ref([])
 
-// Loading states
 const loadingPositions = ref(false)
 const loadingLocations = ref(false)
 const loadingSex = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
-// Load positions
 const loadPositionsData = async () => {
   loadingPositions.value = true
   try {
     positionOptions.value = await loadPositions()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.personnelData.rawData?.fvPosition) {
       const selectedPosition = positionOptions.value.find(
         option => option.value === props.personnelData.rawData.fvPosition
@@ -234,13 +228,11 @@ const loadPositionsData = async () => {
   }
 }
 
-// Load locations
 const loadLocationsData = async () => {
   loadingLocations.value = true
   try {
     locationOptions.value = await loadLocations()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.personnelData.rawData?.objLocation) {
       const selectedLocation = locationOptions.value.find(
         option => option.value === props.personnelData.rawData.objLocation
@@ -256,13 +248,11 @@ const loadLocationsData = async () => {
   }
 }
 
-// Load sex options
 const loadSexData = async () => {
   loadingSex.value = true
   try {
     sexOptions.value = await loadUserSex()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.personnelData.rawData?.fvUserSex) {
       const selectedSex = sexOptions.value.find(
         option => option.value === props.personnelData.rawData.fvUserSex
@@ -278,14 +268,12 @@ const loadSexData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.tabNumber || !form.value.secondName ||
         !form.value.firstName || !form.value.position ||
         !form.value.location || !form.value.sex || !form.value.email ||
@@ -304,7 +292,7 @@ const saveData = async () => {
     emit('refresh')
     closeModal()
   } catch (error) {
-    // Check if error is about existing login
+    
     if (error.response?.data?.error?.message === 'loginExists') {
       notificationStore.showNotification('Логин уже существует. Пожалуйста, используйте другой логин', 'error')
     } else {
@@ -315,12 +303,10 @@ const saveData = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Delete handlers
 const handleDelete = () => {
   if (!props.personnelData?.id) {
     notificationStore.showNotification('Не удалось получить ID сотрудника для удаления.', 'error')
@@ -335,7 +321,7 @@ const confirmDelete = async () => {
   showConfirmModal.value = false
   isDeleting.value = true
   try {
-    // Определяем есть ли логин у сотрудника
+    
     const hasLogin = !!(props.personnelData.login && props.personnelData.login.trim())
 
     await deletePersonnel(props.personnelData.id, hasLogin)
@@ -350,7 +336,6 @@ const confirmDelete = async () => {
   }
 }
 
-// Initialize
 onMounted(() => {
   loadPositionsData()
   loadLocationsData()

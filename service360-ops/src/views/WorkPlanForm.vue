@@ -85,7 +85,6 @@
       />
     </div>
 
-    <!-- Онлайн: открывается по double-click на строке -->
     <WorkCardModal
       v-if="isWorkCardModalOpen"
       :record="selectedRecord"
@@ -96,8 +95,6 @@
       @close="closeWorkCardModal"
     />
 
-    <!-- Черновики: открывается из DraftsPanel -->
-    <!-- Info-черновик (нет parentDraftId) -->
     <DraftInspectionModal
       v-if="isDraftModalOpen && !currentDraft?.parentDraftId"
       :record="currentDraft?.recordData"
@@ -105,7 +102,7 @@
       :formFields="currentDraft?.formFields"
       @close="closeDraftModal"
     />
-    <!-- Дочерний черновик: Неисправность -->
+    
     <DraftDefectModal
       v-if="isDraftModalOpen && currentDraft?.parentDraftId && currentDraft?.formFields?.tab === 'defects'"
       :record="currentDraft?.recordData"
@@ -114,7 +111,7 @@
       :parentDraftId="currentDraft?.parentDraftId"
       @close="closeDraftModal"
     />
-    <!-- Дочерний черновик: Параметр -->
+    
     <DraftParameterModal
       v-if="isDraftModalOpen && currentDraft?.parentDraftId && currentDraft?.formFields?.tab === 'parameters'"
       :record="currentDraft?.recordData"
@@ -173,7 +170,7 @@ const selectedMonth = ref(null);
 const selectedDay = ref(null);
 const isLoading = ref(false);
 const tableData = ref([]);
-const allRecords = ref([]); // Храним все загруженные записи
+const allRecords = ref([]); 
 const sections = ref([]);
 const months = ref([]);
 const monthDropdownKey = ref(0);
@@ -203,7 +200,7 @@ const selectedDate = computed(() => {
 });
 
 const formattedDate = computed(() => {
-  // Если выбран месяц и день - показываем полную дату
+  
   if (selectedDate.value) {
     const date = new Date(selectedDate.value);
     return date.toLocaleDateString('ru-RU', {
@@ -213,7 +210,6 @@ const formattedDate = computed(() => {
     });
   }
 
-  // Если выбран только месяц - показываем месяц и год
   if (selectedMonth.value) {
     const [year, month] = selectedMonth.value.split('-');
     const date = new Date(year, parseInt(month) - 1, 1);
@@ -230,11 +226,9 @@ const selectedSectionName = computed(() => {
   return selectedSection.value || null;
 });
 
-// Вычисляемое свойство для фильтрации дней по выбранному месяцу
 const filteredDays = computed(() => {
   if (!selectedMonth.value || !selectedSection.value) return [];
 
-  // Фильтруем записи по участку и месяцу
   const daysSet = new Set();
   allRecords.value.forEach(record => {
     if (record.nameLocationClsSection === selectedSection.value && record.PlanDateEnd) {
@@ -245,7 +239,6 @@ const filteredDays = computed(() => {
     }
   });
 
-  // Сортируем и форматируем дни
   return Array.from(daysSet)
     .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
     .map((day) => ({
@@ -273,7 +266,6 @@ const onRowDoubleClick = (row) => {
   selectedRecord.value = row;
   isWorkCardModalOpen.value = true;
 };
-
 
 const openConfirmationModal = (row) => {
   recordToComplete.value = row;
@@ -304,7 +296,6 @@ const handleConfirmComplete = async () => {
 
     notificationStore.showNotification('Работа успешно завершена!', 'success');
 
-    // Обновляем таблицу без сброса фильтров
     await reloadTableDataOnly();
 
   } catch (error) {
@@ -367,10 +358,10 @@ const goToInspections = () => {
 
 const goToInspectionRecord = () => {
   if (selectedRows.value.length > 0) {
-    // Если выбраны записи - показываем модалку подтверждения
+    
     isInspectionConfirmModalOpen.value = true;
   } else {
-    // Если записи не выбраны - переходим на страницу записи осмотра
+    
     localStorage.setItem('inspectionsNavigation', 'fromRelatedPage');
     router.push({ name: 'InspectionRecord' });
   }
@@ -385,17 +376,15 @@ const handleConfirmInspections = async () => {
 
   isSavingInspections.value = true;
   try {
-    // selectedRows содержит только ID, нужно получить полные данные строк
+    
     const selectedRowsData = tableData.value.filter(row => selectedRows.value.includes(row.id));
 
     await saveSeveralInspections(selectedRowsData);
 
     notificationStore.showNotification('Осмотры успешно сохранены!', 'success');
 
-    // Сбрасываем выбранные строки
     selectedRows.value = [];
 
-    // Обновляем таблицу без сброса фильтров
     await reloadTableDataOnly();
   } catch (error) {
     console.error('Ошибка при сохранении осмотров:', error);
@@ -409,19 +398,17 @@ const handleConfirmInspections = async () => {
 
 const filterTableData = () => {
   if (!selectedSection.value && !selectedMonth.value && !selectedDay.value) {
-    // Если ничего не выбрано, показываем все записи
+    
     tableData.value = allRecords.value.map(mapRecordToTableRow);
     return;
   }
 
   let filtered = allRecords.value;
 
-  // Фильтруем по участку
   if (selectedSection.value) {
     filtered = filtered.filter(record => record.nameLocationClsSection === selectedSection.value);
   }
 
-  // Фильтруем по дате
   if (selectedMonth.value || selectedDay.value) {
     filtered = filtered.filter(record => {
       if (!record.PlanDateEnd) return false;
@@ -466,14 +453,12 @@ const mapRecordToTableRow = (record) => ({
   FinishLink: record.FinishLink,
 });
 
-// Перезагрузка данных без сброса фильтров
 const reloadTableDataOnly = async () => {
   isLoading.value = true;
   try {
     const records = await cachedLoadWorkPlanInspection();
     allRecords.value = records;
 
-    // Просто обновляем таблицу с текущими фильтрами
     filterTableData();
   } catch (error) {
     notificationStore.showNotification('Не удалось загрузить данные', 'error');
@@ -488,7 +473,6 @@ const loadAllUnfinishedWork = async () => {
     const records = await cachedLoadWorkPlanInspection();
     allRecords.value = records;
 
-    // Извлекаем уникальные участки из загруженных данных
     const sectionsSet = new Set();
     records.forEach(record => {
       if (record.nameLocationClsSection) {
@@ -501,13 +485,12 @@ const loadAllUnfinishedWork = async () => {
       label: section,
     }));
 
-    // Автоматически выбираем первый участок, если есть
     if (sections.value.length > 0) {
       selectedSection.value = sections.value[0].value;
       updateMonthsForSection();
       autoSelectDate();
     } else {
-      // Если участков нет, отображаем все записи
+      
       filterTableData();
     }
   } catch (error) {
@@ -519,21 +502,18 @@ const loadAllUnfinishedWork = async () => {
   }
 };
 
-
 const autoSelectDate = () => {
   if (!selectedSection.value || months.value.length === 0) return;
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Сбрасываем время для корректного сравнения
+  today.setHours(0, 0, 0, 0); 
 
-  // Собираем все даты для выбранного участка
   const availableDates = [];
   allRecords.value.forEach(record => {
     if (record.nameLocationClsSection === selectedSection.value && record.PlanDateEnd) {
       const recordDate = new Date(record.PlanDateEnd);
       recordDate.setHours(0, 0, 0, 0);
 
-      // Добавляем только даты <= сегодняшней
       if (recordDate <= today) {
         availableDates.push({
           fullDate: record.PlanDateEnd,
@@ -544,16 +524,14 @@ const autoSelectDate = () => {
   });
 
   if (availableDates.length === 0) {
-    // Если нет дат <= сегодняшней, показываем все записи без фильтра
+    
     filterTableData();
     return;
   }
 
-  // Сортируем по убыванию (от новых к старым) и берем самую свежую
   availableDates.sort((a, b) => b.dateObj - a.dateObj);
   const closestDate = availableDates[0].fullDate;
 
-  // Разбираем выбранную дату на месяц и день
   const [year, month, day] = closestDate.split('-');
   selectedMonth.value = `${year}-${month}`;
   selectedDay.value = day;
@@ -567,16 +545,14 @@ const autoSelectDate = () => {
 const findClosestDay = (days, targetDay) => {
   if (days.length === 0) return null;
 
-  const numericDays = days.map(d => parseInt(d, 10)).sort((a, b) => b - a); // Сортируем по убыванию
+  const numericDays = days.map(d => parseInt(d, 10)).sort((a, b) => b - a); 
 
-  // Ищем ближайший день, который <= targetDay
   for (const day of numericDays) {
     if (day <= targetDay) {
       return String(day).padStart(2, '0');
     }
   }
 
-  // Если все дни больше targetDay, возвращаем самый ранний (минимальный)
   return String(Math.min(...numericDays)).padStart(2, '0');
 };
 
@@ -585,12 +561,10 @@ const findClosestMonth = (monthsList, targetMonth) => {
 
   const targetDate = new Date(`${targetMonth}-01`);
 
-  // Сортируем месяцы по убыванию (от нового к старому)
   const sortedMonths = [...monthsList].sort((a, b) => {
     return new Date(`${b}-01`) - new Date(`${a}-01`);
   });
 
-  // Ищем ближайший месяц, который <= targetMonth
   for (const month of sortedMonths) {
     const monthDate = new Date(`${month}-01`);
     if (monthDate <= targetDate) {
@@ -598,7 +572,6 @@ const findClosestMonth = (monthsList, targetMonth) => {
     }
   }
 
-  // Если все месяцы больше targetMonth, возвращаем самый ранний
   return monthsList.sort()[0];
 };
 
@@ -612,7 +585,6 @@ const updateMonthsForSection = () => {
     return;
   }
 
-  // Извлекаем уникальные месяцы для выбранного участка
   const monthsSet = new Set();
   allRecords.value.forEach(record => {
     if (record.nameLocationClsSection === selectedSection.value && record.PlanDateEnd) {
@@ -655,7 +627,6 @@ const onDayChange = (value) => {
 const openFromDraft = (draft) => {
   const rd = draft.recordData;
 
-  // Если онлайн — обогащаем метаданные свежими данными из загруженной таблицы
   const fullRecord = allRecords.value.find(r => r.id === rd.id);
   if (fullRecord) {
     draft = {
@@ -689,7 +660,6 @@ onMounted(async () => {
   await loadAllUnfinishedWork();
   isMounted.value = true;
 
-  // Проверяем activeDraft после загрузки данных
   if (activeDraft.value && activeDraft.value.formType === 'workCard') {
     openFromDraft(activeDraft.value);
   }

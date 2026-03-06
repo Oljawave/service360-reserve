@@ -295,10 +295,6 @@ onMounted(async () => {
 })
 </script>
 
-
-
-
-
 <style scoped>
 .form-section {
   display: grid;

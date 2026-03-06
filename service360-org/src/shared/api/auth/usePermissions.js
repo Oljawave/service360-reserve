@@ -23,4 +23,3 @@ export function usePermissions() {
   const hasPermission = (permission) => userPermissions.value.has(permission)
   return { hasPermission }
 }
-

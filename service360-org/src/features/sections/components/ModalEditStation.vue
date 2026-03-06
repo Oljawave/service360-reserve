@@ -138,7 +138,7 @@ const saveData = async () => {
       parent: form.value.section?.value,
       cls: raw.cls,
       name: form.value.name,
-      // id полей для координат, User, UpdatedAt
+      
       idStartKm: raw.idStartKm,
       StartKm: form.value.coordinates.coordStartKm,
       idStartPicket: raw.idStartPicket,

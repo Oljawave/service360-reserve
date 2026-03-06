@@ -66,7 +66,6 @@ const notificationStore = useNotificationStore()
 
 const isSaving = ref(false)
 
-// Form data
 const form = ref({
   name: '',
   bin: '',
@@ -75,14 +74,12 @@ const form = ref({
   description: ''
 })
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.name || !form.value.bin || !form.value.contactPerson || !form.value.contactDetails) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
@@ -101,7 +98,6 @@ const saveData = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }

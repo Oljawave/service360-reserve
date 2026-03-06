@@ -31,7 +31,6 @@ export async function loadWorkPlan(date = "2025-07-30", periodType = 71) {
   return response.data.result?.records || [];
 }
 
-
 export async function savePlan(workData, formData) {
   try {
     const user = await getUserData();
@@ -96,7 +95,7 @@ export async function saveAllPlans(workData, forms) {
 }
 
 export async function updatePlan(planData) {
-  // Форматируем дату если она есть
+  
   if (planData.PlanDateEnd) {
     const date = new Date(planData.PlanDateEnd);
     if (isNaN(date.getTime())) {

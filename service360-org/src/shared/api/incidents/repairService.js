@@ -362,7 +362,7 @@ export async function loadResourceToolsForTaskLog(taskLogId) {
     const records = response.data.result?.records || [];
     return records.map(record => ({
       ...record,
-      Quantity: record.Value, // Map Value to Quantity for consistency in the UI
+      Quantity: record.Value, 
     }));
   } catch (error) {
     console.error("Ошибка при загрузке инструментов для задачи:", error);

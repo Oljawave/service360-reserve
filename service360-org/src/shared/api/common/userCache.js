@@ -4,7 +4,7 @@ export async function getUserData() {
   if (userDataCache) return userDataCache;
 
   try {
-    // Получаем данные пользователя из localStorage (сохранены при логине через getPersonnalInfo)
+    
     const personnalInfoStr = localStorage.getItem('personnalInfo');
 
     if (!personnalInfoStr) {
@@ -12,11 +12,6 @@ export async function getUserData() {
     }
 
     const personnalInfo = JSON.parse(personnalInfoStr);
-
-    // В personnalInfo уже есть все необходимые данные:
-    // - id (objUser)
-    // - pv (pvUser)
-    // - все остальные поля пользователя
 
     userDataCache = personnalInfo;
     return personnalInfo;

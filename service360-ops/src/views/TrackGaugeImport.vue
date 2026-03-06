@@ -67,7 +67,6 @@ const handleFileSelect = (event) => {
     selectedFile.value = file;
     selectedFileName.value = file.name;
 
-    // Сброс таблицы при выборе нового файла
     analyzedData.value = [];
     analysisStatus.value = null;
     canUpload.value = false;
@@ -98,7 +97,7 @@ const handleAnalyze = async () => {
     console.log('Полученные записи:', records);
 
     if (records && records.length > 0) {
-      // Динамически создаем колонки на основе ключей первой записи
+      
       const firstRecord = records[0];
       const dynamicColumns = Object.keys(firstRecord).map(key => ({
         key: key,
@@ -111,30 +110,26 @@ const handleAnalyze = async () => {
       console.log('Созданные колонки:', dynamicColumns);
       console.log('Данные для таблицы:', records);
 
-      // Обновляем таблицу
       if (tableWrapperRef.value && tableWrapperRef.value.refreshTable) {
         tableWrapperRef.value.refreshTable();
       }
 
-      // Вызываем loadImportLog для проверки статуса
       try {
         const logData = await loadImportLog(selectedFileName.value);
         console.log('Данные лога:', logData);
 
         if (logData && logData.msg) {
-          // Если есть сообщение в msg, показываем его красным
+          
           analysisStatus.value = {
             type: 'error',
             message: logData.msg
           };
           canUpload.value = false;
 
-          // Проверяем, есть ли в сообщении kod_napr в квадратных скобках
-          // Например: "Нет привязки [kod_napr_24026]" или "Нет привязки [kod_napr_24026, kod_napr_24027]"
           const hasKodNapr = /\[.*kod_napr.*\]/.test(logData.msg);
           canBind.value = hasKodNapr;
         } else {
-          // Если msg пустой, показываем успешно
+          
           analysisStatus.value = {
             type: 'success',
             message: 'успешно'
@@ -144,7 +139,7 @@ const handleAnalyze = async () => {
         }
       } catch (logError) {
         console.error('Ошибка при загрузке лога:', logError);
-        // Если не удалось загрузить лог, все равно показываем успешно
+        
         analysisStatus.value = {
           type: 'success',
           message: 'успешно'
@@ -189,13 +184,11 @@ const loadDataWrapper = async ({ page, limit, filters: filterValues }) => {
 };
 
 const onRowDoubleClick = (row) => {
-  // Логика обработки двойного клика будет добавлена позже
+  
 };
 
 const extractCodesFromMessage = (message) => {
-  // Извлекаем все что внутри квадратных скобок
-  // Например: "Нет привязки [kod_napr_24026]" -> "kod_napr_24026"
-  // Или: "Нет привязки [kod_napr_24026, kod_napr_24027]" -> "kod_napr_24026, kod_napr_24027"
+  
   const match = message.match(/\[(.*?)\]/);
   return match ? match[1] : '';
 };
@@ -219,7 +212,6 @@ const handleUpload = async () => {
     await uploadTrackGaugeData(analyzedData.value);
     notificationStore.showNotification('Данные успешно залиты', 'success');
 
-    // Обновляем таблицу
     if (tableWrapperRef.value && tableWrapperRef.value.refreshTable) {
       tableWrapperRef.value.refreshTable();
     }

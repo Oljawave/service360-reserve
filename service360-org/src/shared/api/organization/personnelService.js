@@ -36,7 +36,6 @@ export async function loadPersonnel({ page = 1, limit = 10 }) {
         createdAt: formatDate(item.CreatedAt),
         updatedAt: formatDate(item.UpdatedAt),
 
-        // ID полей для возможного редактирования
         idTabNumber: item.idTabNumber,
         idUserSecondName: item.idUserSecondName,
         idUserFirstName: item.idUserFirstName,
@@ -58,7 +57,6 @@ export async function loadPersonnel({ page = 1, limit = 10 }) {
         pvLocation: item.pvLocation,
         objLocation: item.objLocation,
 
-        // Для мобильной версии
         date: item.CreatedAt,
         nameLocation: item.nameLocation || '',
         namePosition: item.namePosition || '',
@@ -138,7 +136,6 @@ export async function savePersonnel(personnelData) {
   try {
     const today = formatDateForBackend(new Date())
 
-    // Get user data for objUser and pvUser
     const userData = await getUserData()
 
     const payload = {
@@ -162,7 +159,6 @@ export async function savePersonnel(personnelData) {
       UpdatedAt: today,
     }
 
-    // Добавляем login только если он не пустой
     if (personnelData.login && personnelData.login.trim()) {
       payload.login = personnelData.login
     }
@@ -186,10 +182,8 @@ export async function updatePersonnel(personnelData) {
   try {
     const today = formatDateForBackend(new Date())
 
-    // Используем rawData напрямую
     const raw = personnelData.rawData
 
-    // Get user data for objUser and pvUser (кто изменяет запись)
     const userData = await getUserData()
 
     const payload = {
@@ -231,7 +225,6 @@ export async function updatePersonnel(personnelData) {
       UpdatedAt: today,
     }
 
-    // Добавляем login только если он не пустой
     if (personnelData.login && personnelData.login.trim()) {
       payload.login = personnelData.login
     }

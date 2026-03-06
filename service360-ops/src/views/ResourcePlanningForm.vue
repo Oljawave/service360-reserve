@@ -117,7 +117,7 @@ const selectedMonth = ref(null);
 const selectedDay = ref(null);
 const isLoading = ref(false);
 const tableData = ref([]);
-const allRecords = ref([]); // Храним все загруженные записи
+const allRecords = ref([]); 
 const sections = ref([]);
 const months = ref([]);
 const monthDropdownKey = ref(0);
@@ -142,7 +142,7 @@ const selectedDate = computed(() => {
 });
 
 const formattedDate = computed(() => {
-  // Если выбран месяц и день - показываем полную дату
+  
   if (selectedDate.value) {
     const date = new Date(selectedDate.value);
     return date.toLocaleDateString('ru-RU', {
@@ -152,7 +152,6 @@ const formattedDate = computed(() => {
     });
   }
 
-  // Если выбран только месяц - показываем месяц и год
   if (selectedMonth.value) {
     const [year, month] = selectedMonth.value.split('-');
     const date = new Date(year, parseInt(month) - 1, 1);
@@ -169,11 +168,9 @@ const selectedSectionName = computed(() => {
   return selectedSection.value || null;
 });
 
-// Вычисляемое свойство для фильтрации дней по выбранному месяцу
 const filteredDays = computed(() => {
   if (!selectedMonth.value || !selectedSection.value) return [];
 
-  // Фильтруем записи по участку и месяцу
   const daysSet = new Set();
   allRecords.value.forEach(record => {
     if (record.nameLocationClsSection === selectedSection.value && record.PlanDateEnd) {
@@ -184,7 +181,6 @@ const filteredDays = computed(() => {
     }
   });
 
-  // Сортируем и форматируем дни
   return Array.from(daysSet)
     .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
     .map((day) => ({
@@ -295,26 +291,24 @@ const columns = [
 ];
 
 const goBack = () => {
-  // Устанавливаем флаг что возвращаемся на ResourcePlanning
+  
   localStorage.setItem('resourcePlanningNavigation', 'fromRelatedPage');
   router.push({ name: 'ResourcePlanning' });
 };
 
 const filterTableData = () => {
   if (!selectedSection.value && !selectedMonth.value && !selectedDay.value) {
-    // Если ничего не выбрано, показываем все записи
+    
     tableData.value = allRecords.value.map(mapRecordToTableRow);
     return;
   }
 
   let filtered = allRecords.value;
 
-  // Фильтруем по участку
   if (selectedSection.value) {
     filtered = filtered.filter(record => record.nameLocationClsSection === selectedSection.value);
   }
 
-  // Фильтруем по дате
   if (selectedMonth.value || selectedDay.value) {
     filtered = filtered.filter(record => {
       if (!record.PlanDateEnd) return false;
@@ -366,7 +360,6 @@ const loadAllUnfinishedWork = async () => {
     const records = await loadWorkPlanCorrectionalUnfinished();
     allRecords.value = records;
 
-    // Извлекаем уникальные участки из загруженных данных
     const sectionsSet = new Set();
     records.forEach(record => {
       if (record.nameLocationClsSection) {
@@ -379,12 +372,10 @@ const loadAllUnfinishedWork = async () => {
       label: section,
     }));
 
-    // Автоматически выбираем первый участок, если есть
     if (sections.value.length > 0) {
       selectedSection.value = sections.value[0].value;
       updateMonthsForSection();
 
-      // Пытаемся восстановить дату из localStorage (если пришли с ResourcePlanning)
       const savedDate = localStorage.getItem('resourcePlanningDate');
       if (savedDate) {
         initializeFromSavedDate(savedDate);
@@ -392,7 +383,7 @@ const loadAllUnfinishedWork = async () => {
         autoSelectDate();
       }
     } else {
-      // Если участков нет, отображаем все записи
+      
       filterTableData();
     }
   } catch (error) {
@@ -413,14 +404,12 @@ const initializeFromSavedDate = (savedDate) => {
   const [year, month, day] = savedDate.split('-');
   const targetMonth = `${year}-${month}`;
 
-  // Проверяем есть ли такой месяц в доступных
   const monthExists = months.value.some(m => m.value === targetMonth);
 
   if (monthExists) {
     selectedMonth.value = targetMonth;
     monthDropdownKey.value++;
 
-    // Проверяем есть ли такой день в доступных для этого месяца
     const dayExists = filteredDays.value.some(d => d.value === day);
     if (dayExists) {
       selectedDay.value = day;
@@ -431,21 +420,18 @@ const initializeFromSavedDate = (savedDate) => {
   filterTableData();
 };
 
-
 const autoSelectDate = () => {
   if (!selectedSection.value || months.value.length === 0) return;
 
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Сбрасываем время для корректного сравнения
+  today.setHours(0, 0, 0, 0); 
 
-  // Собираем все даты для выбранного участка
   const availableDates = [];
   allRecords.value.forEach(record => {
     if (record.nameLocationClsSection === selectedSection.value && record.PlanDateEnd) {
       const recordDate = new Date(record.PlanDateEnd);
       recordDate.setHours(0, 0, 0, 0);
 
-      // Добавляем только даты <= сегодняшней
       if (recordDate <= today) {
         availableDates.push({
           fullDate: record.PlanDateEnd,
@@ -456,16 +442,14 @@ const autoSelectDate = () => {
   });
 
   if (availableDates.length === 0) {
-    // Если нет дат <= сегодняшней, показываем все записи без фильтра
+    
     filterTableData();
     return;
   }
 
-  // Сортируем по убыванию (от новых к старым) и берем самую свежую
   availableDates.sort((a, b) => b.dateObj - a.dateObj);
   const closestDate = availableDates[0].fullDate;
 
-  // Разбираем выбранную дату на месяц и день
   const [year, month, day] = closestDate.split('-');
   selectedMonth.value = `${year}-${month}`;
   selectedDay.value = day;
@@ -479,16 +463,14 @@ const autoSelectDate = () => {
 const findClosestDay = (days, targetDay) => {
   if (days.length === 0) return null;
 
-  const numericDays = days.map(d => parseInt(d, 10)).sort((a, b) => b - a); // Сортируем по убыванию
+  const numericDays = days.map(d => parseInt(d, 10)).sort((a, b) => b - a); 
 
-  // Ищем ближайший день, который <= targetDay
   for (const day of numericDays) {
     if (day <= targetDay) {
       return String(day).padStart(2, '0');
     }
   }
 
-  // Если все дни больше targetDay, возвращаем самый ранний (минимальный)
   return String(Math.min(...numericDays)).padStart(2, '0');
 };
 
@@ -497,12 +479,10 @@ const findClosestMonth = (monthsList, targetMonth) => {
 
   const targetDate = new Date(`${targetMonth}-01`);
 
-  // Сортируем месяцы по убыванию (от нового к старому)
   const sortedMonths = [...monthsList].sort((a, b) => {
     return new Date(`${b}-01`) - new Date(`${a}-01`);
   });
 
-  // Ищем ближайший месяц, который <= targetMonth
   for (const month of sortedMonths) {
     const monthDate = new Date(`${month}-01`);
     if (monthDate <= targetDate) {
@@ -510,7 +490,6 @@ const findClosestMonth = (monthsList, targetMonth) => {
     }
   }
 
-  // Если все месяцы больше targetMonth, возвращаем самый ранний
   return monthsList.sort()[0];
 };
 
@@ -524,7 +503,6 @@ const updateMonthsForSection = () => {
     return;
   }
 
-  // Извлекаем уникальные месяцы для выбранного участка
   const monthsSet = new Set();
   allRecords.value.forEach(record => {
     if (record.nameLocationClsSection === selectedSection.value && record.PlanDateEnd) {
@@ -583,7 +561,6 @@ const openFromDraft = (draft) => {
   clearActiveDraft();
 };
 
-// Открытие черновика при навигации из DraftsPanel
 const isMounted = ref(false);
 
 watch(activeDraft, (draft) => {
@@ -601,7 +578,6 @@ onMounted(async () => {
   await loadAllUnfinishedWork();
   isMounted.value = true;
 
-  // Проверяем activeDraft после загрузки данных
   if (activeDraft.value) {
     openFromDraft(activeDraft.value);
   }

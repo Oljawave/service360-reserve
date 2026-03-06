@@ -59,7 +59,6 @@ import { getUserData } from '@/shared/api/common/userCache'
 const emit = defineEmits(['close', 'refresh'])
 const notificationStore = useNotificationStore()
 
-// Form data
 const form = ref({
   name: '',
   client: null,
@@ -70,14 +69,11 @@ const form = ref({
   stageLength: null
 })
 
-// Dropdown options
 const clientOptions = ref([])
 
-// Loading states
 const loadingClients = ref(false)
 const isSaving = ref(false)
 
-// Load clients
 const loadClientsData = async () => {
   loadingClients.value = true
   try {
@@ -89,20 +85,17 @@ const loadClientsData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.name || !form.value.client || !form.value.coordinates.coordStartKm || !form.value.coordinates.coordEndKm || !form.value.stageLength) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
     }
 
-    // Validate coordinate range
     if (form.value.coordinates.coordStartKm > form.value.coordinates.coordEndKm) {
       notificationStore.showNotification('Начальная координата не может быть больше конечной координаты', 'error')
       return
@@ -140,12 +133,10 @@ const saveData = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadClientsData()
 })

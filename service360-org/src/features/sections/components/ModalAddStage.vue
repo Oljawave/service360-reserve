@@ -59,7 +59,6 @@ import { getUserData } from '@/shared/api/common/userCache'
 const emit = defineEmits(['close', 'refresh'])
 const notificationStore = useNotificationStore()
 
-// Form data
 const form = ref({
   name: '',
   section: null,
@@ -74,14 +73,11 @@ const form = ref({
   stageLength: null
 })
 
-// Dropdown options
 const sectionOptions = ref([])
 
-// Loading states
 const loadingSections = ref(false)
 const isSaving = ref(false)
 
-// Load sections
 const loadSectionsData = async () => {
   loadingSections.value = true
   try {
@@ -98,28 +94,23 @@ const loadSectionsData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.name || !form.value.section || !form.value.coordinates.coordStartKm || !form.value.coordinates.coordStartPk || !form.value.coordinates.coordStartZv || !form.value.coordinates.coordEndKm || !form.value.coordinates.coordEndPk || !form.value.coordinates.coordEndZv || !form.value.stageLength) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
     }
 
-    // Получаем текущую дату
     const currentDate = new Date().toISOString().split('T')[0]
 
-    // Get user data for objUser and pvUser
     const userData = await getUserData()
 
-    // Формируем данные для сохранения
     const stageData = {
-      parent: form.value.section.value, // ID выбранного участка
+      parent: form.value.section.value, 
       name: form.value.name,
       StartKm: form.value.coordinates.coordStartKm,
       StartPicket: form.value.coordinates.coordStartPk,
@@ -136,7 +127,6 @@ const saveData = async () => {
 
     console.log('Создание перегона:', stageData)
 
-    // Вызываем API для создания (операция "ins")
     await saveStage('ins', stageData)
 
     notificationStore.showNotification('Перегон успешно добавлен', 'success')
@@ -150,12 +140,10 @@ const saveData = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadSectionsData()
 })

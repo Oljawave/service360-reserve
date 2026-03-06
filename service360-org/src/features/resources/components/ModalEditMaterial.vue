@@ -71,7 +71,6 @@ const { hasPermission } = usePermissions()
 const canDelete = computed(() => hasPermission('mat:del'))
 const showConfirmModal = ref(false)
 
-// Form data
 const form = ref({
   name: props.materialData.name || '',
   measure: null,
@@ -79,21 +78,17 @@ const form = ref({
   rawData: props.materialData.rawData
 })
 
-// Dropdown options
 const measureOptions = ref([])
 
-// Loading states
 const loadingMeasures = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
-// Load measures
 const loadMeasuresData = async () => {
   loadingMeasures.value = true
   try {
     measureOptions.value = await loadMeasures()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.materialData.rawData?.meaMeasure) {
       const selectedMeasure = measureOptions.value.find(
         option => option.value === props.materialData.rawData.meaMeasure
@@ -109,14 +104,12 @@ const loadMeasuresData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.name || !form.value.measure) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
@@ -135,7 +128,6 @@ const saveData = async () => {
   }
 }
 
-// Delete handlers
 const handleDelete = () => {
   if (!props.materialData?.id) {
     notificationStore.showNotification('Не удалось получить ID материала для удаления.', 'error')
@@ -162,12 +154,10 @@ const confirmDelete = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadMeasuresData()
 })

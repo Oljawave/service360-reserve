@@ -91,7 +91,6 @@ const { hasPermission } = usePermissions()
 const canDelete = computed(() => hasPermission('tool:del'))
 const showConfirmModal = ref(false)
 
-// Form data
 const form = ref({
   inventoryNumber: props.toolData.number || '',
   name: props.toolData.name || '',
@@ -101,23 +100,19 @@ const form = ref({
   rawData: props.toolData.rawData
 })
 
-// Dropdown options
 const toolTypeOptions = ref([])
 const sectionOptions = ref([])
 
-// Loading states
 const loadingToolTypes = ref(false)
 const loadingSections = ref(false)
 const isSaving = ref(false)
 const isDeleting = ref(false)
 
-// Load tool types
 const loadToolTypesData = async () => {
   loadingToolTypes.value = true
   try {
     toolTypeOptions.value = await loadToolTypes()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.toolData.rawData?.fvTypTool) {
       const selectedType = toolTypeOptions.value.find(
         option => option.value === props.toolData.rawData.fvTypTool
@@ -133,13 +128,11 @@ const loadToolTypesData = async () => {
   }
 }
 
-// Load sections
 const loadSectionsData = async () => {
   loadingSections.value = true
   try {
     sectionOptions.value = await loadSections()
 
-    // Устанавливаем выбранное значение после загрузки опций
     if (props.toolData.rawData?.objLocationClsSection) {
       const selectedSection = sectionOptions.value.find(
         option => option.value === props.toolData.rawData.objLocationClsSection
@@ -155,14 +148,12 @@ const loadSectionsData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.inventoryNumber || !form.value.name || !form.value.toolType || !form.value.section) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
@@ -181,7 +172,6 @@ const saveData = async () => {
   }
 }
 
-// Delete handlers
 const handleDelete = () => {
   if (!props.toolData?.id) {
     notificationStore.showNotification('Не удалось получить ID инструмента для удаления.', 'error')
@@ -208,12 +198,10 @@ const confirmDelete = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadToolTypesData()
   loadSectionsData()

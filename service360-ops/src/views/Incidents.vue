@@ -258,12 +258,7 @@ const tableActions = computed(() => [
     },
     show: canAssign.value,
   },
-  // {
-  //   label: 'Экспорт',
-  //   icon: 'Download',
-  //   onClick: () => console.log('Экспортирование инцидентов...'),
-  //   show: true,
-  // },
+  
 ].filter(action => action.show));
 </script>
 

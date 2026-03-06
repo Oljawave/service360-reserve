@@ -11,7 +11,6 @@
       :class="{
         'date-overdue': isFactDateOverdue(col.key),
         'date-ontime': isFactDateOnTime(col.key),
-        // ДОБАВЛЕНЫ: 'dateInfo', 'volumeInfo'
         'multiline-cell': ['generalInfo', 'taskInfo', 'materials', 'services', 'tools', 'equipment', 'performers', 'dateInfo', 'volumeInfo'].includes(col.key)
       }"
     >
@@ -102,13 +101,11 @@ const formatValue = (value) => {
     return value;
   }
 
-  // Форматирование даты YYYY-MM-DD -> DD.MM.YYYY
   if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     const [year, month, day] = value.split('-');
     return `${day}.${month}.${year}`;
   }
 
-  // Форматирование времени HH:mm:ss.sss -> HH:mm:ss
   if (/^\d{2}:\d{2}:\d{2}\.\d+$/.test(value)) {
     return value.substring(0, 8);
   }
@@ -205,6 +202,6 @@ const isFactDateOnTime = (key) => {
 
 .cell-content.preserve-newlines {
   white-space: pre-line;
-  line-height: 1.5; /* Немного уменьшено для более компактного вида */
+  line-height: 1.5;
 }
 </style>

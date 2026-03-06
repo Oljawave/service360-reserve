@@ -69,7 +69,6 @@ import { loadEquipmentTypes, loadSections, saveEquipment } from '@/shared/api/re
 const emit = defineEmits(['close', 'refresh'])
 const notificationStore = useNotificationStore()
 
-// Form data
 const form = ref({
   inventoryNumber: '',
   name: '',
@@ -78,16 +77,13 @@ const form = ref({
   description: ''
 })
 
-// Dropdown options
 const equipmentTypeOptions = ref([])
 const sectionOptions = ref([])
 
-// Loading states
 const loadingEquipmentTypes = ref(false)
 const loadingSections = ref(false)
 const isSaving = ref(false)
 
-// Load equipment types
 const loadEquipmentTypesData = async () => {
   loadingEquipmentTypes.value = true
   try {
@@ -99,7 +95,6 @@ const loadEquipmentTypesData = async () => {
   }
 }
 
-// Load sections
 const loadSectionsData = async () => {
   loadingSections.value = true
   try {
@@ -111,14 +106,12 @@ const loadSectionsData = async () => {
   }
 }
 
-// Save data
 const saveData = async () => {
   if (isSaving.value) return
 
   try {
     isSaving.value = true
 
-    // Validate required fields
     if (!form.value.inventoryNumber || !form.value.name || !form.value.equipmentType || !form.value.section) {
       notificationStore.showNotification('Пожалуйста, заполните все обязательные поля', 'error')
       return
@@ -137,12 +130,10 @@ const saveData = async () => {
   }
 }
 
-// Close modal
 const closeModal = () => {
   emit('close')
 }
 
-// Initialize
 onMounted(() => {
   loadEquipmentTypesData()
   loadSectionsData()

@@ -90,7 +90,7 @@ const createNewItem = () => ({
   parameterOptions: [],
   loadingParameters: false,
   signOptions: [],
-  signRawData: [], // Сырые данные признаков для сохранения
+  signRawData: [], 
   loadingSigns: false
 })
 
@@ -166,20 +166,18 @@ const handleComponentChange = async (componentId) => {
   }
 }
 
-// Функция для преобразования плоского списка в дерево
 const buildSignTree = (records) => {
-  // Сначала найдем все родительские записи (без parent)
+  
   const parents = records.filter(r => !r.parent)
-  // И все дочерние записи (с parent)
+  
   const children = records.filter(r => r.parent)
 
-  // Строим дерево
   return parents.map(parent => {
     const parentChildren = children.filter(c => c.parent === parent.id)
     return {
       label: parent.name,
       value: parent.id,
-      disabled: true, // Родители не выбираются
+      disabled: true, 
       children: parentChildren.map(child => ({
         label: child.name,
         value: child.id,
@@ -187,7 +185,7 @@ const buildSignTree = (records) => {
         cls: child.cls
       }))
     }
-  }).filter(p => p.children.length > 0) // Показываем только родителей с детьми
+  }).filter(p => p.children.length > 0) 
 }
 
 const handleParameterChange = async (parameterId) => {
@@ -200,7 +198,7 @@ const handleParameterChange = async (parameterId) => {
     item.loadingSigns = true
     try {
       const signs = await loadSignsByParameter(parameterId)
-      item.signRawData = signs // Сохраняем сырые данные для формирования payload
+      item.signRawData = signs 
       item.signOptions = buildSignTree(signs)
     } catch (error) {
       console.error('Ошибка загрузки признаков:', error)
@@ -237,15 +235,13 @@ const saveData = async () => {
   isSaving.value = true
   try {
     const item = form.value
-    // Получаем id и pv параметра (item.parameter может быть объектом или числом)
+    
     const parameterId = typeof item.parameter === 'object' ? item.parameter.value : item.parameter
     const parameterData = item.parameterOptions.find(p => p.value === parameterId)
 
-    // Получаем id и pv единицы измерения
     const unitId = typeof item.unit === 'object' ? item.unit.value : item.unit
     const unitData = unitOptions.value.find(u => u.value === unitId)
 
-    // Формируем массив выбранных признаков с полными данными
     const selectedSigns = item.signs.map(signId => {
       const signData = item.signRawData.find(s => s.id === signId)
       if (signData) {
