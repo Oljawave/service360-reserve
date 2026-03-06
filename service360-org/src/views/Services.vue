@@ -67,7 +67,9 @@ const columns = [
   { key: 'index', label: '№' },
   { key: 'name', label: 'Наименование' },
   { key: 'nameMeasure', label: 'Ед. измерения' },
-  { key: 'price', label: 'Стоимость (₸)' },
+  { key: 'quantity', label: 'Количество' },
+  { key: 'price', label: 'Цена за единицу (₸)' },
+  { key: 'cost', label: 'Сумма (₸)' },
   { key: 'description', label: 'Описание' },
 ]
 </script>

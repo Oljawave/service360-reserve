@@ -27,11 +27,27 @@
       />
 
       <AppNumberInput
-        class="col-span-2"
+        id="quantity"
+        label="Количество"
+        placeholder="Введите количество"
+        v-model="form.quantity"
+      />
+
+      <AppNumberInput
         id="price"
-        label="Стоимость (₸)"
-        placeholder="Введите стоимость"
+        label="Цена за единицу (₸)"
+        placeholder="Введите цену"
         v-model="form.price"
+        :allowDecimal="true"
+      />
+
+      <AppNumberInput
+        class="col-span-2"
+        id="cost"
+        label="Сумма (₸)"
+        placeholder="0"
+        v-model="form.cost"
+        :disabled="true"
       />
 
       <AppInput
@@ -47,7 +63,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import ModalWrapper from '@/app/layouts/Modal/ModalWrapper.vue'
 import AppInput from '@/shared/ui/FormControls/AppInput.vue'
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'
@@ -62,13 +78,22 @@ const notificationStore = useNotificationStore()
 const form = ref({
   name: '',
   measure: null,
+  quantity: null,
   price: null,
+  cost: null,
   description: ''
 })
 
 const measureOptions = ref([])
 const loadingMeasures = ref(false)
 const isSaving = ref(false)
+
+watch(
+  () => [form.value.price, form.value.quantity],
+  ([price, quantity]) => {
+    form.value.cost = (price ?? 0) * (quantity ?? 0)
+  }
+)
 
 const loadMeasuresData = async () => {
   loadingMeasures.value = true

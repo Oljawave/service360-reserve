@@ -30,11 +30,27 @@
       />
 
       <AppNumberInput
-        class="col-span-2"
+        id="quantity"
+        label="Количество"
+        placeholder="Введите количество"
+        v-model="form.quantity"
+      />
+
+      <AppNumberInput
         id="price"
-        label="Стоимость (₸)"
-        placeholder="Введите стоимость"
+        label="Цена за единицу (₸)"
+        placeholder="Введите цену"
         v-model="form.price"
+        :allowDecimal="true"
+      />
+
+      <AppNumberInput
+        class="col-span-2"
+        id="cost"
+        label="Сумма (₸)"
+        placeholder="0"
+        v-model="form.cost"
+        :disabled="true"
       />
 
       <AppInput
@@ -58,7 +74,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import ModalWrapper from '@/app/layouts/Modal/ModalWrapper.vue'
 import AppInput from '@/shared/ui/FormControls/AppInput.vue'
 import AppDropdown from '@/shared/ui/FormControls/AppDropdown.vue'
@@ -86,7 +102,9 @@ const canDelete = computed(() => hasPermission('serv:del'))
 const form = ref({
   name: props.serviceData.name || '',
   measure: null,
+  quantity: props.serviceData.quantity ?? null,
   price: props.serviceData.price ?? null,
+  cost: props.serviceData.cost ?? null,
   description: props.serviceData.rawData?.Description || '',
   rawData: props.serviceData.rawData
 })
@@ -94,6 +112,13 @@ const form = ref({
 const measureOptions = ref([])
 const loadingMeasures = ref(false)
 const isSaving = ref(false)
+
+watch(
+  () => [form.value.price, form.value.quantity],
+  ([price, quantity]) => {
+    form.value.cost = (price ?? 0) * (quantity ?? 0)
+  }
+)
 const isDeleting = ref(false)
 const showConfirmModal = ref(false)
 
