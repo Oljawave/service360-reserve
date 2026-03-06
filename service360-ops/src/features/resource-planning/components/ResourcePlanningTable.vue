@@ -21,7 +21,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Существующие строки -->
+          
           <tr v-for="(row, index) in existingRows" :key="row.id || index" class="existing-row">
             <td>{{ getNameLabel(row) }}</td>
             <td v-if="showUnit">{{ getUnitLabel(row) }}</td>
@@ -30,7 +30,6 @@
             <td v-if="showVolume">{{ row.plan || 0 }}</td>
           </tr>
 
-          <!-- Новая строка для добавления -->
           <tr v-if="newRow" class="new-row">
             <td>
               <AppDropdown
@@ -141,7 +140,6 @@ const props = defineProps({
 const emit = defineEmits(['add-row']);
 
 const newRow = ref(null);
-
 
 const showUnit = computed(() => props.resourceType === 'materials');
 const showQuantity = computed(() => ['tools', 'equipment', 'personnel'].includes(props.resourceType));

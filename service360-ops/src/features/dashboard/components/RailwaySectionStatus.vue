@@ -102,18 +102,18 @@ const toggleLegend = (legendType) => {
 const getSegmentColor = (paramsLimit, skewType = null) => {
   if (props.mode === 'skew') {
 
-    if (skewType === 'level') return '#f59e0b'; // откл. от уровня
-    if (skewType === 'skew') return '#ec4899'; // перекос
-    if (skewType === 'subsidence') return '#8b5cf6'; // просадка
-    if (skewType === 'planDeviation') return '#06b6d4'; // откл. в плане
+    if (skewType === 'level') return '#f59e0b'; 
+    if (skewType === 'skew') return '#ec4899'; 
+    if (skewType === 'subsidence') return '#8b5cf6'; 
+    if (skewType === 'planDeviation') return '#06b6d4'; 
     return '#cbd5e1';
   } else if (props.mode === 'width') {
-    // Режим ширины колеи
-    if (paramsLimit < 1516) return '#3b82f6'; // сужение
-    if (paramsLimit > 1538) return '#a855f7'; // уширение
-    return '#cbd5e1'; // Нормальная ширина
+    
+    if (paramsLimit < 1516) return '#3b82f6'; 
+    if (paramsLimit > 1538) return '#a855f7'; 
+    return '#cbd5e1'; 
   } else {
-    // Режим оценки состояния
+    
     if (paramsLimit <= 25) return '#10b981';
     if (paramsLimit <= 80) return '#84cc16';
     if (paramsLimit <= 180) return '#f97316';
@@ -508,7 +508,6 @@ const distanceLabels = computed(() => {
       label: `${Math.round(startKm)}км`
     });
   }
-
 
   const minDistance = step * 0.7; 
   if (labels.length === 0 || labels[labels.length - 1].km < endKm - minDistance) {

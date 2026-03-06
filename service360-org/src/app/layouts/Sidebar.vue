@@ -150,7 +150,7 @@ const filteredItems = computed(() => filterItems(JSON.parse(JSON.stringify(allIt
   display: flex;
   flex-direction: column;
   border-right: 1px solid #e2e8f0;
-  min-height: 100vh;
+  min-height: 100%;
   transition: width 0.3s ease, padding 0.3s ease;
 }
 

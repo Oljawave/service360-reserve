@@ -105,21 +105,18 @@ const form = ref({
   }
 })
 
-// Данные выбранного участка (для beg, end)
 const selectedSectionData = ref(null)
-// Данные выбранного объекта (для координат и границ)
+
 const selectedObjectData = ref(null)
-// Границы объекта и флаг ошибки координат
+
 const objectBounds = ref(null)
 const isCoordinatesOutOfBounds = ref(false)
 
-// Options
 const workOptions = ref([])
 const sectionOptions = ref([])
 const objectTypeOptions = ref([])
 const objectOptions = ref([])
 
-// Loading states
 const loadingWorks = ref(false)
 const loadingSections = ref(false)
 const loadingObjectTypes = ref(false)
@@ -131,9 +128,8 @@ const closeModal = () => {
   emit('close')
 }
 
-// Обработчик выбора работы
 const onWorkChange = async (workId) => {
-  // Сбрасываем зависимые поля
+  
   form.value.section = null
   form.value.objectType = null
   form.value.object = null
@@ -169,9 +165,8 @@ const onWorkChange = async (workId) => {
   }
 }
 
-// Обработчик выбора участка
 const onSectionChange = (sectionId) => {
-  // Сбрасываем зависимые поля
+  
   form.value.objectType = null
   form.value.object = null
   form.value.coordinates = {
@@ -193,11 +188,10 @@ const onSectionChange = (sectionId) => {
     return
   }
 
-  // Находим выбранный участок для получения objObjectTypeMulti и beg/end
   const section = sectionOptions.value.find(s => s.value === sectionId)
   if (section) {
     selectedSectionData.value = section
-    // Тип объекта берём из objObjectTypeMulti выбранного участка
+    
     objectTypeOptions.value = (section.objObjectTypeMulti || []).map(t => ({
       label: t.name,
       value: t.id,
@@ -210,9 +204,8 @@ const onSectionChange = (sectionId) => {
   }
 }
 
-// Обработчик выбора типа объекта
 const onObjectTypeChange = async (objectTypeId) => {
-  // Сбрасываем объект и координаты
+  
   form.value.object = null
   form.value.coordinates = {
     coordStartKm: 0,
@@ -247,7 +240,6 @@ const onObjectTypeChange = async (objectTypeId) => {
   }
 }
 
-// Обработчик выбора объекта
 const onObjectChange = (objectId) => {
   if (!objectId) {
     form.value.coordinates = {
@@ -264,12 +256,10 @@ const onObjectChange = (objectId) => {
     return
   }
 
-  // Находим выбранный объект для получения координат
   const object = objectOptions.value.find(o => o.value === objectId)
   if (object) {
     selectedObjectData.value = object
 
-    // Заполняем координаты из объекта
     const startZv = object.StartLink ?? 0
     const finishZv = object.FinishLink ?? 0
 
@@ -282,7 +272,6 @@ const onObjectChange = (objectId) => {
       coordEndZv: finishZv || null
     }
 
-    // Сохраняем границы объекта для валидации
     objectBounds.value = {
       startAbs: (object.StartKm || 0) * 1000 + (object.StartPicket || 0) * 100 + startZv * 25,
       endAbs: (object.FinishKm || 0) * 1000 + (object.FinishPicket || 0) * 100 + finishZv * 25,
@@ -310,11 +299,9 @@ const onObjectChange = (objectId) => {
   }
 }
 
-// Обработчик изменения координат
 const updateCoordinates = (newCoords) => {
   form.value.coordinates = newCoords
 
-  // Проверка выхода за границы объекта (в реальном времени)
   if (objectBounds.value) {
     const newStartCoordinates = (newCoords.coordStartKm || 0) * 1000 + (newCoords.coordStartPk || 0) * 100 + (newCoords.coordStartZv || 0) * 25
     const newFinishCoordinates = (newCoords.coordEndKm || 0) * 1000 + (newCoords.coordEndPk || 0) * 100 + (newCoords.coordEndZv || 0) * 25
@@ -322,10 +309,8 @@ const updateCoordinates = (newCoords) => {
     const objectStartCoordinates = objectBounds.value.startAbs
     const objectFinishCoordinates = objectBounds.value.endAbs
 
-    // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
     const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates
 
-    // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
     const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates
 
     if (!isStartInBounds || !isFinishInBounds) {
@@ -339,7 +324,6 @@ const updateCoordinates = (newCoords) => {
   }
 }
 
-// Функция форматирования даты
 const formatDateToString = (date) => {
   if (!date) return null
   const d = new Date(date)
@@ -349,7 +333,6 @@ const formatDateToString = (date) => {
   return `${year}-${month}-${day}`
 }
 
-// Валидация формы
 const validateForm = () => {
   if (!form.value.work) {
     notificationStore.showNotification('Не выбрана работа', 'error')
@@ -372,7 +355,6 @@ const validateForm = () => {
     return false
   }
 
-  // Проверка выхода координат за границы объекта
   const coords = form.value.coordinates
   const newStartCoordinates = (coords.coordStartKm || 0) * 1000 + (coords.coordStartPk || 0) * 100 + (coords.coordStartZv || 0) * 25
   const newFinishCoordinates = (coords.coordEndKm || 0) * 1000 + (coords.coordEndPk || 0) * 100 + (coords.coordEndZv || 0) * 25
@@ -393,7 +375,6 @@ const validateForm = () => {
   return true
 }
 
-// Сохранение данных
 const saveData = async () => {
   if (isSaving.value) return
 
@@ -401,17 +382,15 @@ const saveData = async () => {
 
   isSaving.value = true
   try {
-    // Получаем полные данные работы
+    
     const work = typeof form.value.work === 'object'
       ? form.value.work
       : workOptions.value.find(w => w.value === form.value.work)
 
-    // Получаем полные данные участка
     const section = typeof form.value.section === 'object'
       ? form.value.section
       : sectionOptions.value.find(s => s.value === form.value.section)
 
-    // Получаем полные данные объекта
     const object = typeof form.value.object === 'object'
       ? form.value.object
       : objectOptions.value.find(o => o.value === form.value.object)
@@ -438,7 +417,7 @@ const saveData = async () => {
 }
 
 onMounted(async () => {
-  // Загружаем работы при открытии модалки
+  
   loadingWorks.value = true
 
   try {

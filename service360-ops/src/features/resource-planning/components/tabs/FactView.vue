@@ -27,7 +27,7 @@
     <div v-else-if="!hasData" class="empty-state">Данные не найдены</div>
 
     <div v-else class="resources-summary">
-      <!-- Материалы -->
+      
       <div v-if="factData.material && factData.material.length > 0" class="resource-section">
         <div class="section-header">Материалы</div>
         <div class="resource-table">
@@ -40,7 +40,6 @@
         </div>
       </div>
 
-      <!-- Исполнители -->
       <div v-if="factData.personnel && factData.personnel.length > 0" class="resource-section">
         <div class="section-header">Исполнители</div>
         <div class="resource-table">
@@ -57,7 +56,6 @@
         </div>
       </div>
 
-      <!-- Техника -->
       <div v-if="factData.equipment && factData.equipment.length > 0" class="resource-section">
         <div class="section-header">Техника</div>
         <div class="resource-table">
@@ -74,7 +72,6 @@
         </div>
       </div>
 
-      <!-- Инструменты -->
       <div v-if="factData.tool && factData.tool.length > 0" class="resource-section">
         <div class="section-header">Инструменты</div>
         <div class="resource-table">
@@ -91,7 +88,6 @@
         </div>
       </div>
 
-      <!-- Услуги сторонних организаций -->
       <div v-if="factData.service && factData.service.length > 0" class="resource-section">
         <div class="section-header">Услуги сторонних организаций</div>
         <div class="resource-table">

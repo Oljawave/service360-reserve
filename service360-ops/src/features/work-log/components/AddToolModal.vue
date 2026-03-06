@@ -86,7 +86,6 @@ const selectedLocation = ref(null);
 const selectedTools = ref([]);
 const allTools = ref([]);
 
-// Уникальные участки из загруженных инструментов
 const locationOptions = computed(() => {
   const uniqueLocations = new Map();
 
@@ -102,7 +101,6 @@ const locationOptions = computed(() => {
   return Array.from(uniqueLocations.values());
 });
 
-// Отфильтрованные инструменты по выбранному участку
 const filteredTools = computed(() => {
   const locationValue = selectedLocation.value?.value;
   if (!locationValue) {
@@ -114,7 +112,6 @@ const filteredTools = computed(() => {
   );
 });
 
-// Опции для выпадающего списка инструментов
 const toolOptions = computed(() => {
   return filteredTools.value.map(tool => ({
     label: tool.name,
@@ -122,12 +119,10 @@ const toolOptions = computed(() => {
   }));
 });
 
-// Проверка валидности формы
 const isFormValid = computed(() => {
   return selectedLocation.value?.value && selectedTools.value.length > 0;
 });
 
-// Загрузка инструментов при открытии модалки
 watch(() => props.isOpen, async (newValue) => {
   if (newValue) {
     await loadTools();

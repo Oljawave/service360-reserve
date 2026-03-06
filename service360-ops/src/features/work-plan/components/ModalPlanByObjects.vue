@@ -88,17 +88,14 @@ const form = ref({
   objects: []
 })
 
-// Данные выбранного участка (для beg, end)
 const selectedSectionData = ref(null)
 
-// Options
 const workOptions = ref([])
 const placeOptions = ref([])
 const sectionOptions = ref([])
 const objectTypeOptions = ref([])
 const objectOptions = ref([])
 
-// Loading states
 const loadingWorks = ref(false)
 const loadingPlaces = ref(false)
 const loadingSections = ref(false)
@@ -111,9 +108,8 @@ const closeModal = () => {
   emit('close')
 }
 
-// Обработчик выбора работы
 const onWorkChange = () => {
-  // Сбрасываем зависимые поля
+  
   form.value.place = null
   form.value.section = null
   form.value.objectType = null
@@ -124,9 +120,8 @@ const onWorkChange = () => {
   selectedSectionData.value = null
 }
 
-// Обработчик выбора места
 const onPlaceChange = async (placeId) => {
-  // Сбрасываем зависимые поля
+  
   form.value.section = null
   form.value.objectType = null
   form.value.objects = []
@@ -150,9 +145,8 @@ const onPlaceChange = async (placeId) => {
   }
 }
 
-// Обработчик выбора участка
 const onSectionChange = (sectionId) => {
-  // Сбрасываем зависимые поля
+  
   form.value.objectType = null
   form.value.objects = []
   objectOptions.value = []
@@ -163,11 +157,10 @@ const onSectionChange = (sectionId) => {
     return
   }
 
-  // Находим выбранный участок для получения objObjectTypeMulti и beg/end
   const section = sectionOptions.value.find(s => s.value === sectionId)
   if (section) {
     selectedSectionData.value = section
-    // Тип объекта берём из objObjectTypeMulti выбранного участка
+    
     objectTypeOptions.value = (section.objObjectTypeMulti || []).map(t => ({
       label: t.name,
       value: t.id,
@@ -180,9 +173,8 @@ const onSectionChange = (sectionId) => {
   }
 }
 
-// Обработчик выбора типа объекта
 const onObjectTypeChange = async (objectTypeId) => {
-  // Сбрасываем объекты
+  
   form.value.objects = []
 
   if (!objectTypeId || !form.value.place || !selectedSectionData.value) {
@@ -253,12 +245,11 @@ const saveData = async () => {
 
   isSaving.value = true
   try {
-    // Получаем полные данные работы
+    
     const work = typeof form.value.work === 'object'
       ? form.value.work
       : workOptions.value.find(w => w.value === form.value.work)
 
-    // Получаем полные данные выбранных объектов
     const selectedObjects = form.value.objects.map(objId => {
       return objectOptions.value.find(o => o.value === objId)
     }).filter(Boolean)
@@ -283,7 +274,7 @@ const saveData = async () => {
 }
 
 onMounted(async () => {
-  // Загружаем работы и места при открытии модалки
+  
   loadingWorks.value = true
   loadingPlaces.value = true
 

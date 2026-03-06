@@ -41,7 +41,6 @@ const props = defineProps({
 
 defineEmits(['eventDoubleClick']);
 
-// Используем composable для работы со статусами
 const { getStatusText, getStatusClass } = useWorkPlanStatus();
 
 const hasCoordinates = (event) => {

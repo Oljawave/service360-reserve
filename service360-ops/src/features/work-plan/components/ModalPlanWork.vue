@@ -171,7 +171,7 @@ const loadingWorks = ref(false)
 const isAddingObject = ref(false)
 
 const isDateDisabled = () => {
-  return false; // Разрешаем выбирать любую дату
+  return false; 
 };
 
 const closeModal = () => {
@@ -211,7 +211,6 @@ const validateForm = () => {
       return false
     }
 
-    // Проверка выхода за границы объекта (бизнес-логика)
     const coords = obj.coordinates
     const newStartCoordinates = (coords.coordStartKm || 0) * 1000 + (coords.coordStartPk || 0) * 100 + (coords.coordStartZv || 0) * 25
     const newFinishCoordinates = (coords.coordEndKm || 0) * 1000 + (coords.coordEndPk || 0) * 100 + (coords.coordEndZv || 0) * 25
@@ -220,10 +219,8 @@ const validateForm = () => {
       const objectStartCoordinates = obj.objectBounds.startAbs
       const objectFinishCoordinates = obj.objectBounds.endAbs
 
-      // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
       const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates
 
-      // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
       const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates
 
       if (!isStartInBounds || !isFinishInBounds) {
@@ -535,7 +532,6 @@ const updateCoordinates = async (index, newCoords) => {
   const objectForm = form.value.objects[index]
   objectForm.coordinates = newCoords
 
-  // Проверка выхода за границы объекта (в реальном времени)
   if (objectForm.objectBounds) {
     const newStartCoordinates = (newCoords.coordStartKm || 0) * 1000 + (newCoords.coordStartPk || 0) * 100 + (newCoords.coordStartZv || 0) * 25
     const newFinishCoordinates = (newCoords.coordEndKm || 0) * 1000 + (newCoords.coordEndPk || 0) * 100 + (newCoords.coordEndZv || 0) * 25
@@ -543,10 +539,8 @@ const updateCoordinates = async (index, newCoords) => {
     const objectStartCoordinates = objectForm.objectBounds.startAbs
     const objectFinishCoordinates = objectForm.objectBounds.endAbs
 
-    // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
     const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates
 
-    // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
     const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates
 
     if (!isStartInBounds || !isFinishInBounds) {

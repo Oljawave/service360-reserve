@@ -902,7 +902,6 @@ watch(
     const existingData = await loadExistingData(rec);
     loadComponents();
 
-    // Если есть существующий осмотр — разблокируем табы
     if (existingData?.length > 0) {
       const last = existingData[existingData.length - 1];
       if (last?.id) {

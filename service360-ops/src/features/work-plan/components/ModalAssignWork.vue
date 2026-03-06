@@ -93,7 +93,7 @@ const incidentOptions = computed(() => {
 
 const isDateDisabled = (timestamp) => {
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Устанавливаем время на начало дня
+  today.setHours(0, 0, 0, 0); 
   return timestamp < today.getTime();
 };
 
@@ -123,7 +123,7 @@ const onIncidentTypeChange = async (selectedIncidentValue) => {
   form.value.criticality = null;
   form.value.section = null;
   sectionOptions.value = [];
-  // Очищаем список работ при смене инцидента
+  
   form.value.workType = null;
   workTypeOptions.value = [];
 
@@ -137,7 +137,6 @@ const onIncidentTypeChange = async (selectedIncidentValue) => {
   selectedIncident.value = selectedIncidentOption.fullIncidentData;
   const incidentData = selectedIncidentOption.fullIncidentData.rawData;
 
-  // Загружаем работы для объекта этого инцидента
   if (incidentData.objObject) {
     loadingWorks.value = true;
     try {
@@ -151,7 +150,6 @@ const onIncidentTypeChange = async (selectedIncidentValue) => {
     }
   }
 
-  // Устанавливаем критичность из данных инцидента
   if (incidentData.fvCriticality) {
     const foundCriticality = criticalityOptions.value.find(
       c => c.value === incidentData.fvCriticality
@@ -161,7 +159,6 @@ const onIncidentTypeChange = async (selectedIncidentValue) => {
     }
   }
 
-  // Загружаем участки на основе координат инцидента
   const coords = {
     coordStartKm: incidentData.StartKm,
     coordStartPk: incidentData.StartPicket,
@@ -171,7 +168,6 @@ const onIncidentTypeChange = async (selectedIncidentValue) => {
     coordEndZv: incidentData.FinishLink || null,
   };
 
-  // Загружаем участки, если выбрана и работа
   if (form.value.workType?.value && coords.coordStartKm !== null && coords.coordEndKm !== null) {
     await loadSections(coords, form.value.workType.value);
   }
@@ -220,7 +216,6 @@ const loadSections = async (coords, workId) => {
         fullRecord: s
       }));
 
-      // Если только один участок, выбираем его автоматически
       if (sections.length === 1) {
         form.value.section = sectionOptions.value[0];
       }
@@ -244,7 +239,7 @@ onMounted(async () => {
   } catch (error) {
     notificationStore.showNotification('Ошибка при загрузке данных', 'error');
   } finally {
-    // Загрузка работ теперь происходит при выборе инцидента
+    
     loadingWorks.value = false;
     loadingCriticality.value = false;
   }

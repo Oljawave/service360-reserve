@@ -129,7 +129,6 @@ const startEdit = async (index, currentValue) => {
   editingIndex.value = index;
   editingValue.value = currentValue;
 
-
   try {
     let options = [];
 

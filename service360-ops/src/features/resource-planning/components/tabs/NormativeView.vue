@@ -13,7 +13,7 @@
     <div v-else-if="!hasData" class="empty-state">Нормативы не найдены</div>
 
     <div v-else class="resources-summary">
-      <!-- Материалы -->
+      
       <div v-if="normative.material && normative.material.length > 0" class="resource-section">
         <div class="section-header">Материалы</div>
         <div class="resource-table">
@@ -26,7 +26,6 @@
         </div>
       </div>
 
-      <!-- Исполнители -->
       <div v-if="normative.personnel && normative.personnel.length > 0" class="resource-section">
         <div class="section-header">Исполнители</div>
         <div class="resource-table">
@@ -43,7 +42,6 @@
         </div>
       </div>
 
-      <!-- Техника -->
       <div v-if="normative.equipment && normative.equipment.length > 0" class="resource-section">
         <div class="section-header">Техника</div>
         <div class="resource-table">
@@ -60,7 +58,6 @@
         </div>
       </div>
 
-      <!-- Инструменты -->
       <div v-if="normative.tool && normative.tool.length > 0" class="resource-section">
         <div class="section-header">Инструменты</div>
         <div class="resource-table">
@@ -77,7 +74,6 @@
         </div>
       </div>
 
-      <!-- Услуги сторонних организаций -->
       <div v-if="normative.service && normative.service.length > 0" class="resource-section">
         <div class="section-header">Услуги сторонних организаций</div>
         <div class="resource-table">

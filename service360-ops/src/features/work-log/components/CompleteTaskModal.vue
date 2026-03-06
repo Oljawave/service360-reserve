@@ -9,7 +9,6 @@
         <h3 class="summary-title">Свод по фактическим ресурсам</h3>
         <p class="modal-description">Проверьте заполненные данные перед завершением задачи</p>
 
- 
         <div class="resources-summary">
 
           <div v-if="resources.materials && resources.materials.length > 0" class="resource-section">

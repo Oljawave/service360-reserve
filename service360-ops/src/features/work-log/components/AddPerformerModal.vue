@@ -121,12 +121,10 @@ const performerOptions = computed(() => {
   }));
 });
 
-
 const isFormValid = computed(() => {
  
   return selectedLocation.value?.value && selectedPerformers.value.length > 0;
 });
-
 
 watch(() => props.isOpen, async (newValue) => {
   if (newValue) {

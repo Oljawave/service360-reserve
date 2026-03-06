@@ -2,7 +2,7 @@
   <div class="resource-edit-section">
     <div class="section-header">
       <h3 class="section-title">{{ title }}</h3>
-      <!-- Кнопка "Добавить строку" для не-исполнителей, кроме инструментов и техники -->
+      
       <button v-if="!isPerformer && !isTool && !isEquipment" class="add-row-button" @click="addNewRow" :disabled="isReadOnly || !canInsert">
         <Plus :size="18" />
         Добавить строку
@@ -27,7 +27,7 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Существующие строки -->
+          
           <template v-for="(row, index) in existingRows" :key="row.id || index">
             <tr class="existing-row">
               <td v-if="isPerformer || isTool || isEquipment" class="expand-column">
@@ -39,10 +39,9 @@
                   <ChevronRight :size="18" :class="{ rotated: row.expanded }" />
                 </button>
               </td>
-              <!-- Наименование -->
+              
               <td>{{ getNameLabel(row.name) }}</td>
 
-              <!-- Обычные ресурсы (материалы, услуги): Ед. изм., План, Факт, Действия -->
               <td v-if="!isPerformer && !isTool && !isEquipment">{{ row.unit_text || row.unit || 'ед.' }}</td>
               <td v-if="!isPerformer && !isTool && !isEquipment">{{ row.plan }}</td>
               <td v-if="!isPerformer && !isTool && !isEquipment" class="fact-input-cell">
@@ -76,7 +75,6 @@
                 </div>
               </td>
 
-              <!-- Исполнители, Инструменты, Техника: Количество (План/Факт) -->
               <td v-if="isPerformer || isTool || isEquipment" class="plan-fact-cell">
                 <div class="plan-fact-data">
                   <span>План: {{ row.planCount }}</span>
@@ -84,7 +82,6 @@
                 </div>
               </td>
 
-              <!-- Исполнители, Техника: Время (План/Факт) -->
               <td v-if="isPerformer || isEquipment" class="plan-fact-cell">
                 <div class="plan-fact-data">
                   <span>План: {{ row.planHours }}</span>
@@ -93,7 +90,6 @@
               </td>
             </tr>
 
-            <!-- Раскрывающаяся секция для исполнителей -->
             <tr v-if="isPerformer && row.expanded" class="expanded-row">
               <td colspan="4" class="expanded-content">
                 <div class="performers-detail">
@@ -110,7 +106,7 @@
                   </div>
 
                   <div class="performers-list">
-                    <!-- Список существующих исполнителей -->
+                    
                     <div
                       v-for="(performer, pIndex) in row.performers"
                       :key="`existing-${row.id || index}-${pIndex}`"
@@ -166,7 +162,6 @@
               </td>
             </tr>
 
-            <!-- Раскрывающаяся секция для инструментов -->
             <tr v-if="isTool && row.expanded" class="expanded-row">
               <td colspan="3" class="expanded-content">
                 <div class="performers-detail">
@@ -183,7 +178,7 @@
                   </div>
 
                   <div class="performers-list">
-                    <!-- Список существующих единиц инструментов -->
+                    
                     <div
                       v-for="(detail, dIndex) in row.details"
                       :key="`existing-${row.id || index}-${dIndex}`"
@@ -239,7 +234,6 @@
               </td>
             </tr>
 
-            <!-- Раскрывающаяся секция для техники -->
             <tr v-if="isEquipment && row.expanded" class="expanded-row">
               <td colspan="4" class="expanded-content">
                 <div class="performers-detail">
@@ -256,7 +250,7 @@
                   </div>
 
                   <div class="performers-list">
-                    <!-- Список существующих единиц техники -->
+                    
                     <div
                       v-for="(detail, dIndex) in row.details"
                       :key="`existing-${row.id || index}-${dIndex}`"

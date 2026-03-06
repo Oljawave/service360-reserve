@@ -189,7 +189,6 @@ const initializeExistingRows = (rows) => {
         ? row.performerDetails
         : []; 
 
-    
       const { factCount, factHours } = calculatePerformerFacts(performers);
 
       return {

@@ -109,7 +109,6 @@ const isCopyDateEndDisabled = (timestamp) => {
   const maxDate = new Date(periodBounds.value.dend);
   maxDate.setHours(0, 0, 0, 0);
 
-  // Если выбрана дата начала копируемого периода, конец не может быть меньше начала
   if (form.value.copyDateStart) {
     const copyStart = new Date(form.value.copyDateStart);
     copyStart.setHours(0, 0, 0, 0);
@@ -122,27 +121,23 @@ const isCopyDateEndDisabled = (timestamp) => {
   return date < minDate || date > maxDate;
 };
 
-// Вычисляем длительность копируемого периода в днях
 const copyDuration = computed(() => {
   if (!form.value.copyDateStart || !form.value.copyDateEnd) return 0;
-  // Добавляем 1, чтобы учесть включительно оба дня (начало и конец)
+  
   return Math.floor((form.value.copyDateEnd - form.value.copyDateStart) / (1000 * 60 * 60 * 24)) + 1;
 });
 
-// Следим за изменением даты начала планируемого периода
 watch(() => form.value.planDateStart, (newPlanStart) => {
   if (newPlanStart && copyDuration.value > 0) {
-    // Автоматически вычисляем дату окончания на основе длительности копируемого периода
-    // Вычитаем 1, так как copyDuration уже включает оба дня (начало и конец)
+    
     const endDate = new Date(newPlanStart);
     endDate.setDate(endDate.getDate() + copyDuration.value - 1);
     form.value.planDateEnd = endDate;
   }
 });
 
-// Следим за изменением дат копируемого периода
 watch([() => form.value.copyDateStart, () => form.value.copyDateEnd], () => {
-  // Пересчитываем planDateEnd если planDateStart уже выбран
+  
   if (form.value.planDateStart && copyDuration.value > 0) {
     const endDate = new Date(form.value.planDateStart);
     endDate.setDate(endDate.getDate() + copyDuration.value - 1);
@@ -160,17 +155,12 @@ const isPlanDateEndDisabled = (timestamp) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  // Даты в прошлом недоступны
   if (timestamp < today.getTime()) return true;
 
-  // Если не выбрана дата начала планируемого периода, блокируем все даты
   if (!form.value.planDateStart) return true;
 
-  // Если нет длительности копируемого периода, не блокируем
   if (copyDuration.value === 0) return false;
 
-  // Вычисляем правильную дату окончания
-  // Вычитаем 1, так как copyDuration уже включает оба дня (начало и конец)
   const correctEndDate = new Date(form.value.planDateStart);
   correctEndDate.setDate(correctEndDate.getDate() + copyDuration.value - 1);
   correctEndDate.setHours(0, 0, 0, 0);
@@ -178,7 +168,6 @@ const isPlanDateEndDisabled = (timestamp) => {
   const date = new Date(timestamp);
   date.setHours(0, 0, 0, 0);
 
-  // Разрешаем выбирать только правильную дату окончания
   return date.getTime() !== correctEndDate.getTime();
 };
 
@@ -252,7 +241,6 @@ const validateForm = () => {
     return false
   }
 
-  // Проверка что дата окончания больше даты начала
   if (form.value.copyDateEnd < form.value.copyDateStart) {
     notificationStore.showNotification('Дата окончания копируемого периода не может быть меньше даты начала', 'error')
     return false
@@ -263,7 +251,6 @@ const validateForm = () => {
     return false
   }
 
-  // Проверка равенства длительности периодов
   const copyDuration = Math.floor((form.value.copyDateEnd - form.value.copyDateStart) / (1000 * 60 * 60 * 24))
   const planDuration = Math.floor((form.value.planDateEnd - form.value.planDateStart) / (1000 * 60 * 60 * 24))
 
@@ -287,16 +274,14 @@ const saveData = async () => {
 
   isSaving.value = true
   try {
-    // Формируем массив ID выбранных работ
+    
     const idsWorkPlan = props.selectedRows;
 
-    // Форматируем даты в строки YYYY-MM-DD
     const dbegCopy = formatDateToString(form.value.copyDateStart);
     const dendCopy = formatDateToString(form.value.copyDateEnd);
     const dbegPlan = formatDateToString(form.value.planDateStart);
     const dendPlan = formatDateToString(form.value.planDateEnd);
 
-    // Вызываем API для копирования плана
     await copyPlan(idsWorkPlan, dbegCopy, dendCopy, dbegPlan, dendPlan);
 
     notificationStore.showNotification(`Скопировано ${props.selectedRows.length} работ(ы)`, 'success')

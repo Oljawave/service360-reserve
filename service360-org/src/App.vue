@@ -71,15 +71,16 @@ watch(
 <style scoped>
 .app-layout {
   display: flex;
-  height: 100vh;
-  overflow: hidden; 
+  height: calc(100vh / 0.90);
+  overflow: hidden;
 }
 
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden; 
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .login-layout {

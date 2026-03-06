@@ -233,7 +233,7 @@ import {
   loadParameterEntriesForInspection
 } from '@/shared/api/inspections/inspectionsApi';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
-import { deleteFaultOrParameter } from '@/shared/api/defects/faultApi'; // Импорт метода удаления
+import { deleteFaultOrParameter } from '@/shared/api/defects/faultApi';
 import { formatDate } from '@/app/stores/date.js';
 
 const props = defineProps({
@@ -266,7 +266,7 @@ const canSaveChanges = computed(() => {
   if (activeTab.value === 'parameters') {
     return canInsertParameter.value;
   }
-  return false; // По умолчанию кнопка не показывается
+  return false; 
 });
 
 const isSaving = ref(false);
@@ -283,11 +283,9 @@ const visibleTabs = computed(() => allTabs.value);
 const activeTab = ref(null);
 
 onMounted(async () => {
-  // Устанавливаем активную вкладку на первую видимую
+  
   if (visibleTabs.value.length > 0) {
     activeTab.value = visibleTabs.value[0].name;
-
-    // Загружаем данные для первой вкладки, если есть inspectionId
     if (savedInspectionId.value) {
       if (activeTab.value === 'defects') {
         await loadExistingDefects(savedInspectionId.value);

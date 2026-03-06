@@ -124,10 +124,8 @@ import { updateDraft, deleteDraft } from '@/shared/offline/draftsStore';
 
 const props = defineProps({
   record: { type: Object, default: null },
-  // draftId = ID дочернего черновика параметра в Dexie
   draftId: { type: Number, default: null },
   formFields: { type: Object, default: null },
-  // parentDraftId = ID родительского info-черновика (для справки)
   parentDraftId: { type: Number, default: null },
 });
 
@@ -139,7 +137,6 @@ const isSaving = ref(false);
 const savedInspectionId = ref(null);
 const existingParameters = ref([]);
 
-// Значения из черновика — фиксированные хинты для лейблов
 const draftMinValue = ref(null);
 const draftMaxValue = ref(null);
 const draftValue = ref(null);
@@ -191,8 +188,6 @@ const loadExistingParameters = async (inspectionId) => {
   }
 };
 
-// ── Dropdowns ─────────────────────────────────────────────────────────────
-
 const loadComponents = async () => {
   if (!props.record?.objObject) return;
   loadingComponents.value = true;
@@ -238,8 +233,6 @@ const handleParameterChange = (selected) => {
   paramForm.value.value = '';
 };
 
-// ── OFFLINE: Dexie ────────────────────────────────────────────────────────
-
 const saveAsDraft = async () => {
   try {
     const fields = {
@@ -262,8 +255,6 @@ const saveAsDraft = async () => {
     notificationStore.showNotification('Не удалось сохранить черновик.', 'error');
   }
 };
-
-// ── ONLINE: API ───────────────────────────────────────────────────────────
 
 const submitOnline = async () => {
   if (isSaving.value || !savedInspectionId.value) return;
@@ -309,10 +300,8 @@ const submitOnline = async () => {
   }
 };
 
-// ── Init ──────────────────────────────────────────────────────────────────
-
 onMounted(async () => {
-  // Pre-fill from saved draft fields
+ 
   const f = props.formFields?.parameter;
   if (f) {
     if (f.startCoordinates) Object.assign(paramForm.value.startCoordinates, f.startCoordinates);
@@ -322,17 +311,14 @@ onMounted(async () => {
     paramForm.value.maxValue = f.maxValue ?? null;
     paramForm.value.value = f.value || '';
     paramForm.value.note = f.note || '';
-    // Фиксируем черновые значения для лейблов — не меняются при выборе компонента/параметра
     draftMinValue.value = f.minValue ?? null;
     draftMaxValue.value = f.maxValue ?? null;
     draftValue.value = f.value || null;
   }
 
   if (isOnline.value) {
-    // Load components for dropdowns
     await loadComponents();
 
-    // Try to find the existing inspection for this work plan
     if (props.record?.id && props.record?.pv) {
       try {
         const inspections = await loadInspectionEntriesForWorkPlan(props.record.id, props.record.pv);

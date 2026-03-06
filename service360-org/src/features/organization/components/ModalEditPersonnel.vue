@@ -193,7 +193,7 @@ const form = ref({
   location: null,
   sex: null,
   email: props.personnelData.email || '',
-  phone: props.personnelData.phone || '',
+  phone: props.personnelData.phone ? '+7' + props.personnelData.phone : '',
   dateBirth: formatDateForInput(props.personnelData.rawData?.UserDateBirth),
   dateEmployment: formatDateForInput(props.personnelData.rawData?.DateEmployment),
   dateDismissal: formatDateForInput(props.personnelData.rawData?.DateDismissal),
@@ -294,7 +294,10 @@ const saveData = async () => {
       return
     }
 
-    await updatePersonnel(form.value)
+    await updatePersonnel({
+      ...form.value,
+      phone: form.value.phone.replace(/^\+7/, '')
+    })
 
     notificationStore.showNotification('Сотрудник успешно обновлен', 'success')
 

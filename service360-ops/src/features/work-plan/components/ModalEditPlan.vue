@@ -142,7 +142,6 @@ const modalTitle = computed(() => {
   return canUpdate.value ? 'Редактировать плановую работу' : 'Просмотр плановой работы'
 })
 
-
 const form = ref({
   work: null,
   place: null,
@@ -185,7 +184,7 @@ const selectedWorkData = ref(null)
 const selectedObjectData = ref(null)
 const selectedSectionData = ref(null)
 
-const showConfirmationModal = ref(false) // State for the confirmation modal
+const showConfirmationModal = ref(false) 
 
 const closeModal = () => emit('close')
 
@@ -213,7 +212,6 @@ const saveData = async () => {
       return
     }
 
-    // Проверка выхода за границы объекта (бизнес-логика)
     const newStartCoordinates = coordinates.value.coordStartKm * 1000 + coordinates.value.coordStartPk * 100 + coordinates.value.coordStartZv * 25
     const newFinishCoordinates = coordinates.value.coordEndKm * 1000 + coordinates.value.coordEndPk * 100 + coordinates.value.coordEndZv * 25
 
@@ -221,10 +219,8 @@ const saveData = async () => {
       const objectStartCoordinates = objectBounds.value.startAbs
       const objectFinishCoordinates = objectBounds.value.endAbs
 
-      // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
       const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates
 
-      // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
       const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates
 
       if (!isStartInBounds || !isFinishInBounds) {
@@ -291,7 +287,6 @@ const saveData = async () => {
   }
 }
 
-// Function to show the confirmation modal
 const confirmDelete = () => {
   showConfirmationModal.value = true
 }
@@ -299,7 +294,7 @@ const confirmDelete = () => {
 const deletePlan = async () => {
   if (isDeleting.value) return
 
-  showConfirmationModal.value = false // Close the confirmation modal
+  showConfirmationModal.value = false 
   isDeleting.value = true
   try {
     await deletePlanApi(props.rowData.rawData.id)
@@ -393,12 +388,9 @@ const onObjectTypeChange = async (selectedObjectTypeId) => {
   }))
 }
 
-// Функция для парсинга координат из строки nameObject
-// Пример строки: "Перегон [30км 1пк 1зв - 46км 9пк 4зв] [ЖД пути на перегоне] [Сарыжаз -Шалабай]"
 const parseCoordinatesFromName = (nameObject) => {
   if (!nameObject) return null
 
-  // Ищем координаты в квадратных скобках формата [Xкм Yпк Zзв - Aкм Bпк Cзв]
   const coordPattern = /\[(\d+)км\s+(\d+)пк\s+(\d+)зв\s*-\s*(\d+)км\s+(\d+)пк\s+(\d+)зв\]/
   const match = nameObject.match(coordPattern)
 
@@ -426,7 +418,6 @@ const onObjectChange = async (selectedObjectId) => {
 
   selectedObjectData.value = record
 
-  // Пытаемся получить звенья из record, если нет - парсим из nameObject
   let startZv = record.StartLink
   let finishZv = record.FinishLink
 
@@ -438,7 +429,6 @@ const onObjectChange = async (selectedObjectId) => {
     }
   }
 
-  // Если всё равно null/undefined, ставим 0
   startZv = startZv ?? 0
   finishZv = finishZv ?? 0
 
@@ -522,7 +512,6 @@ const onSectionChange = (selectedSectionId) => {
 const updateCoordinates = async (newCoordinates) => {
   coordinates.value = newCoordinates
 
-  // Проверка выхода за границы объекта (в реальном времени)
   if (objectBounds.value) {
     const newStartCoordinates = newCoordinates.coordStartKm * 1000 + newCoordinates.coordStartPk * 100 + newCoordinates.coordStartZv * 25
     const newFinishCoordinates = newCoordinates.coordEndKm * 1000 + newCoordinates.coordEndPk * 100 + newCoordinates.coordEndZv * 25
@@ -530,10 +519,8 @@ const updateCoordinates = async (newCoordinates) => {
     const objectStartCoordinates = objectBounds.value.startAbs
     const objectFinishCoordinates = objectBounds.value.endAbs
 
-    // Проверка: ObjectStartCoordinates <= NewStartCoordinates <= ObjectFinishCoordinates
     const isStartInBounds = newStartCoordinates >= objectStartCoordinates && newStartCoordinates <= objectFinishCoordinates
 
-    // Проверка: ObjectStartCoordinates <= NewFinishCoordinates <= ObjectFinishCoordinates
     const isFinishInBounds = newFinishCoordinates >= objectStartCoordinates && newFinishCoordinates <= objectFinishCoordinates
 
     if (!isStartInBounds || !isFinishInBounds) {
@@ -593,7 +580,6 @@ const restoreFullSelection = async () => {
 
     selectedObjectData.value = targetRecord
 
-    // Пытаемся получить звенья из targetRecord, если нет - парсим из nameObject
     let startZv = targetRecord.StartLink
     let finishZv = targetRecord.FinishLink
 
@@ -605,7 +591,6 @@ const restoreFullSelection = async () => {
       }
     }
 
-    // Если всё равно null/undefined, ставим 0
     startZv = startZv ?? 0
     finishZv = finishZv ?? 0
 

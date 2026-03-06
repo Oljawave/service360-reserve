@@ -8,7 +8,7 @@
     :loading="isSaving"
   >
     <div class="work-card-content">
-      <!-- Основной контент с табами -->
+      
       <div v-show="!showNorma && !showFact">
           <WorkHeaderInfo :record="record" :section="section" :date="date" />
           <div class="tabs-block">
@@ -119,7 +119,6 @@
           </div>
         </div>
 
-      <!-- Нормативы -->
       <NormativeView
         v-if="showNorma"
         :objWork="normaObjWork"
@@ -129,7 +128,6 @@
         @apply="onNormaApply"
       />
 
-      <!-- Факт -->
       <FactView
         v-if="showFact"
         :objWork="factObjWork"
@@ -433,7 +431,6 @@ const saveAsDraft = async () => {
       objLocationClsSection: props.record?.objLocationClsSection,
       pvLocationClsSection: props.record?.pvLocationClsSection,
     }, formData);
-
 
     if (props.draftId) {
       await deleteDraft(props.draftId);

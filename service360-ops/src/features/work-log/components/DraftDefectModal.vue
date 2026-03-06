@@ -117,10 +117,8 @@ import { updateDraft, deleteDraft } from '@/shared/offline/draftsStore';
 
 const props = defineProps({
   record: { type: Object, default: null },
-  // draftId = ID дочернего черновика дефекта в Dexie
   draftId: { type: Number, default: null },
   formFields: { type: Object, default: null },
-  // parentDraftId = ID родительского info-черновика (для справки, не используется при submit)
   parentDraftId: { type: Number, default: null },
 });
 
@@ -174,8 +172,6 @@ const loadExistingDefects = async (inspectionId) => {
   }
 };
 
-// ── Dropdowns ─────────────────────────────────────────────────────────────
-
 const loadComponents = async () => {
   if (!props.record?.objObject) return;
   loadingComponents.value = true;
@@ -205,8 +201,6 @@ const handleComponentChange = async (selected) => {
   }
 };
 
-// ── OFFLINE: Dexie ────────────────────────────────────────────────────────
-
 const saveAsDraft = async () => {
   try {
     const fields = {
@@ -226,8 +220,6 @@ const saveAsDraft = async () => {
     notificationStore.showNotification('Не удалось сохранить черновик.', 'error');
   }
 };
-
-// ── ONLINE: API ───────────────────────────────────────────────────────────
 
 const submitOnline = async () => {
   if (isSaving.value || !savedInspectionId.value) return;
@@ -270,10 +262,8 @@ const submitOnline = async () => {
   }
 };
 
-// ── Init ──────────────────────────────────────────────────────────────────
-
 onMounted(async () => {
-  // Pre-fill from saved draft fields
+
   const f = props.formFields?.defect;
   if (f) {
     if (f.startCoordinates) Object.assign(defectForm.value.startCoordinates, f.startCoordinates);
@@ -283,10 +273,9 @@ onMounted(async () => {
   }
 
   if (isOnline.value) {
-    // Load components for dropdowns
+
     await loadComponents();
 
-    // Try to find the existing inspection for this work plan
     if (props.record?.id && props.record?.pv) {
       try {
         const inspections = await loadInspectionEntriesForWorkPlan(props.record.id, props.record.pv);

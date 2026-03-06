@@ -171,7 +171,6 @@ const fillFormWithData = () => {
   form.value.criticality = foundCriticality || null;
   form.value.criticalityName = foundCriticality ? foundCriticality.label : 'Не указана';
   
-  
   form.value.parsedCoordinates = {
     coordStartKm: rawData.StartKm || null, 
     coordStartPk: rawData.StartPicket || null,
@@ -212,7 +211,6 @@ const saveChanges = async () => {
   const payload = {
     id: rawData.id, 
 
-    
     idCriticality: rawData.idCriticality,
     idInfoApplicant: rawData.idInfoApplicant,
     idDescription: rawData.idDescription,
@@ -296,7 +294,6 @@ const onConfirmDelete = async () => {
 .col-span-2 {
   grid-column: span 2;
 }
-
 
 @media (max-width: 1024px) {
   .form-section {

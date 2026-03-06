@@ -129,7 +129,6 @@ const emit = defineEmits(['update:rows', 'save-row', 'add-row', 'delete-row']);
 
 const newRow = ref(null);
 
-
 const getNameLabel = (value) => {
   const option = props.nameOptions.find((opt) => opt.value === value);
 
@@ -155,7 +154,6 @@ const saveFact = (index) => {
     isExisting: true,
   });
 };
-
 
 const addNewRow = () => {
   if (!newRow.value) {
