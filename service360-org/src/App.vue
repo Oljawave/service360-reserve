@@ -83,7 +83,7 @@ watch(
 }
 
 .login-layout {
-  height: 100vh;
+  height: calc(100vh / 0.90);
   display: flex;
   justify-content: center;
   align-items: center;

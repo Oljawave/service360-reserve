@@ -5,8 +5,9 @@
   font-style: normal;
 }
 
-html {
-  zoom: 0.90;
+html,
+body {
+  height: 100%;
 }
 
 body {
@@ -15,5 +16,12 @@ body {
   background-color: #F8FAFC;
   margin: 0;
   padding: 0;
-  height: 100%;
+}
+
+#app {
+  zoom: 0.90;
+}
+
+.n-base-select-menu {
+  zoom: 0.90;
 }
