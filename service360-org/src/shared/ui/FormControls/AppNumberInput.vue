@@ -73,7 +73,7 @@ const handleInput = (newValue) => {
     return
   }
 
-  let value = props.allowDecimal ? Number(newValue) : Math.floor(Number(newValue))
+  let value = props.allowDecimal ? Math.round(Number(newValue) * 1000) / 1000 : Math.floor(Number(newValue))
 
   if (value < props.min) {
     value = props.min
