@@ -96,17 +96,17 @@ const props = defineProps({
       coordEndZv: null
     })
   },
-  // Добавляем пропс required с default: false
+  
   required: {
     type: Boolean,
     default: false
   },
-  // Добавляем пропс disabled с default: false
+  
   disabled: {
     type: Boolean,
     default: false
   },
-  // Флаг ошибки выхода за границы объекта
+  
   outOfBoundsError: {
     type: Boolean,
     default: false
@@ -128,7 +128,6 @@ const currentEndKm = computed(() => props.modelValue.coordEndKm ?? null)
 const currentEndPk = computed(() => props.modelValue.coordEndPk ?? null)
 const currentEndZv = computed(() => props.modelValue.coordEndZv ?? null)
 
-// Расчет абсолютной координаты
 const startAbs = computed(() => {
   const km = currentStartKm.value ?? 0
   const pk = currentStartPk.value ?? 0
@@ -143,7 +142,6 @@ const endAbs = computed(() => {
   return km * 1000 + pk * 100 + zv * 25
 })
 
-// Проверка на пустые обязательные поля
 const hasEmptyRequiredFields = computed(() => {
   if (!props.required) return false
   return currentStartKm.value === null || currentStartKm.value === 0 ||
@@ -155,16 +153,14 @@ const hasEmptyRequiredFields = computed(() => {
 })
 
 const isInvalid = computed(() => {
-  // Не проверяем диапазон если есть пустые поля
+  
   if (hasEmptyRequiredFields.value) return false
   return startAbs.value > endAbs.value
 })
 
-// Computed для определения статуса каждого поля
 const getFieldStatus = (field) => {
   if (!shouldShowError.value) return null
 
-  // Проверка на пустое обязательное поле
   if (props.required) {
     const value = props.modelValue[field]
     if (value === null || value === 0 || value === '') {
@@ -178,7 +174,6 @@ const getFieldStatus = (field) => {
   return null
 }
 
-// Валидация отдельных полей
 const fieldErrors = ref({
   coordStartKm: null,
   coordStartPk: null,
@@ -224,7 +219,7 @@ const updateCoords = (field, value) => {
 }
 
 const handleStartKm = (value) => {
-  // Проверяем сначала исходное значение
+  
   if (value === 0) {
     fieldErrors.value.coordStartKm = 'Значение не может быть меньше 1'
     updateCoords('coordStartKm', value)
@@ -297,18 +292,16 @@ const handleEndZv = (value) => {
 }
 
 const performValidation = () => {
-  // Не показываем уведомления при начальной загрузке
+  
   if (isInitialMount.value) {
     return
   }
 
-  // Проверка на пустые обязательные поля
   if (hasEmptyRequiredFields.value) {
     notificationStore.showNotification('Необходимо заполнить все координаты', 'error')
     return
   }
 
-  // Проверка ошибок полей
   const hasFieldErrors = Object.values(fieldErrors.value).some(err => err !== null)
   if (hasFieldErrors) {
     const firstError = Object.values(fieldErrors.value).find(err => err !== null)
@@ -324,7 +317,7 @@ const performValidation = () => {
 const handleFocus = () => {
   isUserTyping.value = true
   shouldShowError.value = false
-  // Когда пользователь начинает взаимодействовать, снимаем флаг начальной загрузки
+  
   isInitialMount.value = false
 }
 
@@ -342,8 +335,6 @@ watch([startAbs, endAbs], () => {
   }
 })
 
-// После монтирования компонента даём время для начальной загрузки,
-// затем разрешаем показ уведомлений о валидации
 onMounted(() => {
   setTimeout(() => {
     isInitialMount.value = false

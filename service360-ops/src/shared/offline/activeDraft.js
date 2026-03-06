@@ -1,6 +1,5 @@
 import { ref } from 'vue';
 
-// Реактивное состояние активного черновика для открытия из DraftsPanel
 export const activeDraft = ref(null);
 
 export function setActiveDraft(draft) {

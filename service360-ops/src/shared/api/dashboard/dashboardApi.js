@@ -41,7 +41,6 @@ export const loadWorkPlanForKpi = async (date, periodType = null, objLocation = 
     params.periodType = periodType;
   }
 
-  // Только добавляем objLocation если он не null (не "Все хозяйства")
   if (objLocation !== null) {
     params.objLocation = objLocation;
   }
@@ -66,21 +65,17 @@ export const loadIncidentsForKpi = async (date, periodType, objLocation = null, 
     periodType
   };
 
-  // Добавляем objLocation только если он не null
   if (objLocation !== null) {
     params.objLocation = objLocation;
   }
 
-  // Добавляем status только если он не null
   if (status !== null) {
     params.status = status;
   }
 
-  // Добавляем event только если он не null
   if (event !== null) {
     params.event = event;
   }
-
 
   const response = await axios.post(
     API_INCIDENTS_URL,
@@ -100,10 +95,10 @@ export const loadRailwayStatus = async (customDate = null, relobj = 2525) => {
   let dateStr;
 
   if (customDate) {
-    // Если передана кастомная дата, используем её
+    
     dateStr = customDate;
   } else {
-    // Иначе используем сегодняшнюю дату
+    
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -143,7 +138,6 @@ export const loadRailwaySkewData = async (customDate = null) => {
     dateStr = `${year}-${month}-${day}`;
   }
 
-  // Загружаем данные по всем 4 типам отклонений параллельно
   const [levelData, skewData, subsidence, planDeviation] = await Promise.all([
     axios.post(
       API_INSPECTIONS_URL,
@@ -179,7 +173,6 @@ export const loadRailwaySkewData = async (customDate = null) => {
     )
   ]);
 
-  // Объединяем все данные и добавляем тип отклонения
   const allData = [
     ...(levelData.data.result?.records || []).map(item => ({ ...item, skewType: 'level' })),
     ...(skewData.data.result?.records || []).map(item => ({ ...item, skewType: 'skew' })),
@@ -201,17 +194,14 @@ export const loadSizeIncidentOfMonth = async (objLocation = null, event = null, 
     date: dateStr
   };
 
-  // Добавляем objLocation только если он не null
   if (objLocation !== null) {
     params.objLocation = objLocation;
   }
 
-  // Добавляем event только если он не null
   if (event !== null) {
     params.event = event;
   }
 
-  // Добавляем open только если он не null
   if (open !== null) {
     params.open = open;
   }

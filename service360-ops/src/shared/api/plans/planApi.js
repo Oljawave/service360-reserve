@@ -1,7 +1,6 @@
 import axios from "axios";
 import { getUserData } from "../common/userCache";
 
-
 const API_BASE_URL = import.meta.env.VITE_PLAN_URL;
 
 export async function loadWorkPlan(date = "2025-07-30", periodType = 11) {
@@ -59,7 +58,7 @@ export async function completeThePlanWork(id, cls, date) {
     }
   } catch (error) {
     console.error('Ошибка завершения работы:', error);
-    // Пробрасываем оригинальную ошибку, чтобы сохранить response.data
+    
     throw error;
   }
 }
@@ -96,11 +95,11 @@ export async function copyPlan(idsWorkPlan, dbegCopy, dendCopy, dbegPlan, dendPl
     const today = new Date().toISOString().split('T')[0];
 
     const payload = {
-      idsWorkPlan: idsWorkPlan, // Массив ID работ для копирования
-      dbegCopy: dbegCopy,        // Начало копируемого периода (формат: "YYYY-MM-DD")
-      dendCopy: dendCopy,        // Конец копируемого периода
-      dbegPlan: dbegPlan,        // Начало планируемого периода
-      dendPlan: dendPlan,        // Конец планируемого периода
+      idsWorkPlan: idsWorkPlan, 
+      dbegCopy: dbegCopy,        
+      dendCopy: dendCopy,        
+      dbegPlan: dbegPlan,        
+      dendPlan: dendPlan,        
       pvUser: user.pv,
       objUser: user.id,
       CreatedAt: today,

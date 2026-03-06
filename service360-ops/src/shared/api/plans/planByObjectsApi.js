@@ -5,7 +5,6 @@ const OBJECT_URL = import.meta.env.VITE_OBJECT_URL
 const LOCATION_URL = import.meta.env.VITE_LOCATION_URL
 const PLAN_URL = import.meta.env.VITE_PLAN_URL
 
-// Загрузка списка работ
 export async function loadWorksList() {
   try {
     const response = await axios.post(OBJECT_URL, {
@@ -27,7 +26,6 @@ export async function loadWorksList() {
   }
 }
 
-// Загрузка списка мест (секций)
 export async function loadPlacesList() {
   try {
     const response = await axios.post(OBJECT_URL, {
@@ -47,7 +45,6 @@ export async function loadPlacesList() {
   }
 }
 
-// Загрузка участков по работе
 export async function loadSectionsByWork(objWork) {
   try {
     const response = await axios.post(LOCATION_URL, {
@@ -70,7 +67,6 @@ export async function loadSectionsByWork(objWork) {
   }
 }
 
-// Загрузка участков по работе и месту
 export async function loadSectionsByWorkAndPlace(objWork, objSection) {
   try {
     const response = await axios.post(LOCATION_URL, {
@@ -93,7 +89,6 @@ export async function loadSectionsByWorkAndPlace(objWork, objSection) {
   }
 }
 
-// Загрузка объектов по типу объекта и координатам участка
 export async function loadObjectsByTypeAndCoord(objObjectType, beg, end) {
   try {
     const response = await axios.post(OBJECT_URL, {
@@ -127,7 +122,6 @@ export async function loadObjectsByTypeAndCoord(objObjectType, beg, end) {
   }
 }
 
-// Загрузка объектов по месту, типу объекта и координатам участка
 export async function loadObjectsByParams(objSection, objObjectType, beg, end) {
   try {
     const response = await axios.post(OBJECT_URL, {
@@ -162,7 +156,6 @@ export async function loadObjectsByParams(objSection, objObjectType, beg, end) {
   }
 }
 
-// Сохранение одного плана по участку
 export async function savePlanBySection({ work, section, object, coordinates, plannedDate, description }) {
   try {
     const user = await getUserData()
@@ -207,7 +200,6 @@ export async function savePlanBySection({ work, section, object, coordinates, pl
   }
 }
 
-// Сохранение планов по нескольким объектам
 export async function saveSeveralPlans({ work, section, plannedDate, objects }) {
   try {
     const user = await getUserData()

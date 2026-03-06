@@ -70,7 +70,7 @@ const props = defineProps({
     type: Object,
     default: null
   },
-  // ИЗМЕНЕНИЕ: Устанавливаем default: false, чтобы управлять атрибутом извне
+  
   required: {
     type: Boolean,
     default: false
@@ -101,7 +101,6 @@ const endAbs = computed(() => {
   return km * 1000 + pk * 100
 })
 
-// Проверка на пустые обязательные поля
 const hasEmptyRequiredFields = computed(() => {
   if (!props.required) return false
   return currentStartKm.value === null || currentStartKm.value === 0 ||
@@ -111,7 +110,7 @@ const hasEmptyRequiredFields = computed(() => {
 })
 
 const isInvalid = computed(() => {
-  // Не проверяем диапазон если есть пустые поля
+  
   if (hasEmptyRequiredFields.value) return false
   return startAbs.value > endAbs.value
 })
@@ -123,11 +122,9 @@ const isOutOfBounds = computed(() => {
   return startAbs.value < objStartAbs || endAbs.value > objEndAbs
 })
 
-// Computed для определения статуса каждого поля
 const getFieldStatus = (field) => {
   if (!shouldShowError.value) return null
 
-  // Проверка на пустое обязательное поле
   if (props.required) {
     const value = props.modelValue[field]
     if (value === null || value === 0 || value === '') {
@@ -140,7 +137,6 @@ const getFieldStatus = (field) => {
   return null
 }
 
-// Валидация отдельных полей
 const fieldErrors = ref({
   coordStartKm: null,
   coordStartPk: null,
@@ -232,13 +228,12 @@ const handleEndPk = (value) => {
 }
 
 const performValidation = () => {
-  // Проверка на пустые обязательные поля
+  
   if (hasEmptyRequiredFields.value) {
     notificationStore.showNotification('Необходимо заполнить все координаты', 'error')
     return
   }
 
-  // Проверка ошибок полей
   const hasFieldErrors = Object.values(fieldErrors.value).some(err => err !== null)
   if (hasFieldErrors) {
     const firstError = Object.values(fieldErrors.value).find(err => err !== null)

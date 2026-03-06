@@ -111,7 +111,6 @@ export async function saveNewEvent(eventName) {
       throw new Error(error.message || JSON.stringify(error));
     }
 
-    // Предполагаем, что сервер возвращает ID созданной записи
     const newRecordId = response.data.result?.records?.[0]?.id;
     if (!newRecordId) {
       throw new Error('Сервер не вернул ID для нового события.');
@@ -215,7 +214,6 @@ export async function saveIncident(payloadData) {
       }]
     };
 
-    // Добавляем критичность, если она есть
     if (payloadData.criticalityFv !== undefined && payloadData.criticalityPv !== undefined) {
       payload.params[1].fvCriticality = payloadData.criticalityFv;
       payload.params[1].pvCriticality = payloadData.criticalityPv;
@@ -242,12 +240,10 @@ export async function saveIncident(payloadData) {
   } catch (error) {
     console.error("Ошибка при сохранении инцидента:", error);
 
-    // Если это ошибка от сервера в теле ответа (не HTTP ошибка)
     if (error.message && !error.response) {
-      throw error; // Пробрасываем уже обработанную ошибку с правильным сообщением
+      throw error; 
     }
 
-    // Обработка HTTP ошибок
     let errorMessage = 'Не удалось сохранить инцидент';
     if (error.response?.data?.error?.message) {
       errorMessage = error.response.data.error.message;
@@ -275,16 +271,15 @@ export async function updateIncident(payloadData) {
     const payload = {
       method: "data/saveIncident",
       params: ["upd", {
-        id: payloadData.id, // id самого инцидента
+        id: payloadData.id, 
         
-        // Обновление полей
         idInfoApplicant: payloadData.idInfoApplicant,
         InfoApplicant: payloadData.InfoApplicant,
         idDescription: payloadData.idDescription,
         Description: payloadData.Description,
         idUpdatedAt: payloadData.idUpdatedAt,
         UpdatedAt: datePart,
-        // Обновление критичности
+        
         idCriticality: payloadData.idCriticality,
         pvCriticality: payloadData.criticalityPv,
         fvCriticality: payloadData.criticalityFv,
@@ -389,7 +384,7 @@ export async function assignWorkToIncident(incident, work, completionDate, selec
     );
 
     if (response.data && response.data.error) {
-      // Улучшаем обработку ошибок для получения сообщения
+      
       const errorMessage = typeof response.data.error === 'object' && response.data.error !== null 
                            ? response.data.error.message || JSON.stringify(response.data.error) 
                            : response.data.error;

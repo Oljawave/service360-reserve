@@ -90,7 +90,6 @@ const fetchObjectsForSelect = async (objWork) => {
   }
 };
 
-// Обновленная функция для завершения работы
 const completeThePlanWork = async (id, cls, date) => {
   try {
     const response = await axios.post(DATA_API_URL, {
@@ -113,7 +112,7 @@ const completeThePlanWork = async (id, cls, date) => {
     }
   } catch (error) {
     console.error('Ошибка завершения работы:', error);
-    // Пробрасываем оригинальную ошибку, чтобы сохранить response.data
+    
     throw error;
   }
 };

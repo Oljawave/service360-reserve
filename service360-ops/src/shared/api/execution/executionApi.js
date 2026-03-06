@@ -279,7 +279,7 @@ export async function addResourcePersonnel(personnelData, taskLogId, taskLogCls)
       pvPosition: personnelData.pvPosition,
       objPersonnel: personnelData.id,
       pvPersonnel: personnelData.pv,
-      Value: personnelData.time || 0, // Часы работы
+      Value: personnelData.time || 0, 
       objTaskLog: taskLogId,
       linkCls: taskLogCls,
       CreatedAt: today,
@@ -314,7 +314,7 @@ export async function saveComplexPersonnel(personnelId, performerData) {
   }
 
   try {
-    // Определяем операцию: "ins" для новых, "upd" для существующих
+    
     const operation = performerData.isNew ? "ins" : "upd";
 
     const payload = {
@@ -324,7 +324,6 @@ export async function saveComplexPersonnel(personnelId, performerData) {
       PerformerValue: Number(performerData.PerformerValue)
     };
 
-    // Для обновления существующих исполнителей добавляем дополнительные поля
     if (!performerData.isNew) {
       payload.idPerformer = performerData.idPerformer;
       payload.idPerformerValue = performerData.idPerformerValue;
@@ -397,47 +396,38 @@ export async function saveTaskLogFact(taskData) {
       UpdatedAt: today
     };
 
-    // Добавляем FactDateStart только если он передан (при начале задачи)
     if (taskData.FactDateStart) {
       payload.FactDateStart = taskData.FactDateStart;
     }
 
-    // Добавляем FactDateEnd только если он передан (при завершении задачи)
     if (taskData.FactDateEnd) {
       payload.FactDateEnd = taskData.FactDateEnd;
     }
 
-    // Добавляем Value (фактический объем) только если он передан
     if (taskData.Value !== undefined) {
       payload.Value = taskData.Value;
     }
 
-    // Добавляем ReasonDeviation только если он передан
     if (taskData.ReasonDeviation) {
       payload.ReasonDeviation = taskData.ReasonDeviation;
     }
 
-    // Добавляем Number (новый номер объекта) только если он передан
     if (taskData.Number) {
       payload.Number = taskData.Number;
     }
 
-    // Добавляем objObject только если он передан
     if (taskData.objObject) {
       payload.objObject = taskData.objObject;
     }
 
-    // Добавляем fullNameWork только если он передан
     if (taskData.fullNameWork) {
       payload.fullNameWork = taskData.fullNameWork;
     }
 
-    // Добавляем idUser только если он есть
     if (taskData.idUser) {
       payload.idUser = taskData.idUser;
     }
 
-    // Добавляем idUpdatedAt только если он есть
     if (taskData.idUpdatedAt) {
       payload.idUpdatedAt = taskData.idUpdatedAt;
     }

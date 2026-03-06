@@ -31,7 +31,6 @@ export async function analyzeTrackGaugeFile(filename, file) {
 
   console.log('Полный ответ от сервера:', response.data);
 
-  // Проверяем разные возможные структуры ответа
   if (response.data.result?.records) {
     return response.data.result.records;
   } else if (response.data.result) {
@@ -154,7 +153,6 @@ export async function uploadTrackGaugeData(records) {
     const user = await getUserData();
     const today = new Date().toISOString().split('T')[0];
 
-    // Определяем тип данных: если в первой записи есть kod_otstup, то "Otstup", иначе "Ball"
     const dataType = records.length > 0 && records[0].kod_otstup !== undefined ? "Otstup" : "Ball";
 
     const payload = {

@@ -30,7 +30,7 @@ export async function loadObjectServed({ page = 1, limit = 10 }) {
   return {
 
     data: records.map((item, i) => ({
-      rawData: item, // Добавляем исходные данные
+      rawData: item, 
       id: item.id,
       cls: item.cls,
       type: typeMap[item.objObjectType] || 'Неизвестно',

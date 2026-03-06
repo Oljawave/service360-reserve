@@ -38,7 +38,7 @@ const props = defineProps({
     default: false
   },
   status: String,
-  hint: String // 👈 добавили
+  hint: String 
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -49,7 +49,7 @@ const updateValue = (selectedValue) => {
 }
 
 const renderLabel = (option) => {
-  // Проверяем, что label существует и является строкой
+  
   const labelText = String(option.label ?? '');
   return h(
     'div',

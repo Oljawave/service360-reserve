@@ -16,7 +16,7 @@ describe('parseLocalDate', () => {
     const result = parseLocalDate('2024-03-15')
     expect(result).toBeInstanceOf(Date)
     expect(result.getFullYear()).toBe(2024)
-    expect(result.getMonth()).toBe(2) // март = 2
+    expect(result.getMonth()).toBe(2) 
     expect(result.getDate()).toBe(15)
   })
 
@@ -75,12 +75,12 @@ describe('isOverdue', () => {
 
 describe('formatDate', () => {
   it('форматирует дату в YYYY-MM-DD', () => {
-    const date = new Date(2024, 2, 5) // 5 марта 2024
+    const date = new Date(2024, 2, 5) 
     expect(formatDate(date)).toBe('2024-03-05')
   })
 
   it('добавляет ведущий ноль для месяца и дня', () => {
-    const date = new Date(2024, 0, 9) // 9 января
+    const date = new Date(2024, 0, 9) 
     expect(formatDate(date)).toBe('2024-01-09')
   })
 
@@ -109,7 +109,7 @@ describe('formatDateHuman', () => {
 describe('isToday', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-    vi.setSystemTime(new Date(2024, 2, 15)) // 15 марта 2024
+    vi.setSystemTime(new Date(2024, 2, 15)) 
   })
 
   it('возвращает true для сегодняшней даты', () => {
@@ -135,9 +135,9 @@ describe('addDays', () => {
   })
 
   it('переходит через конец месяца', () => {
-    const date = new Date(2024, 2, 29) // 29 марта
+    const date = new Date(2024, 2, 29) 
     const result = addDays(date, 3)
-    expect(result.getMonth()).toBe(3) // апрель
+    expect(result.getMonth()).toBe(3) 
     expect(result.getDate()).toBe(1)
   })
 

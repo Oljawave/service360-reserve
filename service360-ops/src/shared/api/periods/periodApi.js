@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const API_BASE_URL = import.meta.env.VITE_OBJECT_URL;
 
 export const loadPeriodTypes = async () => {

@@ -4,7 +4,7 @@ export async function getUserData() {
   if (userDataCache) return userDataCache;
 
   try {
-    // Получаем данные пользователя из localStorage (сохранены при логине через getPersonnalInfo)
+   
     const personnalInfoStr = localStorage.getItem('personnalInfo');
 
     if (!personnalInfoStr) {

@@ -60,5 +60,4 @@ export async function clearAllDrafts() {
   await refreshDraftsCount();
 }
 
-// Инициализация счётчика при импорте
 refreshDraftsCount();

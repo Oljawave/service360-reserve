@@ -16,4 +16,3 @@ export const loadLocation = async () => {
     throw error;
   }
 };
-

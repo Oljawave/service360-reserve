@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 const API_URL = import.meta.env.VITE_LOCATION_URL;
 
 export const saveLocation = async (form, multiOptions) => {

@@ -49,7 +49,6 @@ const emit = defineEmits(['update:modelValue']);
 const timestamp = computed(() => {
   if (!props.modelValue) return null;
   
-  // Обрабатываем разные типы входных данных
   let date;
   if (props.modelValue instanceof Date) {
     date = props.modelValue;

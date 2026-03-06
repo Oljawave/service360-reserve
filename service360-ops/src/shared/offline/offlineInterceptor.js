@@ -22,12 +22,11 @@ function isApiUrl(url) {
 
 export function setupOfflineInterceptor() {
   axios.interceptors.request.use(async (config) => {
-    // Только POST-запросы к нашим API
+    
     if (config.method !== 'post' || !isApiUrl(config.url)) {
       return config;
     }
 
-    // Пропускаем replay-запросы (избегаем бесконечного цикла)
     if (config.headers?.['X-Offline-Sync'] === 'true') {
       return config;
     }
@@ -35,7 +34,6 @@ export function setupOfflineInterceptor() {
     const rpcMethod = config.data?.method;
     if (!rpcMethod) return config;
 
-    // Если офлайн и это мутация — ставим в очередь
     if (!navigator.onLine && isMutation(rpcMethod)) {
       const queueId = await enqueueRequest(
         config.url,
@@ -43,7 +41,6 @@ export function setupOfflineInterceptor() {
         config.data.params
       );
 
-      // Возвращаем ошибку с маркером для response interceptor
       return Promise.reject({
         __offlineQueued: true,
         queueId,
@@ -54,12 +51,11 @@ export function setupOfflineInterceptor() {
     return config;
   });
 
-  // Response interceptor — перехватываем queued-ошибки
   axios.interceptors.response.use(
     response => response,
     error => {
       if (error?.__offlineQueued) {
-        // Возвращаем синтетический успешный ответ
+        
         return {
           data: {
             result: {
@@ -72,7 +68,7 @@ export function setupOfflineInterceptor() {
           statusText: 'Queued Offline',
         };
       }
-      // Сессия истекла — редирект на логин
+      
       if (error?.response?.status === 401) {
         logout();
         router.push('/login');

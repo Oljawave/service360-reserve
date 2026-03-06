@@ -1,8 +1,6 @@
 import axios from 'axios';
 
-
 const API_URL = import.meta.env.VITE_OBJECT_URL;
-
 
 export const deleteObject = async (objectId) => {
   try {

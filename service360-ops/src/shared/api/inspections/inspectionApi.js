@@ -32,8 +32,5 @@ export async function loadInspections(date = "2025-07-30", periodType = 11) {
     }
   );
 
-
-  
-
   return response.data.result?.records || [];
 }

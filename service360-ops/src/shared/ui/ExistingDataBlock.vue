@@ -215,7 +215,6 @@ const getHeaderClass = () => {
   min-width: fit-content;
 }
 
-
 /* --- СТИЛИ ДЛЯ ЗАГОЛОВКОВ (HEADER ROW STYLES) --- */
 /* INFO Header (Default) - Для заголовка без специального класса */
 .data-row.header-row:not(.defects-header):not(.parameters-header):not(.planning-header):not(.materials-header):not(.external-services-header):not(.personnel-header):not(.equipment-header):not(.tools-header) {
@@ -336,7 +335,6 @@ const getHeaderClass = () => {
   grid-template-columns: 60px 360px 140px; /* № | ИНСТРУМЕНТ | КОЛИЧЕСТВО */
   .tool-type-cell, .quantity-cell { display: block; }
 }
-
 
 /* --- ОБЩИЕ СТИЛИ ЯЧЕЕК --- */
 .data-row:not(.header-row) {

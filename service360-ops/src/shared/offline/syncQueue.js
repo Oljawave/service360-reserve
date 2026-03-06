@@ -4,7 +4,6 @@ import axios from 'axios';
 
 export const pendingCount = ref(0);
 
-// Загрузить начальный счётчик
 db.syncQueue
   .where('status')
   .equals('pending')

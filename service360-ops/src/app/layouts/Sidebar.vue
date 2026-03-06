@@ -99,7 +99,6 @@ const getUserPermissions = () => {
   try {
     const curUser = JSON.parse(curUserString)
     const target = curUser?.result?.target || ''
-    // Оставляем только привилегии БЕЗ суффиксов (без двоеточия)
     const permissions = target.split(',').filter(p => !p.includes(':'))
     return new Set(permissions)
   } catch (e) {
@@ -112,15 +111,12 @@ const userPermissions = getUserPermissions()
 
 const filterItems = (items) => {
   return items.filter(item => {
-    // Проверяем разрешение для самого пункта
     if (item.permission && !userPermissions.has(item.permission)) {
       return false
     }
     
-    // Если есть дочерние элементы, фильтруем их
     if (item.children) {
       item.children = filterItems(item.children)
-      // Показываем родительский элемент только если есть доступные дочерние
       return item.children.length > 0
     }
     

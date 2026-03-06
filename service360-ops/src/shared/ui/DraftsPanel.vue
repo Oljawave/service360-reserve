@@ -30,7 +30,7 @@
             :key="group.draft.id"
             class="drafts-group"
           >
-            <!-- Родительский черновик -->
+            
             <div
               class="drafts-panel-item"
               :class="{ 'drafts-panel-item--submitted': group.draft.submitted }"
@@ -51,7 +51,6 @@
               </button>
             </div>
 
-            <!-- Дочерние черновики (Неисправности / Параметры) -->
             <div
               v-for="child in group.children"
               :key="child.id"
@@ -107,12 +106,11 @@ const FORM_LABELS = {
 
 const getFormLabel = (formType) => FORM_LABELS[formType] || formType;
 
-// Группируем черновики: родительские + их дети
 const groupedDrafts = computed(() => {
   const allDrafts = drafts.value;
-  // Родительские черновики (без parentDraftId)
+  
   const parents = allDrafts.filter(d => !d.parentDraftId);
-  // Дочерние черновики (с parentDraftId)
+  
   const children = allDrafts.filter(d => !!d.parentDraftId);
 
   return parents
@@ -160,7 +158,7 @@ const getChildPreview = (child) => {
 
 const isChildAvailable = (child) => {
   if (!child.parentDraftId) return true;
-  // Доступен только если родительский черновик (Карточка осмотра) существует
+  
   const parent = drafts.value.find(d => d.id === child.parentDraftId);
   return !!parent && parent.formType === 'workCard';
 };
@@ -170,14 +168,13 @@ const getDraftPreview = (draft) => {
   if (!fields) return '';
   const parts = [];
 
-  // Название работы из recordData
   if (draft.recordData?.name) {
     parts.push(draft.recordData.name);
   }
 
   if (draft.formType === 'workCard') {
     if (fields.info?.deviationReason) parts.push(fields.info.deviationReason);
-    // Совместимость со старым форматом
+    
     if (fields.defect?.componentText) parts.push(fields.defect.componentText);
     if (fields.defect?.defectText) parts.push(fields.defect.defectText);
     if (fields.info?.deviationReason === undefined && fields.deviationReason) parts.push(fields.deviationReason);
@@ -239,12 +236,10 @@ const navigateAndOpen = async (draft) => {
   setActiveDraft(draft);
 };
 
-// Открыть родительский (info) черновик
 const openDraft = async (draft) => {
   await navigateAndOpen(draft);
 };
 
-// Открыть дочерний черновик (дефект или параметр) — передаём parentDraftId
 const openChildDraft = async (child) => {
   if (!isChildAvailable(child)) {
     notificationStore.showNotification('Сначала необходимо сохранить информацию по работе!', 'error');

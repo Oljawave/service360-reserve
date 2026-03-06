@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_PLAN_URL;
 
-
 export const deletePlan = async (planId) => {
   if (!planId) {
     throw new Error('ID плана не указан');
@@ -26,7 +25,6 @@ export const deletePlan = async (planId) => {
 
     const result = await response.json();
 
-    // Проверяем на наличие ошибок в ответе
     if (result.error) {
       throw new Error(result.error.message || 'Ошибка при удалении плана');
     }

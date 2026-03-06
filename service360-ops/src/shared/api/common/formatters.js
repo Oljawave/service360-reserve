@@ -1,8 +1,4 @@
-/**
- * Форматирует дату в формат DD.MM.YYYY для отображения
- * @param {string|Date} date - Дата для форматирования
- * @returns {string|null} Отформатированная дата или null
- */
+
 export function formatDate(date) {
   if (!date) return null;
 
@@ -16,11 +12,6 @@ export function formatDate(date) {
   return `${day}.${month}.${year}`;
 }
 
-/**
- * Форматирует дату в формат YYYY-MM-DD для отправки на бэкенд
- * @param {string|number|Date} date - Дата для форматирования
- * @returns {string|null} Отформатированная дата в формате YYYY-MM-DD или null
- */
 export function formatDateForBackend(date) {
   if (!date) return null;
 

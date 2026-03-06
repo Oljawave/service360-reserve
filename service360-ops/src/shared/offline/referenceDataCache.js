@@ -1,23 +1,20 @@
 import { db } from './db';
 
-const CACHE_TTL = 4 * 60 * 60 * 1000; // 4 часа
+const CACHE_TTL = 4 * 60 * 60 * 1000; 
 
 async function getCachedOrFetch(tableName, fetchFn) {
   const meta = await db.cacheMeta.get(tableName);
   const now = Date.now();
 
-  // Кэш свежий — возвращаем из IndexedDB
   if (meta && meta.expiresAt > now) {
     const cached = await db[tableName].toArray();
     if (cached.length > 0) return cached;
   }
 
-  // Пробуем загрузить из сети
   if (navigator.onLine) {
     try {
       const data = await fetchFn();
 
-      // Сохраняем в IndexedDB
       await db[tableName].clear();
       if (data.length > 0) {
         await db[tableName].bulkPut(data);
@@ -33,7 +30,6 @@ async function getCachedOrFetch(tableName, fetchFn) {
     }
   }
 
-  // Фолбэк — устаревший кэш
   const stale = await db[tableName].toArray();
   if (stale.length > 0) return stale;
 
@@ -52,7 +48,6 @@ export const cachedLoadTasks = async (objWork) => {
   const fetchFn = () =>
     import('../api/repairs/repairApi').then(m => m.loadTasks(objWork));
 
-  // Задачи зависят от objWork, поэтому при онлайне всегда делаем свежий запрос
   if (navigator.onLine) {
     try {
       const data = await fetchFn();
@@ -66,7 +61,6 @@ export const cachedLoadTasks = async (objWork) => {
     }
   }
 
-  // Офлайн-фолбэк
   const stale = await db.tasks.toArray();
   if (stale.length > 0) return stale;
 
@@ -93,7 +87,6 @@ export const cachedLoadWorkPlanInspection = async () => {
   const fetchFn = () =>
     import('../api/inspections/inspectionsApi').then(m => m.loadWorkPlanInspectionUnfinished());
 
-  // Оперативные данные (незавершённые работы) — при онлайне всегда свежий запрос
   if (navigator.onLine) {
     try {
       const data = await fetchFn();
@@ -107,7 +100,6 @@ export const cachedLoadWorkPlanInspection = async () => {
     }
   }
 
-  // Офлайн-фолбэк
   const stale = await db.workPlanRecords.toArray();
   if (stale.length > 0) return stale;
 

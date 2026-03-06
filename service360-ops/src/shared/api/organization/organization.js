@@ -1,6 +1,5 @@
 import axios from 'axios'
 
-
 const DEFAULT_API_URL = import.meta.env.VITE_OBJECT_URL;  
 const LOCATION_API_URL = import.meta.env.VITE_LOCATION_URL;  
 
