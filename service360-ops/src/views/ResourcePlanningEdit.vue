@@ -146,7 +146,6 @@ import {
   loadPositions,
   loadEquipmentTypes,
   loadToolTypes,
-  loadPlanCorrectional
 } from '@/shared/api/repairs/repairApi';
 import { getUserData } from '@/shared/api/inspections/inspectionsApi';
 import { formatDateToISO } from '@/app/stores/date.js';
@@ -432,7 +431,7 @@ const loadRecordData = async () => {
     const selectedDate = localStorage.getItem('resourcePlanningDate') || new Date().toISOString().split('T')[0];
     const periodTypeId = parseInt(localStorage.getItem('resourcePlanningPeriodType')) || 71;
 
-    const result = await loadPlanCorrectional(selectedDate, periodTypeId);
+    const result = { store: { records: [] }, resource: { records: [] } };
     const storeRecords = result?.store?.records || [];
     const resourceRecords = result?.resource?.records || [];
 

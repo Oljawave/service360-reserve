@@ -30,34 +30,6 @@ export async function loadWorkPlanCorrectionalUnfinished() {
   }
 }
 
-export async function loadPlanCorrectional(date = "2025-07-30", periodType = 11) {
-  const objLocation = localStorage.getItem("objLocation");
-
-  if (!objLocation) {
-    throw new Error("objLocation не найден в localStorage");
-  }
-
-  const response = await axios.post(
-    API_REPAIR_URL,
-    {
-      method: "data/loadTaskLog",
-      params: [
-        {
-          date,
-          periodType,
-          objLocation: parseInt(objLocation),
-        }
-      ]
-    },
-    {
-      withCredentials: true
-    }
-  );
-
-  const result = response.data.result;
-
-  return result || { store: { records: [] }, resource: { records: [] } };
-}
 
 export async function loadDateWorkPlanCorrectional(selectedSectionId, pv) {
   try {

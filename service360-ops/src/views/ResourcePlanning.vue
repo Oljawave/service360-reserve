@@ -21,7 +21,6 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import TableWrapper from '@/app/layouts/Table/TableWrapper.vue';
-import { loadPlanCorrectional } from '@/shared/api/repairs/repairApi';
 import { loadPeriodTypes } from '@/shared/api/periods/periodApi';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
 
@@ -295,7 +294,7 @@ const loadInspectionsWrapper = async ({ page, limit, filters: filterValues }) =>
     const selectedDate = filterValues.date ? formatDateToString(filterValues.date) : formatDateToString(new Date());
     const periodTypeId = filterValues.periodType?.value ?? 71;
 
-    const result = await loadPlanCorrectional(selectedDate, periodTypeId);
+    const result = { store: { records: [] }, resource: { records: [] } };
     const storeRecords = result?.store?.records || [];
     const resourceRecords = result?.resource?.records || [];
 
