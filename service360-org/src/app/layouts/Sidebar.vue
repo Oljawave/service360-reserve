@@ -100,6 +100,14 @@ const allItems = [
     path: '/clients',
     icon: 'Users',
     permission: 'cl'
+  },
+  {
+    label: 'Справочники 1С',
+    icon: 'BookOpen',
+    children: [
+      { label: 'Материалы', path: '/1c/materials' },
+      { label: 'Услуги', path: '/1c/services' }
+    ]
   }
 ]
 

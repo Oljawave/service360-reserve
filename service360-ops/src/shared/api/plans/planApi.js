@@ -63,6 +63,41 @@ export async function completeThePlanWork(id, cls, date) {
   }
 }
 
+export async function approveThePlanWork(row, today) {
+  try {
+    const user = await getUserData();
+
+    const response = await axios.post(
+      API_BASE_URL,
+      {
+        method: "data/approveThePlanWork",
+        params: [
+          {
+            id: row.id,
+            cls: row.rawData.cls,
+            idUpdatedAt: row.rawData.idUpdatedAt,
+            UpdatedAt: today,
+            idUser: row.rawData.idUser,
+            pvUser: user.pv,
+            objUser: user.id,
+            idStatus: row.rawData.idStatus,
+            pvStatus: row.rawData.pvStatus,
+            fvStatus: row.rawData.fvStatus,
+          }
+        ]
+      },
+      { withCredentials: true }
+    );
+
+    if (response.data?.result) return response.data.result;
+    if (response.data?.error) throw new Error(response.data.error);
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка утверждения работы:', error);
+    throw error;
+  }
+}
+
 export async function getPeriodInfo(date, periodType) {
   try {
     const response = await axios.post(

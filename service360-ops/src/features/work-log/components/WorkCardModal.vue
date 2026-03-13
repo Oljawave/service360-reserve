@@ -215,7 +215,7 @@
         <div class="main-actions">
           <button v-if="!isOnline" class="draft-btn" @click="saveAsDraft">{{ getDraftButtonLabel() }}</button>
           <MainButton
-            v-if="isOnline && !(activeTab === 'info' && existingRecords.length > 0)"
+            v-if="isOnline"
             :label="getButtonLabel()"
             :loading="isSaving"
             @click="saveWork"
@@ -496,6 +496,11 @@ const saveWork = async () => {
       }
     }
 
+    if (!newRecord.value.date) {
+      notificationStore.showNotification('Необходимо указать дату!', 'error');
+      return;
+    }
+
     isSaving.value = true;
     try {
       const user = await getUserData();
@@ -518,6 +523,9 @@ const saveWork = async () => {
         CreatedAt: new Date().toISOString().split('T')[0],
         UpdatedAt: new Date().toISOString().split('T')[0],
         ReasonDeviation: newRecord.value.deviationReason,
+        idStatus: props.record.idStatus,
+        pvStatus: props.record.pvStatus,
+        fvStatus: props.record.fvStatus,
       });
 
       if (response?.result?.id) savedInspectionId.value = response.result.id;
@@ -899,16 +907,8 @@ watch(
       coordEndKm: rec.FinishKm || null, coordEndPk: rec.FinishPicket || null, coordEndZv: rec.FinishLink || null,
     });
 
-    const existingData = await loadExistingData(rec);
+    await loadExistingData(rec);
     loadComponents();
-
-    if (existingData?.length > 0) {
-      const last = existingData[existingData.length - 1];
-      if (last?.id) {
-        savedInspectionId.value = last.id;
-        isInfoSaved.value = true;
-      }
-    }
   },
   { immediate: true }
 );

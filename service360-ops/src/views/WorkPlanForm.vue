@@ -451,6 +451,9 @@ const mapRecordToTableRow = (record) => ({
   FinishKm: record.FinishKm,
   FinishPicket: record.FinishPicket,
   FinishLink: record.FinishLink,
+  idStatus: record.idStatus,
+  pvStatus: record.pvStatus,
+  fvStatus: record.fvStatus,
 });
 
 const reloadTableDataOnly = async () => {

@@ -64,6 +64,14 @@
     @cancel="isConfirmModalOpen = false"
   />
 
+  <ConfirmationModal
+    v-if="isConfirmApproveModalOpen"
+    title="Утверждение работы"
+    message="Вы уверены, что хотите утвердить эту работу?"
+    @confirm="handleConfirmApprove"
+    @cancel="isConfirmApproveModalOpen = false"
+  />
+
 </template>
 
 <script setup>
@@ -74,7 +82,7 @@ import ModalPlanWork from '@/features/work-plan/components/ModalPlanWork.vue';
 import ModalCopyPlan from '@/features/work-plan/components/ModalCopyPlan.vue';
 import ModalPlanByObjects from '@/features/work-plan/components/ModalPlanByObjects.vue';
 import ModalPlanBySection from '@/features/work-plan/components/ModalPlanBySection.vue';
-import { loadWorkPlan, completeThePlanWork } from '@/shared/api/plans/planApi';
+import { loadWorkPlan, completeThePlanWork, approveThePlanWork } from '@/shared/api/plans/planApi';
 import { loadPeriodTypes } from '@/shared/api/periods/periodApi';
 import { usePermissions } from '@/shared/api/permissions/usePermissions';
 import UiButton from '@/shared/ui/UiButton.vue';
@@ -90,7 +98,9 @@ const isPlanByObjectsModalOpen = ref(false);
 const isPlanBySectionModalOpen = ref(false);
 const tableWrapperRef = ref(null);
 const isConfirmModalOpen = ref(false);
+const isConfirmApproveModalOpen = ref(false);
 const recordToComplete = ref(null);
+const recordToApprove = ref(null);
 const notificationStore = useNotificationStore();
 const selectedRows = ref([]);
 
@@ -183,6 +193,34 @@ const openConfirmationModal = (row) => {
   isConfirmModalOpen.value = true;
 };
 
+const openApproveModal = (row) => {
+  recordToApprove.value = row;
+  isConfirmApproveModalOpen.value = true;
+};
+
+const handleConfirmApprove = async () => {
+  if (!recordToApprove.value?.id) {
+    notificationStore.showNotification('Ошибка: Нет записи для утверждения.', 'error');
+    return;
+  }
+
+  try {
+    const today = formatDateToISO(new Date());
+    await approveThePlanWork(recordToApprove.value, today);
+    notificationStore.showNotification('Работа успешно утверждена!', 'success');
+    handleTableUpdate();
+  } catch (error) {
+    let errorMessage = 'Не удалось утвердить работу';
+    if (error.response?.data?.error?.message) errorMessage = error.response.data.error.message;
+    else if (error.response?.data?.message) errorMessage = error.response.data.message;
+    else if (error.message) errorMessage = error.message;
+    notificationStore.showNotification(errorMessage, 'error');
+  } finally {
+    isConfirmApproveModalOpen.value = false;
+    recordToApprove.value = null;
+  }
+};
+
 const handleConfirmComplete = async () => {
   if (!recordToComplete.value || !recordToComplete.value.id) {
     notificationStore.showNotification('Ошибка: Нет записи для завершения.', 'error');
@@ -268,7 +306,7 @@ const loadWorkPlanWrapper = async ({ page, limit, filters: filterValues }) => {
       index: null,
       id: r.id,
       name: r.nameLocationClsSection,
-      work: r.nameClsWork,
+      work: r.nameCls,
       fullNameWork: r.fullNameWork,
       coordinates: formatCoordinates(r.StartKm, r.StartPicket, r.StartLink, r.FinishKm, r.FinishPicket, r.FinishLink),
       object: r.fullNameObject,
@@ -284,7 +322,8 @@ const loadWorkPlanWrapper = async ({ page, limit, filters: filterValues }) => {
       FinishLink: r.FinishLink,
       nameLocationClsSection: r.nameLocationClsSection,
       objLocationClsSection: r.objLocationClsSection,
-      status: (r.FactDateEnd && r.FactDateEnd !== '0000-01-01') ? 'Да' : 'Нет',
+      status: r.nameStatus ?? '',
+      factDateEnd: r.FactDateEnd,
     }));
 
     return {
@@ -314,7 +353,7 @@ const columns = computed(() => {
     { key: 'coordinates', label: 'Координаты' },
     { key: 'object', label: 'Объект' },
     { key: 'planDate', label: 'Плановая дата' },
-    { key: 'status', label: 'Завершен' },
+    { key: 'status', label: 'Статус' },
   ];
 
   if (hasPermission('plan:finish')) {
@@ -326,7 +365,17 @@ const columns = computed(() => {
           return () => {
             const rowData = context.attrs.row;
 
-            if (rowData?.status === 'Да') return null;
+            if (rowData?.status === 'создан' && hasPermission('plan:apr')) {
+              return h(UiButton, {
+                text: 'Утвердить работу',
+                onClick: (event) => {
+                  event.stopPropagation();
+                  openApproveModal(rowData);
+                },
+              });
+            }
+
+            if (rowData?.factDateEnd && rowData.factDateEnd !== '0000-01-01') return null;
 
             return h(UiButton, {
               text: 'Завершить работу',
@@ -357,12 +406,6 @@ const tableActions = computed(() => {
   
   const baseActions = [
     {
-      label: 'Копировать план работ',
-      icon: 'Copy', 
-      onClick: handleCopyWorkPlan,
-      hidden: !hasPermission('plan:copy'),
-    },
-    {
       label: 'Запланировать новую работу',
       icon: 'Plus', 
       onClick: () => {
@@ -386,6 +429,12 @@ const tableActions = computed(() => {
       },
       hidden: !hasPermission('plan:ins'),
     },
+    {
+      label: 'Копировать план работ',
+      icon: 'Copy', 
+      onClick: handleCopyWorkPlan,
+      hidden: !hasPermission('plan:copy'),
+    }
     
   ];
 
@@ -395,7 +444,7 @@ const tableActions = computed(() => {
   const sectionAction = baseActions.find(a => a.icon === 'MapPin');
   const exportAction = baseActions.find(a => a.icon === 'Printer');
 
-  return [copyAction, plusAction, objectsAction, sectionAction, exportAction].filter(action => action && !action.hidden);
+  return [plusAction, objectsAction, sectionAction, copyAction, exportAction].filter(action => action && !action.hidden);
 });
 </script>
 

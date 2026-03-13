@@ -51,6 +51,7 @@
         placeholder="0"
         v-model="form.cost"
         :disabled="true"
+        :format="formatCost"
       />
 
       <AppInput
@@ -116,9 +117,15 @@ const isSaving = ref(false)
 watch(
   () => [form.value.price, form.value.quantity],
   ([price, quantity]) => {
-    form.value.cost = (price ?? 0) * (quantity ?? 0)
+    form.value.cost = Math.round((price ?? 0) * (quantity ?? 0) * 1000) / 1000
   }
 )
+
+const formatCost = (v) => {
+  if (v === null || v === undefined) return ''
+  return v.toFixed(3).replace(/\.?0+$/, '')
+}
+
 const isDeleting = ref(false)
 const showConfirmModal = ref(false)
 
