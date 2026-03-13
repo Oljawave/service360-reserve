@@ -15,6 +15,8 @@ import Clients from '@/views/Clients.vue'
 import Services from '@/views/Services.vue'
 import PassportData from '@/views/PassportData.vue'
 import Profile from '@/views/Profile.vue'
+import Materials1C from '@/views/Materials1C.vue'
+import Services1C from '@/views/Services1C.vue'
 import { isAuthenticated } from '@/shared/api/auth/auth'
 
 const routes = [
@@ -116,6 +118,18 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: Profile,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/1c/materials',
+    name: 'Materials1C',
+    component: Materials1C,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/1c/services',
+    name: 'Services1C',
+    component: Services1C,
     meta: { requiresAuth: true }
   }
 ];
